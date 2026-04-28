@@ -23,7 +23,7 @@ export default function FinishedDisplay({ dict, onRestart }: FinishedDisplayProp
       </div>
       <div className="space-y-4">
         <h2 className="font-display text-3xl font-extrabold">{dict.congrats}</h2>
-        <p className="text-muted text-lg">{dict.congratsDesc}</p>
+        <p className="  text-lg">{dict.congratsDesc}</p>
       </div>
       
       <button

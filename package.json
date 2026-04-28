@@ -10,6 +10,7 @@
     "clean": "next clean"
   },
   "dependencies": {
+    "@base-ui/react": "^1.4.1",
     "@formatjs/intl-localematcher": "^0.8.4",
     "@google/genai": "^1.17.0",
     "@hookform/resolvers": "^5.2.1",
@@ -27,6 +28,7 @@
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "server-only": "^0.0.1",
+    "shadcn": "^4.5.0",
     "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {

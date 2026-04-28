@@ -17,7 +17,7 @@ export default function InterruptedDisplay({ dict }: InterruptedDisplayProps) {
       className="text-center space-y-6 absolute -bottom-64 w-xs"
     >
       <h2 className="font-display text-4xl font-extrabold">{dict.moveWarning}</h2>
-      <p className="text-muted text-lg max-w-xs mx-auto text-red-400">{dict.moveWarningDesc}</p>
+      <p className="  text-lg max-w-xs mx-auto text-red-400">{dict.moveWarningDesc}</p>
     </motion.div>
   );
 }

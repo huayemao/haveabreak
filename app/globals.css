@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
 
 @theme {
   --color-bg-base: #E0E5EC;
@@ -19,16 +23,87 @@
   --font-display: var(--font-plus-jakarta-sans);
 }
 
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: var(--font-dm-sans);
+  --color-sidebar-ring: #6C63FF;
+  --color-sidebar-border: transparent;
+  --color-sidebar-accent-foreground: #6C63FF;
+  --color-sidebar-accent: #E0E5EC;
+  --color-sidebar-primary-foreground: #FFFFFF;
+  --color-sidebar-primary: #6C63FF;
+  --color-sidebar-foreground: #3D4852;
+  --color-sidebar: #E0E5EC;
+  --color-chart-5: #38B2AC;
+  --color-chart-4: #8B84FF;
+  --color-chart-3: #6C63FF;
+  --color-chart-2: #6B7280;
+  --color-chart-1: #3D4852;
+  --color-ring: #6C63FF;
+  --color-input: transparent;
+  --color-border: transparent;
+  --color-destructive: #EF4444;
+  --color-accent-foreground: #FFFFFF;
+  --color-muted-foreground: #6B7280;
+  --color-muted: #E0E5EC;
+  --color-secondary-foreground: #3D4852;
+  --color-secondary: #E0E5EC;
+  --color-primary-foreground: #FFFFFF;
+  --color-primary: #6C63FF;
+  --color-popover-foreground: #3D4852;
+  --color-popover: #E0E5EC;
+  --color-card-foreground: #3D4852;
+  --color-card: #E0E5EC;
+  --color-foreground: #3D4852;
+  --color-background: #E0E5EC;
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: #E0E5EC;
+  --foreground: #3D4852;
+  --card: #E0E5EC;
+  --card-foreground: #3D4852;
+  --popover: #E0E5EC;
+  --popover-foreground: #3D4852;
+  --primary: #6C63FF;
+  --primary-foreground: #FFFFFF;
+  --secondary: #E0E5EC;
+  --secondary-foreground: #3D4852;
+  --muted: #E0E5EC;
+  --muted-foreground: #6B7280;
+  --accent: #6C63FF;
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444;
+  --border: transparent;
+  --input: transparent;
+  --ring: #6C63FF;
+  --radius: 0.5rem;
+  --sidebar: #E0E5EC;
+  --sidebar-foreground: #3D4852;
+  --sidebar-primary: #6C63FF;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #E0E5EC;
+  --sidebar-accent-foreground: #3D4852;
+  --sidebar-border: transparent;
+  --sidebar-ring: #6C63FF;
+}
+
 @layer base {
-  :root {
-    --color-bg-base: #E0E5EC;
-  }
-  
   html, body {
     height: 100%;
     width: 100%;
     margin: 0;
     padding: 0;
+  }
+  html {
+    font-family: var(--font-dm-sans);
   }
 }
 
@@ -38,4 +113,61 @@ body {
   overflow-x: hidden;
   user-select: none;
   -webkit-user-select: none;
+}
+
+/* Neumorphism styles for Dialog */
+.neumorphic-dialog {
+  background-color: #E0E5EC;
+  border-radius: 32px;
+  box-shadow: 9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5);
+}
+
+.neumorphic-input {
+  background-color: #E0E5EC;
+  border-radius: 16px;
+  box-shadow: inset 6px 6px 10px rgba(163, 177, 198, 0.6), inset -6px -6px 10px rgba(255, 255, 255, 0.5);
+  border: none;
+  padding: 12px 16px;
+  color: #3D4852;
+}
+
+.neumorphic-input:focus {
+  box-shadow: inset 10px 10px 20px rgba(163, 177, 198, 0.7), inset -10px -10px 20px rgba(255, 255, 255, 0.6);
+  outline: none;
+}
+
+.neumorphic-button {
+  background-color: #E0E5EC;
+  border-radius: 16px;
+  box-shadow: 9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5);
+  border: none;
+  padding: 10px 20px;
+  color: #3D4852;
+  cursor: pointer;
+  transition: all 0.3s ease-out;
+}
+
+.neumorphic-button:hover {
+  box-shadow: 12px 12px 20px rgba(163, 177, 198, 0.7), -12px -12px 20px rgba(255, 255, 255, 0.6);
+  transform: translateY(-1px);
+}
+
+.neumorphic-button:active {
+  box-shadow: inset 6px 6px 10px rgba(163, 177, 198, 0.6), inset -6px -6px 10px rgba(255, 255, 255, 0.5);
+  transform: translateY(0.5px);
+}
+
+.neumorphic-button-primary {
+  background-color: #6C63FF;
+  color: #FFFFFF;
+  box-shadow: 9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5);
+}
+
+.neumorphic-button-primary:hover {
+  box-shadow: 12px 12px 20px rgba(163, 177, 198, 0.7), -12px -12px 20px rgba(255, 255, 255, 0.6);
+}
+
+.neumorphic-button-destructive {
+  background-color: #EF4444;
+  color: #FFFFFF;
 }

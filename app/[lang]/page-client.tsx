@@ -9,6 +9,7 @@ import TimerDisplay from '@/components/TimerDisplay';
 import InterruptedDisplay from '@/components/InterruptedDisplay';
 import FinishedDisplay from '@/components/FinishedDisplay';
 import LandingSection from '@/components/LandingSection';
+import { loadCustomTips, loadDisabledPresets } from '@/components/Settings';
 
 export default function TimerApp({ dict }: { dict: Dictionary }) {
   const [isRunning, setIsRunning] = useState(false);
@@ -17,8 +18,20 @@ export default function TimerApp({ dict }: { dict: Dictionary }) {
 
   const [selectedMinutes, setSelectedMinutes] = useState(5);
   const [timeLeft, setTimeLeft] = useState(selectedMinutes * 60);
+  const [customTips, setCustomTips] = useState<string[]>([]);
+  const [disabledPresetTips, setDisabledPresetTips] = useState<string[]>([]);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    const custom = loadCustomTips();
+    const disabled = loadDisabledPresets();
+    setCustomTips(custom);
+    setDisabledPresetTips(disabled);
+  }, []);
+
+  const enabledPresetTips = dict.timerTips.filter(tip => !disabledPresetTips.includes(tip));
+  const allTips = [...enabledPresetTips, ...customTips];
 
   useEffect(() => {
     if (isRunning) {
@@ -157,6 +170,10 @@ export default function TimerApp({ dict }: { dict: Dictionary }) {
                 selectedMinutes={selectedMinutes}
                 onSelect={setSelectedMinutes}
                 onStart={startTimer}
+                customTips={customTips}
+                onTipsChange={setCustomTips}
+                disabledPresetTips={disabledPresetTips}
+                onDisabledPresetTipsChange={setDisabledPresetTips}
               />
             )}
 
@@ -167,6 +184,7 @@ export default function TimerApp({ dict }: { dict: Dictionary }) {
                 totalSeconds={selectedMinutes * 60}
                 onStop={stopTimer}
                 isInterrupted={isInterrupted}
+                tips={allTips}
               />
             )}
 
