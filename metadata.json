@@ -1,0 +1,6 @@
+{
+  "name": "haveabreak",
+  "description": "A mindful PWA timer application that encourages genuine rest. Start the timer, step away from your device, and take a real break. Any movement resets the timer.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

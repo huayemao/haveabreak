@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg-base: #E0E5EC;
+  --color-fg-primary: #3D4852;
+  --color-fg-muted: #6B7280;
+  --color-accent: #6C63FF;
+  --color-accent-light: #8B84FF;
+  --color-accent-sec: #38B2AC;
+
+  --shadow-extruded: 9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5);
+  --shadow-extruded-hover: 12px 12px 20px rgba(163, 177, 198, 0.7), -12px -12px 20px rgba(255, 255, 255, 0.6);
+  --shadow-extruded-sm: 5px 5px 10px rgba(163, 177, 198, 0.6), -5px -5px 10px rgba(255, 255, 255, 0.5);
+  --shadow-inset: inset 6px 6px 10px rgba(163, 177, 198, 0.6), inset -6px -6px 10px rgba(255, 255, 255, 0.5);
+  --shadow-inset-deep: inset 10px 10px 20px rgba(163, 177, 198, 0.7), inset -10px -10px 20px rgba(255, 255, 255, 0.6);
+  --shadow-inset-sm: inset 3px 3px 6px rgba(163, 177, 198, 0.6), inset -3px -3px 6px rgba(255, 255, 255, 0.5);
+
+  --font-sans: var(--font-dm-sans);
+  --font-display: var(--font-plus-jakarta-sans);
+}
+
+@layer base {
+  :root {
+    --color-bg-base: #E0E5EC;
+  }
+  
+  html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+body {
+  background-color: var(--color-bg-base);
+  color: var(--color-fg-primary);
+  overflow-x: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
