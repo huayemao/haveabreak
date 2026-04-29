@@ -1,7 +1,9 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { Collection, MediaItem } from '../types';
+import { Collection, MediaItem, MediaType } from '../types';
 import { Dictionary } from '@/dictionaries';
+import MediaThumbnail from './MediaThumbnail';
+import CollectionDetail from './CollectionDetail';
 
 interface CollectionManagerProps {
   collections: Collection[];
@@ -13,8 +15,12 @@ interface CollectionManagerProps {
   onDelete: (id: string) => void;
   onShare: (collection: Collection) => void;
   onPlay: (collection: Collection) => void;
+  onMediaAdd: (url: string, type: MediaType, title?: string) => void;
+  onMediaDelete: (id: string) => void;
   dict: Dictionary;
 }
+
+type ViewMode = 'list' | 'detail';
 
 export default function CollectionManager({
   collections,
@@ -26,8 +32,11 @@ export default function CollectionManager({
   onDelete,
   onShare,
   onPlay,
+  onMediaAdd,
+  onMediaDelete,
   dict,
 }: CollectionManagerProps) {
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -109,6 +118,35 @@ export default function CollectionManager({
     );
   };
 
+  const handleCollectionClick = (collection: Collection) => {
+    onSelect(collection.id);
+    setViewMode('detail');
+  };
+
+  const handleBack = () => {
+    setViewMode('list');
+    onSelect('');
+  };
+
+  const selectedCollection = collections.find((c) => c.id === selectedCollectionId);
+
+  if (viewMode === 'detail' && selectedCollection) {
+    return (
+      <CollectionDetail
+        collection={selectedCollection}
+        media={media}
+        onBack={handleBack}
+        onUpdate={onUpdate}
+        onDelete={onDelete}
+        onPlay={onPlay}
+        onShare={onShare}
+        onMediaAdd={onMediaAdd}
+        onMediaDelete={onMediaDelete}
+        dict={dict}
+      />
+    );
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -135,7 +173,7 @@ export default function CollectionManager({
                   ? 'ring-2 ring-accent ring-offset-2 ring-offset-bg-base'
                   : ''
               }`}
-              onClick={() => onSelect(collection.id)}
+              onClick={() => handleCollectionClick(collection)}
               style={{
                 background: '#E0E5EC',
                 boxShadow: '9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5)',
@@ -233,25 +271,7 @@ export default function CollectionManager({
                       key={mediaId}
                       className="w-12 h-12 rounded-xl overflow-hidden bg-muted"
                     >
-                      {item.type === 'image' ? (
-                        <img src={item.url} alt="" className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full relative bg-black/10">
-                          <video
-                            src={item.url}
-                            className="w-full h-full object-cover"
-                            muted
-                            loop
-                            playsInline
-                            preload="metadata"
-                          />
-                          <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                            <svg className="w-6 h-6 text-white/80" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M8 5v14l11-7z" />
-                            </svg>
-                          </div>
-                        </div>
-                      )}
+                      <MediaThumbnail item={item} className="w-full h-full" />
                     </div>
                   ) : null;
                 })}
@@ -305,27 +325,7 @@ export default function CollectionManager({
                       }`}
                       onClick={() => toggleMediaSelection(item.id)}
                     >
-                      <div className="aspect-square">
-                        {item.type === 'image' ? (
-                          <img src={item.url} alt="" className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="w-full h-full relative bg-black/10">
-                            <video
-                              src={item.url}
-                              className="w-full h-full object-cover"
-                              muted
-                              loop
-                              playsInline
-                              preload="metadata"
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                              <svg className="w-6 h-6 text-white/80" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z" />
-                              </svg>
-                            </div>
-                          </div>
-                        )}
-                      </div>
+                      <MediaThumbnail item={item} className="w-full h-full" />
                       {selectedMediaIds.includes(item.id) && (
                         <div className="absolute top-1 right-1 w-5 h-5 bg-accent rounded-full flex items-center justify-center">
                           <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -394,27 +394,7 @@ export default function CollectionManager({
                       }`}
                       onClick={() => toggleMediaSelection(item.id)}
                     >
-                      <div className="aspect-square">
-                        {item.type === 'image' ? (
-                          <img src={item.url} alt="" className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="w-full h-full relative bg-black/10">
-                            <video
-                              src={item.url}
-                              className="w-full h-full object-cover"
-                              muted
-                              loop
-                              playsInline
-                              preload="metadata"
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                              <svg className="w-6 h-6 text-white/80" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z" />
-                              </svg>
-                            </div>
-                          </div>
-                        )}
-                      </div>
+                      <MediaThumbnail item={item} className="w-full h-full" />
                       {selectedMediaIds.includes(item.id) && (
                         <div className="absolute top-1 right-1 w-5 h-5 bg-accent rounded-full flex items-center justify-center">
                           <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
