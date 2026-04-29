@@ -1,4 +1,5 @@
-import { useState } from 'react';
+"use client";
+import { useState, useEffect } from 'react';
 import { Collection, MediaItem } from '../types';
 import { Dictionary } from '@/dictionaries';
 
@@ -11,6 +12,7 @@ interface CollectionManagerProps {
   onUpdate: (id: string, updates: Partial<Collection>) => void;
   onDelete: (id: string) => void;
   onShare: (collection: Collection) => void;
+  onPlay: (collection: Collection) => void;
   dict: Dictionary;
 }
 
@@ -23,6 +25,7 @@ export default function CollectionManager({
   onUpdate,
   onDelete,
   onShare,
+  onPlay,
   dict,
 }: CollectionManagerProps) {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -34,6 +37,18 @@ export default function CollectionManager({
   const [selectedMediaIds, setSelectedMediaIds] = useState<string[]>([]);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setActiveDropdown(null);
+    };
+
+    if (activeDropdown) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [activeDropdown]);
 
   const handleCreate = () => {
     if (newName.trim()) {
@@ -129,39 +144,75 @@ export default function CollectionManager({
               <div className="flex justify-between items-start mb-2">
                 <h3 className="font-bold text-fg-primary">{collection.name}</h3>
                 <div className="flex gap-2">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleShare(collection);
-                    }}
-                    className="w-8 h-8 rounded-full bg-white/50 hover:bg-white/80 flex items-center justify-center text-fg-muted hover:text-fg-primary transition-all"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openEditModal(collection);
-                    }}
-                    className="w-8 h-8 rounded-full bg-white/50 hover:bg-white/80 flex items-center justify-center text-fg-muted hover:text-fg-primary transition-all"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setConfirmDeleteId(collection.id);
-                    }}
-                    className="w-8 h-8 rounded-full bg-white/50 hover:bg-red-500 flex items-center justify-center text-fg-muted hover:text-white transition-all"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
+                  {collection.mediaIds.length > 0 && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onPlay(collection);
+                      }}
+                      className="w-8 h-8 rounded-full bg-accent hover:bg-accent-light flex items-center justify-center text-white transition-all"
+                    >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </button>
+                  )}
+                  <div className="relative">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveDropdown(activeDropdown === collection.id ? null : collection.id);
+                      }}
+                      className="w-8 h-8 rounded-full bg-white/50 hover:bg-white/80 flex items-center justify-center text-fg-muted hover:text-fg-primary transition-all"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                      </svg>
+                    </button>
+                    {activeDropdown === collection.id && (
+                      <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-xl shadow-lg py-1 z-10" onClick={(e) => e.stopPropagation()}>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleShare(collection);
+                            setActiveDropdown(null);
+                          }}
+                          className="w-full px-4 py-2 text-left text-sm text-fg-primary hover:bg-gray-100 flex items-center gap-2"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                          </svg>
+                          {dict.frame.share}
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openEditModal(collection);
+                            setActiveDropdown(null);
+                          }}
+                          className="w-full px-4 py-2 text-left text-sm text-fg-primary hover:bg-gray-100 flex items-center gap-2"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                          {dict.frame.edit}
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setConfirmDeleteId(collection.id);
+                            setActiveDropdown(null);
+                          }}
+                          className="w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-gray-100 flex items-center gap-2"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                          {dict.frame.delete}
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 

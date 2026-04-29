@@ -194,6 +194,26 @@ export default function MediaGallery({ media, onDelete, onAdd, dict }: MediaGall
         slides={slides}
         index={currentIndex}
         plugins={[]}
+        render={{
+          slideFooter: ({ slide }) => (
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none">
+              <div className="absolute bottom-0 left-0 right-0 p-4 flex justify-center pointer-events-auto">
+                <button
+                  onClick={() => {
+                    const currentMedia = imageMedia.find((m) => m.url === slide.src);
+                    if (currentMedia) {
+                      handleDelete(currentMedia.id);
+                      setLightboxOpen(false);
+                    }
+                  }}
+                  className="px-4 py-2 bg-red-500/80 hover:bg-red-500 text-white rounded-lg transition-colors"
+                >
+                  {dict.frame.delete || 'Delete'}
+                </button>
+              </div>
+            </div>
+          ),
+        }}
       />
 
       {showVideoModal && currentVideo && (

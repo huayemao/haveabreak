@@ -139,6 +139,11 @@ export default function FrameApp({ dict }: FrameAppProps) {
     setShowFullscreen(true);
   };
 
+  const handlePlayCollection = (collection: Collection) => {
+    setSelectedCollectionId(collection.id);
+    setShowFullscreen(true);
+  };
+
   const handleExitFullscreen = () => {
     setShowFullscreen(false);
   };
@@ -352,6 +357,7 @@ export default function FrameApp({ dict }: FrameAppProps) {
             onUpdate={handleUpdateCollection}
             onDelete={handleDeleteCollection}
             onShare={() => {}}
+            onPlay={handlePlayCollection}
             dict={dict}
           />
         )}
@@ -378,6 +384,7 @@ export default function FrameApp({ dict }: FrameAppProps) {
           settings={settings}
           dict={dict}
           onExit={handleExitFullscreen}
+          onDelete={handleDeleteMedia}
         />
       )}
     </div>

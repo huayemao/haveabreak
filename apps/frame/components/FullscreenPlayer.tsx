@@ -7,9 +7,10 @@ interface FullscreenPlayerProps {
   settings: FrameSettings;
   dict: Dictionary;
   onExit: () => void;
+  onDelete?: (id: string) => void;
 }
 
-export default function FullscreenPlayer({ media, settings, dict, onExit }: FullscreenPlayerProps) {
+export default function FullscreenPlayer({ media, settings, dict, onExit, onDelete }: FullscreenPlayerProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(settings.autoPlay);
   const [showControls, setShowControls] = useState(true);
@@ -217,7 +218,30 @@ export default function FullscreenPlayer({ media, settings, dict, onExit }: Full
 
       {showControls && (
         <>
-          <div className="absolute top-6 right-6">
+          <div className="absolute top-6 right-6 flex gap-2">
+            {onDelete && currentMedia && (
+              <button
+                onClick={() => {
+                  if (currentMedia.id && confirm(dict.frame.confirmDelete)) {
+                    onDelete(currentMedia.id);
+                    if (filteredMedia.length > 1) {
+                      goToNext();
+                    } else {
+                      onExit();
+                    }
+                  }
+                }}
+                className="w-10 h-10 rounded-full bg-red-500/80 hover:bg-red-500 flex items-center justify-center text-white transition-all group"
+                title={dict.frame.delete}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs text-white/70 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  {dict.frame.delete}
+                </span>
+              </button>
+            )}
             <button
               onClick={onExit}
               className="w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white transition-all group"
