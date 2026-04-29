@@ -102,5 +102,13 @@ export const de = {
     mediaType: 'Medientyp',
     single: 'Einzeln',
     batch: 'Stapel',
+    importResult: 'Import-Ergebnis',
+    success: 'Erfolgreich',
+    failed: 'Fehlgeschlagen',
+    total: 'Gesamt',
+    confirm: 'Bestätigen',
+    retry: 'Wiederholen',
+    autoDetected: 'Automatisch erkannt als',
+    cannotDetectType: 'Medientyp kann nicht erkannt werden',
   }
 };

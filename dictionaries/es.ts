@@ -102,5 +102,13 @@ export const es = {
     mediaType: 'Tipo de Medio',
     single: 'Individual',
     batch: 'Lote',
+    importResult: 'Resultado de Importación',
+    success: 'Éxito',
+    failed: 'Fallido',
+    total: 'Total',
+    confirm: 'Confirmar',
+    retry: 'Reintentar',
+    autoDetected: 'Detectado automáticamente como',
+    cannotDetectType: 'No se puede detectar el tipo de medio',
   }
 };

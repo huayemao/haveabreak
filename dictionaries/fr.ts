@@ -102,5 +102,13 @@ export const fr = {
     mediaType: 'Type de Média',
     single: 'Simple',
     batch: 'Lot',
+    importResult: 'Résultat de l\'Importation',
+    success: 'Succès',
+    failed: 'Échec',
+    total: 'Total',
+    confirm: 'Confirmer',
+    retry: 'Réessayer',
+    autoDetected: 'Détecté automatiquement comme',
+    cannotDetectType: 'Impossible de détecter le type de média',
   }
 };

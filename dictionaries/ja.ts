@@ -102,5 +102,13 @@ export const ja = {
     mediaType: 'メディアタイプ',
     single: 'シングル',
     batch: 'バッチ',
+    importResult: 'インポート結果',
+    success: '成功',
+    failed: '失敗',
+    total: '合計',
+    confirm: '確認',
+    retry: '再試行',
+    autoDetected: '自動検出',
+    cannotDetectType: 'メディアタイプを検出できません',
   }
 };

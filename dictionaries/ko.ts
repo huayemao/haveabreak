@@ -102,5 +102,13 @@ export const ko = {
     mediaType: '미디어 유형',
     single: '개별',
     batch: '일괄',
+    importResult: '가져오기 결과',
+    success: '성공',
+    failed: '실패',
+    total: '총계',
+    confirm: '확인',
+    retry: '재시도',
+    autoDetected: '자동 감지됨',
+    cannotDetectType: '미디어 유형을 감지할 수 없습니다',
   }
 };

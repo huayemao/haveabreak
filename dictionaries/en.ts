@@ -102,5 +102,13 @@ export const en = {
     mediaType: 'Media Type',
     single: 'Single',
     batch: 'Batch',
+    importResult: 'Import Result',
+    success: 'Success',
+    failed: 'Failed',
+    total: 'Total',
+    confirm: 'Confirm',
+    retry: 'Retry',
+    autoDetected: 'Auto detected as',
+    cannotDetectType: 'Cannot detect media type',
   }
 };

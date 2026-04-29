@@ -102,5 +102,13 @@ export const ru = {
     mediaType: 'Тип медиа',
     single: 'Один',
     batch: 'Пакет',
+    importResult: 'Результат импорта',
+    success: 'Успешно',
+    failed: 'Не удалось',
+    total: 'Всего',
+    confirm: 'Подтвердить',
+    retry: 'Повторить',
+    autoDetected: 'Автоматически определено как',
+    cannotDetectType: 'Не удалось определить тип медиа',
   }
 };

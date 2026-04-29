@@ -102,5 +102,13 @@ export const pt = {
     mediaType: 'Tipo de Mídia',
     single: 'Único',
     batch: 'Lote',
+    importResult: 'Resultado da Importação',
+    success: 'Sucesso',
+    failed: 'Falha',
+    total: 'Total',
+    confirm: 'Confirmar',
+    retry: 'Tentar Novamente',
+    autoDetected: 'Detectado automaticamente como',
+    cannotDetectType: 'Não é possível detectar o tipo de mídia',
   }
 };

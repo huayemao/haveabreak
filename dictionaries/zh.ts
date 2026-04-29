@@ -102,5 +102,13 @@ export const zh = {
     mediaType: '媒体类型',
     single: '单独',
     batch: '批量',
+    importResult: '导入结果',
+    success: '成功',
+    failed: '失败',
+    total: '总计',
+    confirm: '确认',
+    retry: '重试',
+    autoDetected: '自动检测为',
+    cannotDetectType: '无法识别媒体类型',
   }
 };
