@@ -139,8 +139,8 @@ export default function MediaGallery({
         plugins={[Video]}
         render={{
           slideFooter: ({ slide }) => (
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent">
-              <div className="absolute bottom-0 left-0 right-0 p-4">
+            <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-transparent pointer-events-none">
+              <div className="absolute top-0 left-0 right-0 p-4">
                 <div className="flex items-center justify-center gap-3">
                   {onPlay && (
                     <button
@@ -148,7 +148,7 @@ export default function MediaGallery({
                         setLightboxOpen(false);
                         onPlay(true);
                       }}
-                      className="w-11 h-11 rounded-full bg-white/90 flex items-center justify-center text-fg-primary hover:bg-white shadow-lg transition-all"
+                      className="w-11 h-11 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 shadow-lg transition-all pointer-events-auto"
                       title={dict.frame.slideshow || 'Slideshow'}
                     >
                       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -158,7 +158,7 @@ export default function MediaGallery({
                   )}
                   <button
                     onClick={() => setShowDeleteConfirm(true)}
-                    className="w-11 h-11 rounded-full bg-red-500 flex items-center justify-center text-white hover:bg-red-600 shadow-lg transition-all"
+                    className="w-11 h-11 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 shadow-lg transition-all pointer-events-auto"
                     title={dict.frame.delete || 'Delete'}
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
