@@ -354,6 +354,7 @@ export default function FrameApp({ dict }: FrameAppProps) {
             media={media}
             onDelete={handleDeleteMedia}
             onAdd={handleAddMedia}
+            onAddUrlList={handleImportUrlList}
             onPlay={(paused, index) => handleStartSlideshow(paused, index)}
             dict={dict}
           />
@@ -371,6 +372,7 @@ export default function FrameApp({ dict }: FrameAppProps) {
             onShare={() => { }}
             onPlay={handlePlayCollection}
             onMediaAdd={handleAddMedia}
+            onMediaAddUrlList={handleImportUrlList}
             onMediaDelete={handleDeleteMedia}
             dict={dict}
           />
@@ -386,7 +388,6 @@ export default function FrameApp({ dict }: FrameAppProps) {
             onUpdate={handleUpdateSettings}
             onExport={handleExport}
             onImport={handleImport}
-            onImportUrlList={handleImportUrlList}
             dict={dict}
           />
         )}

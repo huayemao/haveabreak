@@ -16,11 +16,10 @@ interface CollectionManagerProps {
   onShare: (collection: Collection) => void;
   onPlay: (collection: Collection, paused?: boolean, startIndex?: number) => void;
   onMediaAdd: (url: string, type: MediaType, title?: string) => void;
+  onMediaAddUrlList: (urls: string[], type: MediaType) => void;
   onMediaDelete: (id: string) => void;
   dict: Dictionary;
 }
-
-type ViewMode = 'list' | 'detail';
 
 export default function CollectionManager({
   collections,
@@ -33,6 +32,7 @@ export default function CollectionManager({
   onShare,
   onPlay,
   onMediaAdd,
+  onMediaAddUrlList,
   onMediaDelete,
   dict,
 }: CollectionManagerProps) {
@@ -141,6 +141,7 @@ export default function CollectionManager({
         onPlay={onPlay}
         onShare={onShare}
         onMediaAdd={onMediaAdd}
+        onMediaAddUrlList={onMediaAddUrlList}
         onMediaDelete={onMediaDelete}
         dict={dict}
       />

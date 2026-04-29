@@ -12,6 +12,7 @@ interface CollectionDetailProps {
   onPlay: (collection: Collection, paused?: boolean, startIndex?: number) => void;
   onShare: (collection: Collection) => void;
   onMediaAdd: (url: string, type: MediaType, title?: string) => void;
+  onMediaAddUrlList: (urls: string[], type: MediaType) => void;
   onMediaDelete: (id: string) => void;
   dict: Dictionary;
 }
@@ -25,6 +26,7 @@ export default function CollectionDetail({
   onPlay,
   onShare,
   onMediaAdd,
+  onMediaAddUrlList,
   onMediaDelete,
   dict,
 }: CollectionDetailProps) {
@@ -78,6 +80,7 @@ export default function CollectionDetail({
         media={collectionMedia}
         onDelete={onMediaDelete}
         onAdd={onMediaAdd}
+        onAddUrlList={onMediaAddUrlList}
         onPlay={(paused, startIndex) => onPlay(collection, paused, startIndex)}
         dict={dict}
         showAddButton={true}

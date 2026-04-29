@@ -7,7 +7,6 @@ interface SettingsPanelProps {
   onUpdate: (settings: FrameSettings) => void;
   onExport: () => void;
   onImport: (data: string) => void;
-  onImportUrlList: (urls: string[]) => void;
   dict: Dictionary;
 }
 
@@ -16,13 +15,10 @@ export default function SettingsPanel({
   onUpdate,
   onExport,
   onImport,
-  onImportUrlList,
   dict,
 }: SettingsPanelProps) {
   const [showImportModal, setShowImportModal] = useState(false);
   const [importData, setImportData] = useState('');
-  const [showUrlImportModal, setShowUrlImportModal] = useState(false);
-  const [urlList, setUrlList] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -38,18 +34,6 @@ export default function SettingsPanel({
       } catch {
         alert(dict.frame.importFailed);
       }
-    }
-  };
-
-  const handleUrlImport = () => {
-    if (urlList.trim()) {
-      const urls = urlList.split('\n').filter((url) => url.trim());
-      onImportUrlList(urls);
-      setSuccessMessage(dict.frame.importSuccess);
-      setShowSuccess(true);
-      setUrlList('');
-      setShowUrlImportModal(false);
-      setTimeout(() => setShowSuccess(false), 3000);
     }
   };
 
@@ -224,13 +208,6 @@ export default function SettingsPanel({
             {dict.frame.import}
           </button>
         </div>
-
-        <button
-          onClick={() => setShowUrlImportModal(true)}
-          className="w-full neumorphic-button"
-        >
-          {dict.frame.importUrlList}
-        </button>
       </div>
 
       {showImportModal && (
@@ -255,37 +232,6 @@ export default function SettingsPanel({
               </button>
               <button
                 onClick={handleImport}
-                className="flex-1 neumorphic-button-primary"
-              >
-                {dict.frame.import}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showUrlImportModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="neumorphic-dialog p-6 max-w-lg w-full">
-            <h3 className="text-lg font-bold mb-4">{dict.frame.importUrlList}</h3>
-            
-            <textarea
-              value={urlList}
-              onChange={(e) => setUrlList(e.target.value)}
-              placeholder={dict.frame.urlListPlaceholder}
-              rows={8}
-              className="neumorphic-input w-full resize-none font-mono text-sm"
-            />
-
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => setShowUrlImportModal(false)}
-                className="flex-1 neumorphic-button"
-              >
-                {dict.frame.cancel}
-              </button>
-              <button
-                onClick={handleUrlImport}
                 className="flex-1 neumorphic-button-primary"
               >
                 {dict.frame.import}

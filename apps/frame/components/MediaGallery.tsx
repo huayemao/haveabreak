@@ -12,6 +12,7 @@ interface MediaGalleryProps {
   media: MediaItem[];
   onDelete: (id: string) => void;
   onAdd: (url: string, type: MediaType, title?: string) => void;
+  onAddUrlList: (urls: string[], type: MediaType) => void;
   onPlay?: (paused: boolean, startIndex?: number) => void;
   dict: Dictionary;
   showAddButton?: boolean;
@@ -21,6 +22,7 @@ export default function MediaGallery({
   media,
   onDelete,
   onAdd,
+  onAddUrlList,
   onPlay,
   dict,
   showAddButton = true,
@@ -206,6 +208,7 @@ export default function MediaGallery({
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
         onAdd={onAdd}
+        onAddUrlList={onAddUrlList}
         dict={dict}
       />
     </div>
