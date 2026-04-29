@@ -5,6 +5,14 @@ import Video from 'yet-another-react-lightbox/plugins/video';
 import { MediaItem, MediaType } from '../types';
 import { Dictionary } from '@/dictionaries';
 import 'yet-another-react-lightbox/styles.css';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu';
+import { Check, Trash2, Play } from 'lucide-react';
 
 interface MediaGalleryProps {
   media: MediaItem[];
@@ -128,85 +136,83 @@ export default function MediaGallery({ media, onDelete, onAdd, onPlay, dict }: M
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {media.map((item, index) => (
-            <div
-              key={item.id}
-              className={`group relative rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${
-                selectedId === item.id ? 'ring-2 ring-accent ring-offset-2' : ''
-              }`}
-              onClick={() => handleMediaClick(item, index)}
-            >
-              <div className="aspect-square bg-muted overflow-hidden">
-                {item.type === 'image' ? (
-                  <img
-                    src={item.url}
-                    alt={item.title || ''}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="w-full h-full relative bg-black/10">
-                    <video
-                      src={item.url}
-                      className="w-full h-full object-cover"
-                      muted
-                      loop
-                      playsInline
-                      preload="metadata"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                      <svg className="w-10 h-10 text-white/80" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
+            <ContextMenu key={item.id}>
+              <ContextMenuTrigger>
+                <div
+                  className={`group relative rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${
+                    selectedId === item.id ? 'ring-2 ring-accent ring-offset-2' : ''
+                  }`}
+                  onClick={() => handleMediaClick(item, index)}
+                >
+                  <div className="aspect-square bg-muted overflow-hidden">
+                    {item.type === 'image' ? (
+                      <img
+                        src={item.url}
+                        alt={item.title || ''}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-full h-full relative bg-black/10">
+                        <video
+                          src={item.url}
+                          className="w-full h-full object-cover"
+                          muted
+                          loop
+                          playsInline
+                          preload="metadata"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                          <svg className="w-10 h-10 text-white/80" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="absolute bottom-0 left-0 right-0 p-3">
+                      {item.title && (
+                        <p className="text-white text-sm font-medium truncate">{item.title}</p>
+                      )}
+                      <div className="flex gap-1 mt-1">
+                        <span className="text-xs px-2 py-0.5 bg-white/20 rounded-full text-white">
+                          {item.type === 'image' ? dict.frame.image : dict.frame.video}
+                        </span>
+                        <span className="text-xs px-2 py-0.5 bg-white/20 rounded-full text-white">
+                          {getOrientationLabel(item.orientation)}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                )}
-              </div>
-
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="absolute bottom-0 left-0 right-0 p-3">
-                  {item.title && (
-                    <p className="text-white text-sm font-medium truncate">{item.title}</p>
-                  )}
-                  <div className="flex gap-1 mt-1">
-                    <span className="text-xs px-2 py-0.5 bg-white/20 rounded-full text-white">
-                      {item.type === 'image' ? dict.frame.image : dict.frame.video}
-                    </span>
-                    <span className="text-xs px-2 py-0.5 bg-white/20 rounded-full text-white">
-                      {getOrientationLabel(item.orientation)}
-                    </span>
-                  </div>
                 </div>
-              </div>
-
-              <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedId(selectedId === item.id ? null : item.id);
-                  }}
-                  className="w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    {selectedId === item.id ? (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    ) : (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    )}
-                  </svg>
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
+              </ContextMenuTrigger>
+              <ContextMenuContent className="w-48">
+                {onPlay && (
+                  <ContextMenuItem
+                    onClick={() => {
+                      setLightboxOpen(false);
+                      onPlay(true);
+                    }}
+                    className="gap-2"
+                  >
+                    <Play className="w-4 h-4" />
+                    {dict.frame.slideshow}
+                  </ContextMenuItem>
+                )}
+                <ContextMenuSeparator />
+                <ContextMenuItem
+                  onClick={() => {
                     handleDelete(item.id);
                   }}
-                  className="w-8 h-8 rounded-full bg-red-500/80 hover:bg-red-500 flex items-center justify-center text-white"
+                  className="gap-2 text-red-500 focus:text-red-500"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            </div>
+                  <Trash2 className="w-4 h-4" />
+                  {dict.frame.delete}
+                </ContextMenuItem>
+              </ContextMenuContent>
+            </ContextMenu>
           ))}
         </div>
       )}
