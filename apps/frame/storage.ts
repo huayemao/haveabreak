@@ -1,13 +1,10 @@
 import { MediaItem, Collection, FrameSettings, DEFAULT_SLIDE_INTERVAL, DEFAULT_VOLUME } from './types';
-
+import presets from './presets.json';
 const MEDIA_STORAGE_KEY = 'frame_media';
 const COLLECTION_STORAGE_KEY = 'frame_collections';
 const SETTINGS_STORAGE_KEY = 'frame_settings';
 
-async function loadPresets(): Promise<{ media: MediaItem[]; collections: Collection[]; settings: FrameSettings }> {
-  const response = await fetch('/frame/presets.json');
-  return response.json();
-}
+
 
 export async function getOrientationFromUrl(url: string): Promise<'landscape' | 'portrait' | 'square'> {
   return new Promise((resolve) => {
@@ -41,8 +38,7 @@ export async function getStoredMedia(): Promise<MediaItem[]> {
     return JSON.parse(stored);
   }
   
-  const presets = await loadPresets();
-  const presetMedia: MediaItem[] = presets.media.map((item, index) => ({
+  const presetMedia: MediaItem[] = (presets.media as MediaItem[]).map((item, index) => ({
     ...item,
     createdAt: Date.now() - (presets.media.length - index) * 1000,
   }));
@@ -91,7 +87,6 @@ export async function getCollections(): Promise<Collection[]> {
     return JSON.parse(stored);
   }
   
-  const presets = await loadPresets();
   const media = await getStoredMedia();
   
   const defaultCollection: Collection = {
@@ -146,7 +141,6 @@ export async function getSettings(): Promise<FrameSettings> {
     return JSON.parse(stored);
   }
   
-  const presets = await loadPresets();
   
   localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(presets.settings));
   return presets.settings;

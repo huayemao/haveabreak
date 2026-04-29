@@ -3,11 +3,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { MediaItem, Collection, FrameSettings, MediaType } from './types';
 import {
   getStoredMedia,
-  saveMedia,
   addMedia,
   deleteMedia,
   getCollections,
-  saveCollections,
   createCollection,
   updateCollection,
   deleteCollection,
@@ -19,12 +17,12 @@ import {
 } from './storage';
 import { Dictionary } from '@/dictionaries';
 import FullscreenPlayer from './components/FullscreenPlayer';
-import MediaLibrary from './components/MediaLibrary';
+import MediaGallery from './components/MediaGallery';
 import CollectionManager from './components/CollectionManager';
 import SettingsPanel from './components/SettingsPanel';
 import Downloader from './components/Downloader';
 
-type TabType = 'media' | 'collections' | 'slideshow' | 'settings' | 'download';
+type ViewMode = 'gallery' | 'collections' | 'settings' | 'download';
 
 interface FrameAppProps {
   dict: Dictionary;
@@ -43,8 +41,7 @@ export default function FrameApp({ dict }: FrameAppProps) {
     volume: 0.3,
   });
   const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null);
-  const [selectedMediaIds, setSelectedMediaIds] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<TabType>('media');
+  const [viewMode, setViewMode] = useState<ViewMode>('gallery');
   const [showFullscreen, setShowFullscreen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -82,18 +79,11 @@ export default function FrameApp({ dict }: FrameAppProps) {
   const handleDeleteMedia = async (id: string) => {
     await deleteMedia(id);
     setMedia((prev) => prev.filter((m) => m.id !== id));
-    setSelectedMediaIds((prev) => prev.filter((mid) => mid !== id));
     setCollections((prev) =>
       prev.map((col) => ({
         ...col,
         mediaIds: col.mediaIds.filter((mid) => mid !== id),
       }))
-    );
-  };
-
-  const handleSelectMedia = (id: string) => {
-    setSelectedMediaIds((prev) =>
-      prev.includes(id) ? prev.filter((mid) => mid !== id) : [...prev, id]
     );
   };
 
@@ -164,6 +154,7 @@ export default function FrameApp({ dict }: FrameAppProps) {
   };
 
   const currentMedia = getCurrentMedia();
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   if (isLoading) {
     return (
@@ -176,67 +167,182 @@ export default function FrameApp({ dict }: FrameAppProps) {
     );
   }
 
+
   return (
     <div className="min-h-screen bg-bg-base">
       <header className="sticky top-0 z-40 bg-bg-base/80 backdrop-blur-lg border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-fg-primary font-display">
-                {dict.frame.appTitle}
-              </h1>
-              <p className="text-sm text-fg-muted">{dict.frame.appSubtitle}</p>
+            <div className="flex items-center gap-3">
+              <div>
+                <h1 className="text-lg font-bold text-fg-primary font-display">
+                  {dict.frame.appTitle}
+                </h1>
+                <p className="text-xs text-fg-muted hidden sm:block">{dict.frame.appSubtitle}</p>
+              </div>
             </div>
-            {activeTab !== 'slideshow' && currentMedia.length > 0 && (
+            
+            <div className="flex items-center gap-2">
+              <div className="hidden sm:flex items-center gap-2">
+                <button
+                  onClick={() => setViewMode('gallery')}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all ${
+                    viewMode === 'gallery'
+                      ? 'bg-accent text-white'
+                      : 'neumorphic-button'
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                  </svg>
+                  <span className="hidden md:inline text-sm">{dict.frame.mediaLibrary}</span>
+                </button>
+
+                <button
+                  onClick={() => setViewMode('collections')}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all ${
+                    viewMode === 'collections'
+                      ? 'bg-accent text-white'
+                      : 'neumorphic-button'
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
+                  <span className="hidden md:inline text-sm">{dict.frame.collections}</span>
+                </button>
+
+                <button
+                  onClick={() => setViewMode('download')}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all ${
+                    viewMode === 'download'
+                      ? 'bg-accent text-white'
+                      : 'neumorphic-button'
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  <span className="hidden md:inline text-sm">{dict.frame.download}</span>
+                </button>
+
+                <button
+                  onClick={() => setViewMode('settings')}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all ${
+                    viewMode === 'settings'
+                      ? 'bg-accent text-white'
+                      : 'neumorphic-button'
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  </svg>
+                  <span className="hidden md:inline text-sm">{dict.frame.settings}</span>
+                </button>
+              </div>
+
+              {currentMedia.length > 0 && (
+                <button
+                  onClick={handleStartSlideshow}
+                  className="neumorphic-button-primary px-3 py-1.5 flex items-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                  <span className="hidden sm:inline text-sm">{dict.frame.slideshow}</span>
+                </button>
+              )}
+
               <button
-                onClick={handleStartSlideshow}
-                className="neumorphic-button-primary px-6 py-2"
+                onClick={() => setShowMobileMenu(!showMobileMenu)}
+                className="sm:hidden neumorphic-button p-2"
               >
-                {dict.frame.slideshow}
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {showMobileMenu ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
               </button>
-            )}
+            </div>
           </div>
+
+          {showMobileMenu && (
+            <div className="sm:hidden mt-3 pt-3 border-t border-border">
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => { setViewMode('gallery'); setShowMobileMenu(false); }}
+                  className={`flex items-center justify-center gap-2 px-4 py-2 rounded-xl transition-all ${
+                    viewMode === 'gallery'
+                      ? 'bg-accent text-white'
+                      : 'neumorphic-button'
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                  </svg>
+                  <span className="text-sm">{dict.frame.mediaLibrary}</span>
+                </button>
+
+                <button
+                  onClick={() => { setViewMode('collections'); setShowMobileMenu(false); }}
+                  className={`flex items-center justify-center gap-2 px-4 py-2 rounded-xl transition-all ${
+                    viewMode === 'collections'
+                      ? 'bg-accent text-white'
+                      : 'neumorphic-button'
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
+                  <span className="text-sm">{dict.frame.collections}</span>
+                </button>
+
+                <button
+                  onClick={() => { setViewMode('download'); setShowMobileMenu(false); }}
+                  className={`flex items-center justify-center gap-2 px-4 py-2 rounded-xl transition-all ${
+                    viewMode === 'download'
+                      ? 'bg-accent text-white'
+                      : 'neumorphic-button'
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  <span className="text-sm">{dict.frame.download}</span>
+                </button>
+
+                <button
+                  onClick={() => { setViewMode('settings'); setShowMobileMenu(false); }}
+                  className={`flex items-center justify-center gap-2 px-4 py-2 rounded-xl transition-all ${
+                    viewMode === 'settings'
+                      ? 'bg-accent text-white'
+                      : 'neumorphic-button'
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  </svg>
+                  <span className="text-sm">{dict.frame.settings}</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
-      <nav className="sticky top-[72px] z-30 bg-bg-base/90 backdrop-blur-lg border-b border-border">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex gap-2 overflow-x-auto pb-2">
-            {[
-              { id: 'media' as TabType, label: dict.frame.mediaLibrary },
-              { id: 'collections' as TabType, label: dict.frame.collections },
-              { id: 'download' as TabType, label: dict.frame.download },
-              { id: 'settings' as TabType, label: dict.frame.settings },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-2 rounded-xl whitespace-nowrap transition-all ${
-                  activeTab === tab.id
-                    ? 'bg-accent text-white'
-                    : 'neumorphic-button'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </nav>
-
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        {activeTab === 'media' && (
-          <MediaLibrary
+      <main className="max-w-7xl mx-auto px-4 py-6">
+        {viewMode === 'gallery' && (
+          <MediaGallery
             media={media}
-            selectedIds={selectedMediaIds}
-            onSelect={handleSelectMedia}
             onDelete={handleDeleteMedia}
             onAdd={handleAddMedia}
             dict={dict}
           />
         )}
 
-        {activeTab === 'collections' && (
+        {viewMode === 'collections' && (
           <CollectionManager
             collections={collections}
             media={media}
@@ -250,11 +356,11 @@ export default function FrameApp({ dict }: FrameAppProps) {
           />
         )}
 
-        {activeTab === 'download' && (
+        {viewMode === 'download' && (
           <Downloader media={currentMedia} dict={dict} />
         )}
 
-        {activeTab === 'settings' && (
+        {viewMode === 'settings' && (
           <SettingsPanel
             settings={settings}
             onUpdate={handleUpdateSettings}
