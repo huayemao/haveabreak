@@ -43,6 +43,7 @@ export default function FrameApp({ dict }: FrameAppProps) {
   const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('gallery');
   const [showFullscreen, setShowFullscreen] = useState(false);
+  const [startPaused, setStartPaused] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -135,17 +136,20 @@ export default function FrameApp({ dict }: FrameAppProps) {
     loadData();
   };
 
-  const handleStartSlideshow = () => {
+  const handleStartSlideshow = (paused = false) => {
+    setStartPaused(paused);
     setShowFullscreen(true);
   };
 
   const handlePlayCollection = (collection: Collection) => {
     setSelectedCollectionId(collection.id);
+    setStartPaused(false);
     setShowFullscreen(true);
   };
 
   const handleExitFullscreen = () => {
     setShowFullscreen(false);
+    setStartPaused(false);
   };
 
   const getCurrentMedia = () => {
@@ -248,7 +252,7 @@ export default function FrameApp({ dict }: FrameAppProps) {
 
               {currentMedia.length > 0 && (
                 <button
-                  onClick={handleStartSlideshow}
+                  onClick={() => handleStartSlideshow(false)}
                   className="neumorphic-button-primary px-3 py-1.5 flex items-center gap-2"
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -343,6 +347,7 @@ export default function FrameApp({ dict }: FrameAppProps) {
             media={media}
             onDelete={handleDeleteMedia}
             onAdd={handleAddMedia}
+            onPlay={(paused) => handleStartSlideshow(paused)}
             dict={dict}
           />
         )}
@@ -385,6 +390,7 @@ export default function FrameApp({ dict }: FrameAppProps) {
           dict={dict}
           onExit={handleExitFullscreen}
           onDelete={handleDeleteMedia}
+          startPaused={startPaused}
         />
       )}
     </div>

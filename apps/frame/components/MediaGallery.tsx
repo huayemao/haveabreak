@@ -10,10 +10,11 @@ interface MediaGalleryProps {
   media: MediaItem[];
   onDelete: (id: string) => void;
   onAdd: (url: string, type: MediaType, title?: string) => void;
+  onPlay?: (paused: boolean) => void;
   dict: Dictionary;
 }
 
-export default function MediaGallery({ media, onDelete, onAdd, dict }: MediaGalleryProps) {
+export default function MediaGallery({ media, onDelete, onAdd, onPlay, dict }: MediaGalleryProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -21,6 +22,7 @@ export default function MediaGallery({ media, onDelete, onAdd, dict }: MediaGall
   const [newTitle, setNewTitle] = useState('');
   const [mediaType, setMediaType] = useState<MediaType>('image');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const slides = media.map((item) => {
     if (item.type === 'video') {
@@ -217,30 +219,68 @@ export default function MediaGallery({ media, onDelete, onAdd, dict }: MediaGall
         plugins={[Video]}
         render={{
           slideFooter: ({ slide }) => (
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none">
-              <div className="absolute bottom-0 left-0 right-0 p-4 flex justify-center pointer-events-auto">
-                <button
-                  onClick={() => {
-                    const currentMedia = media.find((m) => {
-                      if ('type' in slide && slide.type === 'video') {
-                        return m.type === 'video' && m.url === slide.sources[0]?.src;
-                      }
-                      return m.type === 'image' && 'src' in slide && m.url === slide.src;
-                    });
-                    if (currentMedia) {
-                      handleDelete(currentMedia.id);
-                      setLightboxOpen(false);
-                    }
-                  }}
-                  className="px-4 py-2 bg-red-500/80 hover:bg-red-500 text-white rounded-lg transition-colors"
-                >
-                  {dict.frame.delete || 'Delete'}
-                </button>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent">
+              <div className="absolute bottom-0 left-0 right-0 p-4">
+                <div className="flex items-center justify-center gap-3">
+                  {onPlay && (
+                    <button
+                      onClick={() => {
+                        setLightboxOpen(false);
+                        onPlay(true);
+                      }}
+                      className="w-11 h-11 rounded-full bg-white/90 flex items-center justify-center text-fg-primary hover:bg-white shadow-lg transition-all"
+                      title={dict.frame.slideshow || 'Slideshow'}
+                    >
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="w-11 h-11 rounded-full bg-red-500 flex items-center justify-center text-white hover:bg-red-600 shadow-lg transition-all"
+                    title={dict.frame.delete || 'Delete'}
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
           ),
         }}
       />
+
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="neumorphic-dialog p-6 max-w-sm w-full">
+            <h3 className="text-lg font-bold mb-4">{dict.frame.confirmDelete || 'Confirm Delete'}</h3>
+            <p className="mb-6">{dict.frame.confirmDeleteMedia || 'Are you sure you want to delete this media?'}</p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="flex-1 neumorphic-button"
+              >
+                {dict.frame.cancel || 'Cancel'}
+              </button>
+              <button
+                onClick={() => {
+                  const currentMedia = media[currentIndex];
+                  if (currentMedia) {
+                    handleDelete(currentMedia.id);
+                    setShowDeleteConfirm(false);
+                    setLightboxOpen(false);
+                  }
+                }}
+                className="flex-1 neumorphic-button-destructive"
+              >
+                {dict.frame.delete || 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
