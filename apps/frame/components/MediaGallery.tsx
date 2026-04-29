@@ -12,7 +12,7 @@ interface MediaGalleryProps {
   media: MediaItem[];
   onDelete: (id: string) => void;
   onAdd: (url: string, type: MediaType, title?: string) => void;
-  onPlay?: (paused: boolean) => void;
+  onPlay?: (paused: boolean, startIndex?: number) => void;
   dict: Dictionary;
   showAddButton?: boolean;
 }
@@ -146,7 +146,7 @@ export default function MediaGallery({
                     <button
                       onClick={() => {
                         setLightboxOpen(false);
-                        onPlay(true);
+                        onPlay(true, currentIndex);
                       }}
                       className="w-11 h-11 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 shadow-lg transition-all pointer-events-auto"
                       title={dict.frame.slideshow || 'Slideshow'}

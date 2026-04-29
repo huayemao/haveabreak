@@ -44,6 +44,7 @@ export default function FrameApp({ dict }: FrameAppProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('gallery');
   const [showFullscreen, setShowFullscreen] = useState(false);
   const [startPaused, setStartPaused] = useState(false);
+  const [startIndex, setStartIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -136,14 +137,16 @@ export default function FrameApp({ dict }: FrameAppProps) {
     loadData();
   };
 
-  const handleStartSlideshow = (paused = false) => {
+  const handleStartSlideshow = (paused = false, index = 0) => {
     setStartPaused(paused);
+    setStartIndex(index);
     setShowFullscreen(true);
   };
 
-  const handlePlayCollection = (collection: Collection) => {
+  const handlePlayCollection = (collection: Collection, paused = false, startIndex = 0) => {
     setSelectedCollectionId(collection.id);
-    setStartPaused(false);
+    setStartPaused(paused);
+    setStartIndex(startIndex);
     setShowFullscreen(true);
   };
 
@@ -324,7 +327,7 @@ export default function FrameApp({ dict }: FrameAppProps) {
             media={media}
             onDelete={handleDeleteMedia}
             onAdd={handleAddMedia}
-            onPlay={(paused) => handleStartSlideshow(paused)}
+            onPlay={(paused, index) => handleStartSlideshow(paused, index)}
             dict={dict}
           />
         )}
@@ -370,6 +373,7 @@ export default function FrameApp({ dict }: FrameAppProps) {
           onExit={handleExitFullscreen}
           onDelete={handleDeleteMedia}
           startPaused={startPaused}
+          startIndex={startIndex}
         />
       )}
     </div>

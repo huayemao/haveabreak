@@ -17,7 +17,7 @@ interface MediaCardProps {
   selectedId: string | null;
   onSelect: (item: MediaItem, index: number) => void;
   onDelete: (id: string) => void;
-  onPlay?: (paused: boolean) => void;
+  onPlay?: (paused: boolean, startIndex?: number) => void;
   dict: Dictionary;
 }
 
@@ -84,7 +84,7 @@ export default function MediaCard({
       <ContextMenuContent className="w-48">
         {onPlay && (
           <ContextMenuItem
-            onClick={() => onPlay(true)}
+            onClick={() => onPlay(true, index)}
             className="gap-2"
           >
             <Play className="w-4 h-4" />

@@ -9,10 +9,11 @@ interface FullscreenPlayerProps {
   onExit: () => void;
   onDelete?: (id: string) => void;
   startPaused?: boolean;
+  startIndex?: number;
 }
 
-export default function FullscreenPlayer({ media, settings, dict, onExit, onDelete, startPaused = false }: FullscreenPlayerProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
+export default function FullscreenPlayer({ media, settings, dict, onExit, onDelete, startPaused = false, startIndex = 0 }: FullscreenPlayerProps) {
+  const [currentIndex, setCurrentIndex] = useState(startIndex);
   const [isPlaying, setIsPlaying] = useState(startPaused ? false : settings.autoPlay);
   const [showControls, setShowControls] = useState(true);
   const [progress, setProgress] = useState(0);

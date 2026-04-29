@@ -9,7 +9,7 @@ interface CollectionDetailProps {
   onBack: () => void;
   onUpdate: (id: string, updates: Partial<Collection>) => void;
   onDelete: (id: string) => void;
-  onPlay: (collection: Collection) => void;
+  onPlay: (collection: Collection, paused?: boolean, startIndex?: number) => void;
   onShare: (collection: Collection) => void;
   onMediaAdd: (url: string, type: MediaType, title?: string) => void;
   onMediaDelete: (id: string) => void;
@@ -58,7 +58,7 @@ export default function CollectionDetail({
             </svg>
           </button>
           <button
-            onClick={() => onPlay(collection)}
+            onClick={() => onPlay(collection, false, 0)}
             className="w-10 h-10 rounded-full bg-accent hover:bg-accent-light flex items-center justify-center text-white transition-colors"
             title={dict.frame.slideshow}
           >
@@ -78,7 +78,7 @@ export default function CollectionDetail({
         media={collectionMedia}
         onDelete={onMediaDelete}
         onAdd={onMediaAdd}
-        onPlay={() => onPlay(collection)}
+        onPlay={(paused, startIndex) => onPlay(collection, paused, startIndex)}
         dict={dict}
         showAddButton={true}
       />

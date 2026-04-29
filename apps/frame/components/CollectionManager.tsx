@@ -14,7 +14,7 @@ interface CollectionManagerProps {
   onUpdate: (id: string, updates: Partial<Collection>) => void;
   onDelete: (id: string) => void;
   onShare: (collection: Collection) => void;
-  onPlay: (collection: Collection) => void;
+  onPlay: (collection: Collection, paused?: boolean, startIndex?: number) => void;
   onMediaAdd: (url: string, type: MediaType, title?: string) => void;
   onMediaDelete: (id: string) => void;
   dict: Dictionary;
@@ -186,7 +186,7 @@ export default function CollectionManager({
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        onPlay(collection);
+                        onPlay(collection, false, 0);
                       }}
                       className="w-8 h-8 rounded-full bg-accent hover:bg-accent-light flex items-center justify-center text-white transition-all"
                     >
