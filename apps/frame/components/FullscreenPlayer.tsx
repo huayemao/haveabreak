@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { MediaItem, FrameSettings, MediaOrientation } from '../types';
+import { MediaItem, FrameSettings } from '../types';
 import { Dictionary } from '@/dictionaries';
 
 interface FullscreenPlayerProps {
@@ -23,34 +23,27 @@ export default function FullscreenPlayer({ media, settings, dict, onExit, onDele
   const slideIntervalRef = useRef<number | null>(null);
   const progressIntervalRef = useRef<number | null>(null);
 
-  const filteredMedia = media.filter(item => {
-    if (!settings.filterByOrientation) return true;
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    const targetOrientation: MediaOrientation = isMobile ? 'portrait' : 'landscape';
-    return item.orientation === targetOrientation || item.orientation === 'square';
-  });
-
-  const currentMedia = filteredMedia[currentIndex] || filteredMedia[0];
+  const currentMedia = media[currentIndex] || media[0];
 
   const shuffleMedia = useCallback(() => {
-    if (settings.shuffle && filteredMedia.length > 1) {
-      const shuffled = [...filteredMedia].sort(() => Math.random() - 0.5);
+    if (settings.shuffle && media.length > 1) {
+      const shuffled = [...media].sort(() => Math.random() - 0.5);
       setCurrentIndex(shuffled.indexOf(currentMedia) || 0);
     }
-  }, [settings.shuffle, filteredMedia, currentMedia]);
+  }, [settings.shuffle, media, currentMedia]);
 
   const goToNext = useCallback(() => {
-    if (filteredMedia.length === 0) return;
-    setCurrentIndex((prev) => (prev + 1) % filteredMedia.length);
+    if (media.length === 0) return;
+    setCurrentIndex((prev) => (prev + 1) % media.length);
     setProgress(0);
     shuffleMedia();
-  }, [filteredMedia.length, shuffleMedia]);
+  }, [media.length, shuffleMedia]);
 
   const goToPrev = useCallback(() => {
-    if (filteredMedia.length === 0) return;
-    setCurrentIndex((prev) => (prev - 1 + filteredMedia.length) % filteredMedia.length);
+    if (media.length === 0) return;
+    setCurrentIndex((prev) => (prev - 1 + media.length) % media.length);
     setProgress(0);
-  }, [filteredMedia.length]);
+  }, [media.length]);
 
   useEffect(() => {
     const enterFullscreen = async () => {
@@ -271,7 +264,7 @@ export default function FullscreenPlayer({ media, settings, dict, onExit, onDele
           </div>
 
           <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex gap-2">
-            {filteredMedia.map((_, index) => (
+            {media.map((_, index) => (
               <button
                 key={index}
                 onClick={() => {

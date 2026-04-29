@@ -137,16 +137,38 @@ export default function FrameApp({ dict }: FrameAppProps) {
     loadData();
   };
 
+  const filterMediaByOrientation = (mediaList: MediaItem[]) => {
+    if (!settings.filterByOrientation) return mediaList;
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const targetOrientation = isMobile ? 'portrait' : 'landscape';
+    return mediaList.filter(item => item.orientation === targetOrientation || item.orientation === 'square');
+  };
+
   const handleStartSlideshow = (paused = false, index = 0) => {
+    const filtered = filterMediaByOrientation(media);
+    const originalMedia = media[index];
+    if (originalMedia) {
+      const filteredIndex = filtered.findIndex(item => item.id === originalMedia.id);
+      setStartIndex(filteredIndex >= 0 ? filteredIndex : 0);
+    } else {
+      setStartIndex(0);
+    }
     setStartPaused(paused);
-    setStartIndex(index);
     setShowFullscreen(true);
   };
 
   const handlePlayCollection = (collection: Collection, paused = false, startIndex = 0) => {
     setSelectedCollectionId(collection.id);
+    const collectionMedia = media.filter((m) => collection.mediaIds.includes(m.id));
+    const filtered = filterMediaByOrientation(collectionMedia);
+    const originalMedia = collectionMedia[startIndex];
+    if (originalMedia) {
+      const filteredIndex = filtered.findIndex(item => item.id === originalMedia.id);
+      setStartIndex(filteredIndex >= 0 ? filteredIndex : 0);
+    } else {
+      setStartIndex(0);
+    }
     setStartPaused(paused);
-    setStartIndex(startIndex);
     setShowFullscreen(true);
   };
 
@@ -156,13 +178,18 @@ export default function FrameApp({ dict }: FrameAppProps) {
   };
 
   const getCurrentMedia = () => {
+    let mediaList: MediaItem[];
     if (selectedCollectionId) {
       const collection = collections.find((col) => col.id === selectedCollectionId);
       if (collection) {
-        return media.filter((m) => collection.mediaIds.includes(m.id));
+        mediaList = media.filter((m) => collection.mediaIds.includes(m.id));
+      } else {
+        mediaList = media;
       }
+    } else {
+      mediaList = media;
     }
-    return media;
+    return filterMediaByOrientation(mediaList);
   };
 
   const currentMedia = getCurrentMedia();
