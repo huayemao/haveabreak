@@ -1,6 +1,7 @@
 "use client";
 import { useState, useCallback } from 'react';
 import Lightbox from 'yet-another-react-lightbox';
+import Video from 'yet-another-react-lightbox/plugins/video';
 import { MediaItem, MediaType } from '../types';
 import { Dictionary } from '@/dictionaries';
 import 'yet-another-react-lightbox/styles.css';
@@ -20,25 +21,45 @@ export default function MediaGallery({ media, onDelete, onAdd, dict }: MediaGall
   const [newTitle, setNewTitle] = useState('');
   const [mediaType, setMediaType] = useState<MediaType>('image');
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [showVideoModal, setShowVideoModal] = useState(false);
-  const [currentVideo, setCurrentVideo] = useState<MediaItem | null>(null);
 
-  const imageMedia = media.filter((item) => item.type === 'image');
-  const slides = imageMedia.map((item) => ({
-    src: item.url,
-    title: item.title || '',
-  }));
+  const slides = media.map((item) => {
+    if (item.type === 'video') {
+      let width = 1280;
+      let height = 720;
+      
+      if (item.orientation === 'portrait') {
+        width = 720;
+        height = 1280;
+      } else if (item.orientation === 'square') {
+        width = 1080;
+        height = 1080;
+      }
+      
+      return {
+        type: 'video' as const,
+        poster: '',
+        sources: [
+          {
+            src: item.url,
+            type: 'video/mp4',
+          },
+        ],
+        width,
+        height,
+      };
+    }
+    return {
+      src: item.url,
+      title: item.title || '',
+      type: undefined,
+    };
+  });
 
   const handleMediaClick = useCallback((item: MediaItem, index: number) => {
-    if (item.type === 'image') {
-      const imageIndex = imageMedia.findIndex((img) => img.id === item.id);
-      setCurrentIndex(imageIndex);
-      setLightboxOpen(true);
-    } else {
-      setCurrentVideo(item);
-      setShowVideoModal(true);
-    }
-  }, [imageMedia]);
+    const mediaIndex = media.findIndex((m) => m.id === item.id);
+    setCurrentIndex(mediaIndex);
+    setLightboxOpen(true);
+  }, [media]);
 
   const handleAdd = () => {
     if (newUrl.trim()) {
@@ -193,14 +214,19 @@ export default function MediaGallery({ media, onDelete, onAdd, dict }: MediaGall
         close={() => setLightboxOpen(false)}
         slides={slides}
         index={currentIndex}
-        plugins={[]}
+        plugins={[Video]}
         render={{
           slideFooter: ({ slide }) => (
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none">
               <div className="absolute bottom-0 left-0 right-0 p-4 flex justify-center pointer-events-auto">
                 <button
                   onClick={() => {
-                    const currentMedia = imageMedia.find((m) => m.url === slide.src);
+                    const currentMedia = media.find((m) => {
+                      if ('type' in slide && slide.type === 'video') {
+                        return m.type === 'video' && m.url === slide.sources[0]?.src;
+                      }
+                      return m.type === 'image' && 'src' in slide && m.url === slide.src;
+                    });
                     if (currentMedia) {
                       handleDelete(currentMedia.id);
                       setLightboxOpen(false);
@@ -215,32 +241,6 @@ export default function MediaGallery({ media, onDelete, onAdd, dict }: MediaGall
           ),
         }}
       />
-
-      {showVideoModal && currentVideo && (
-        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4" onClick={() => setShowVideoModal(false)}>
-          <div className="max-w-4xl w-full" onClick={(e) => e.stopPropagation()}>
-            <div className="relative">
-              <video
-                src={currentVideo.url}
-                className="w-full max-h-[80vh] object-contain rounded-xl"
-                controls
-                autoPlay
-              />
-              {currentVideo.title && (
-                <p className="text-white text-center mt-4">{currentVideo.title}</p>
-              )}
-            </div>
-            <button
-              onClick={() => setShowVideoModal(false)}
-              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      )}
 
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
