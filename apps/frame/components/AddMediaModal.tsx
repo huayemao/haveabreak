@@ -86,7 +86,7 @@ export default function AddMediaModal({ isOpen, onClose, onAdd, onAddUrlList, di
         <div className="space-y-4">
           {isBatchMode ? (
             <div>
-              <label className="block text-sm font-medium mb-2">{dict.frame.urlList}</label>
+              <label className="block text-sm font-medium mb-2">{dict.frame.importUrlList}</label>
               <textarea
                 value={urlList}
                 onChange={(e) => setUrlList(e.target.value)}

@@ -5,6 +5,8 @@ import { Dictionary } from '@/dictionaries';
 import MediaThumbnail from './MediaThumbnail';
 import CollectionDetail from './CollectionDetail';
 
+type ViewMode = 'list' | 'detail';
+
 interface CollectionManagerProps {
   collections: Collection[];
   media: MediaItem[];
