@@ -213,14 +213,14 @@ export default function FullscreenPlayer({ media, settings, dict, onExit, onDele
               <img
                 src={currentMedia.url}
                 alt={currentMedia.title || ''}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover"
                 draggable={false}
               />
             ) : (
               <video
                 ref={videoRef}
                 src={currentMedia.url}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover"
                 playsInline
                 autoPlay={isPlaying}
                 draggable={false}

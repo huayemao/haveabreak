@@ -1,10 +1,9 @@
 import { getDictionary, Locale } from '@/dictionaries';
-import GalleryPageClient from './gallery/GalleryPageClient';
+import GalleryPageClient from './GalleryPageClient';
 
-export default async function FramePage({ params }: { params: Promise<{ lang: string }> }) {
+export default async function GalleryPage({ params }: { params: Promise<{ lang: string }> }) {
   const resolvedParams = await params;
   const lang = resolvedParams.lang as Locale;
   const dict = await getDictionary(lang);
-
   return <GalleryPageClient dict={dict} />;
 }
