@@ -1,5 +1,6 @@
 import { getDictionary, Locale } from '@/dictionaries';
 import FrameLayoutClient from './FrameLayoutClient';
+import { Suspense } from 'react';
 
 export default async function FrameLayout({
   children,
@@ -13,8 +14,10 @@ export default async function FrameLayout({
   const dict = await getDictionary(lang);
 
   return (
-    <FrameLayoutClient dict={dict} lang={lang}>
-      {children}
-    </FrameLayoutClient>
+    <Suspense fallback={null}>
+      <FrameLayoutClient dict={dict} lang={lang}>
+        {children}
+      </FrameLayoutClient>
+    </Suspense>
   );
 }
