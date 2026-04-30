@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FrameSettings } from '../types';
 import { Dictionary } from '@/dictionaries';
+import { useScrollLock } from '../utils/useScrollLock';
 
 interface SettingsPanelProps {
   settings: FrameSettings;
@@ -18,6 +19,7 @@ export default function SettingsPanel({
   dict,
 }: SettingsPanelProps) {
   const [showImportModal, setShowImportModal] = useState(false);
+  useScrollLock(showImportModal);
   const [importData, setImportData] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');

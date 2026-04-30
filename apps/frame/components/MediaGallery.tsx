@@ -7,6 +7,7 @@ import { Dictionary } from '@/dictionaries';
 import 'yet-another-react-lightbox/styles.css';
 import MediaCard from './MediaCard';
 import AddMediaModal from './AddMediaModal';
+import { useScrollLock } from '../utils/useScrollLock';
 
 interface MediaGalleryProps {
   media: MediaItem[];
@@ -32,6 +33,8 @@ export default function MediaGallery({
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  useScrollLock(lightboxOpen || showDeleteConfirm);
 
   const slides = media.map((item) => {
     if (item.type === 'video') {

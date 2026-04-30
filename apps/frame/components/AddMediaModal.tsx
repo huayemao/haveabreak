@@ -4,6 +4,7 @@ import { MediaType } from '../types';
 import { Dictionary } from '@/dictionaries';
 import { detectMediaType, extractUrls, ImportResultItem } from '../utils/mediaDetector';
 import ImportResultDialog from './ImportResultDialog';
+import { useScrollLock } from '../utils/useScrollLock';
 
 interface AddMediaModalProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ interface AddMediaModalProps {
 }
 
 export default function AddMediaModal({ isOpen, onClose, onAdd, onAddUrlList, dict }: AddMediaModalProps) {
+  useScrollLock(isOpen);
   const [newUrl, setNewUrl] = useState('');
   const [newTitle, setNewTitle] = useState('');
   const [mediaType, setMediaType] = useState<MediaType>('image');

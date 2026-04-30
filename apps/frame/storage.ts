@@ -4,7 +4,8 @@ const MEDIA_STORAGE_KEY = 'frame_media';
 const COLLECTION_STORAGE_KEY = 'frame_collections';
 const SETTINGS_STORAGE_KEY = 'frame_settings';
 
-
+// 不能删除
+console.log(presets)
 
 export async function getOrientationFromUrl(url: string): Promise<'landscape' | 'portrait' | 'square'> {
   return new Promise((resolve) => {
@@ -12,7 +13,7 @@ export async function getOrientationFromUrl(url: string): Promise<'landscape' | 
       resolve('landscape');
       return;
     }
-    
+
     const img = new Image();
     img.onload = () => {
       const ratio = img.width / img.height;
@@ -37,12 +38,12 @@ export async function getStoredMedia(): Promise<MediaItem[]> {
   if (stored) {
     return JSON.parse(stored);
   }
-  
+
   const presetMedia: MediaItem[] = (presets.media as MediaItem[]).map((item, index) => ({
     ...item,
     createdAt: Date.now() - (presets.media.length - index) * 1000,
   }));
-  
+
   localStorage.setItem(MEDIA_STORAGE_KEY, JSON.stringify(presetMedia));
   return presetMedia;
 }
@@ -54,7 +55,7 @@ export function saveMedia(media: MediaItem[]): void {
 export async function addMedia(url: string, type: 'image' | 'video', title?: string): Promise<MediaItem> {
   const media = await getStoredMedia();
   const orientation = await getOrientationFromUrl(url);
-  
+
   const newItem: MediaItem = {
     id: generateId(),
     url,
@@ -63,7 +64,7 @@ export async function addMedia(url: string, type: 'image' | 'video', title?: str
     title,
     createdAt: Date.now(),
   };
-  
+
   media.push(newItem);
   saveMedia(media);
   return newItem;
@@ -72,7 +73,7 @@ export async function addMedia(url: string, type: 'image' | 'video', title?: str
 export async function deleteMedia(id: string): Promise<void> {
   const media = (await getStoredMedia()).filter((m) => m.id !== id);
   saveMedia(media);
-  
+
   const collections = await getCollections();
   collections.forEach((col) => {
     col.mediaIds = col.mediaIds.filter((mid) => mid !== id);
@@ -86,16 +87,16 @@ export async function getCollections(): Promise<Collection[]> {
   if (stored) {
     return JSON.parse(stored);
   }
-  
+
   const media = await getStoredMedia();
-  
+
   const defaultCollection: Collection = {
     ...presets.collections[0],
     mediaIds: media.map((m) => m.id),
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };
-  
+
   localStorage.setItem(COLLECTION_STORAGE_KEY, JSON.stringify([defaultCollection]));
   return [defaultCollection];
 }
@@ -115,7 +116,7 @@ export async function createCollection(name: string, description?: string, media
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };
-  
+
   collections.push(newCollection);
   saveCollections(collections);
   return newCollection;
@@ -140,8 +141,8 @@ export async function getSettings(): Promise<FrameSettings> {
   if (stored) {
     return JSON.parse(stored);
   }
-  
-  
+
+
   localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(presets.settings));
   return presets.settings;
 }
@@ -154,14 +155,14 @@ export async function exportData(): Promise<string> {
   const media = await getStoredMedia();
   const collections = await getCollections();
   const settings = await getSettings();
-  
+
   return JSON.stringify({ media, collections, settings }, null, 2);
 }
 
 export function importData(data: string): void {
   try {
     const parsed = JSON.parse(data);
-    
+
     if (parsed.media) {
       saveMedia(parsed.media);
     }
@@ -178,15 +179,15 @@ export function importData(data: string): void {
 
 export async function importUrlList(urls: string[]): Promise<MediaItem[]> {
   const results: MediaItem[] = [];
-  
+
   for (const url of urls) {
     const trimmedUrl = url.trim();
     if (!trimmedUrl) continue;
-    
-    const isVideo = trimmedUrl.toLowerCase().endsWith('.mp4') || 
-                   trimmedUrl.toLowerCase().endsWith('.webm') || 
-                   trimmedUrl.toLowerCase().endsWith('.mov');
-    
+
+    const isVideo = trimmedUrl.toLowerCase().endsWith('.mp4') ||
+      trimmedUrl.toLowerCase().endsWith('.webm') ||
+      trimmedUrl.toLowerCase().endsWith('.mov');
+
     try {
       const item = await addMedia(trimmedUrl, isVideo ? 'video' : 'image');
       results.push(item);
@@ -194,7 +195,7 @@ export async function importUrlList(urls: string[]): Promise<MediaItem[]> {
       continue;
     }
   }
-  
+
   return results;
 }
 
@@ -204,10 +205,10 @@ export async function downloadMedia(url: string, filename: string): Promise<void
     link.href = url;
     link.download = filename;
     link.target = '_blank';
-    
+
     link.onload = () => resolve();
     link.onerror = () => reject(new Error('Download failed'));
-    
+
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

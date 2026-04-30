@@ -4,6 +4,7 @@ import { Collection, MediaItem, MediaType } from '../types';
 import { Dictionary } from '@/dictionaries';
 import MediaThumbnail from './MediaThumbnail';
 import CollectionDetail from './CollectionDetail';
+import { useScrollLock } from '../utils/useScrollLock';
 
 type ViewMode = 'list' | 'detail';
 
@@ -47,6 +48,8 @@ export default function CollectionManager({
   const [newDesc, setNewDesc] = useState('');
   const [selectedMediaIds, setSelectedMediaIds] = useState<string[]>([]);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+
+  useScrollLock(showAddModal || showEditModal || showShareModal || !!confirmDeleteId);
   const [copied, setCopied] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 

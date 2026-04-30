@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { MediaItem, FrameSettings } from '../types';
 import { Dictionary } from '@/dictionaries';
+import { useScrollLock } from '../utils/useScrollLock';
 
 interface FullscreenPlayerProps {
   media: MediaItem[];
@@ -23,6 +25,9 @@ export default function FullscreenPlayer({ media, settings, dict, onExit, onDele
   const slideIntervalRef = useRef<number | null>(null);
   const progressIntervalRef = useRef<number | null>(null);
 
+  // Lock body scroll when player is open
+  useScrollLock();
+
   const currentMedia = media[currentIndex] || media[0];
 
   const shuffleMedia = useCallback(() => {
@@ -36,8 +41,8 @@ export default function FullscreenPlayer({ media, settings, dict, onExit, onDele
     if (media.length === 0) return;
     setCurrentIndex((prev) => (prev + 1) % media.length);
     setProgress(0);
-    shuffleMedia();
-  }, [media.length, shuffleMedia]);
+    // shuffleMedia(); // Commented out to avoid confusion during sequential playback
+  }, [media.length]);
 
   const goToPrev = useCallback(() => {
     if (media.length === 0) return;
@@ -48,7 +53,9 @@ export default function FullscreenPlayer({ media, settings, dict, onExit, onDele
   useEffect(() => {
     const enterFullscreen = async () => {
       try {
-        await document.documentElement.requestFullscreen();
+        if (!document.fullscreenElement) {
+          await document.documentElement.requestFullscreen();
+        }
       } catch (error) {
         console.warn('Fullscreen not available:', error);
       }
@@ -65,9 +72,6 @@ export default function FullscreenPlayer({ media, settings, dict, onExit, onDele
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     return () => {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
-      if (document.fullscreenElement) {
-        document.exitFullscreen().catch(() => {});
-      }
     };
   }, [onExit]);
 
@@ -75,9 +79,11 @@ export default function FullscreenPlayer({ media, settings, dict, onExit, onDele
     if (controlsTimeoutRef.current) {
       clearTimeout(controlsTimeoutRef.current);
     }
-    controlsTimeoutRef.current = window.setTimeout(() => {
-      setShowControls(false);
-    }, 3000);
+    if (showControls) {
+      controlsTimeoutRef.current = window.setTimeout(() => {
+        setShowControls(false);
+      }, 3000);
+    }
 
     return () => {
       if (controlsTimeoutRef.current) {
@@ -105,53 +111,50 @@ export default function FullscreenPlayer({ media, settings, dict, onExit, onDele
   useEffect(() => {
     if (currentMedia?.type === 'video' && videoRef.current) {
       if (isPlaying) {
-        videoRef.current.play().catch(() => {});
+        videoRef.current.play().catch(err => {
+          console.warn('Auto-play blocked or failed:', err);
+          // If auto-play fails (e.g. browser policy), we might need to show a play button or stay paused
+        });
       } else {
         videoRef.current.pause();
       }
     }
-  }, [currentMedia?.type, isPlaying]);
+  }, [currentMedia?.type, isPlaying, currentIndex]); // Added currentIndex to re-trigger on slide change
 
   useEffect(() => {
     if (currentMedia?.type === 'video' && videoRef.current) {
-      progressIntervalRef.current = window.setInterval(() => {
-        if (videoRef.current && videoRef.current.duration) {
-          setProgress((videoRef.current.currentTime / videoRef.current.duration) * 100);
-        }
-      }, 100);
+      const video = videoRef.current;
 
-      const handleVideoEnd = () => {
-        goToNext();
+      const updateProgress = () => {
+        if (video.duration) {
+          setProgress((video.currentTime / video.duration) * 100);
+        }
       };
-      videoRef.current.addEventListener('ended', handleVideoEnd);
+
+      video.addEventListener('timeupdate', updateProgress);
+      video.addEventListener('ended', goToNext);
 
       return () => {
-        if (progressIntervalRef.current) {
-          clearInterval(progressIntervalRef.current);
-        }
-        videoRef.current?.removeEventListener('ended', handleVideoEnd);
+        video.removeEventListener('timeupdate', updateProgress);
+        video.removeEventListener('ended', goToNext);
       };
-    } else {
-      if (progressIntervalRef.current) {
-        clearInterval(progressIntervalRef.current);
-      }
     }
-  }, [currentMedia?.type, goToNext]);
+  }, [currentMedia?.type, currentMedia?.url, goToNext]); // Re-bind when URL changes
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       switch (e.key) {
         case 'ArrowRight':
-        case 'Space':
           e.preventDefault();
-          if (currentMedia?.type === 'image') {
-            goToNext();
-          } else {
-            setIsPlaying((prev) => !prev);
-          }
+          goToNext();
           break;
         case 'ArrowLeft':
+          e.preventDefault();
           goToPrev();
+          break;
+        case ' ':
+          e.preventDefault();
+          setIsPlaying((prev) => !prev);
           break;
         case 'Escape':
           onExit();
@@ -161,16 +164,13 @@ export default function FullscreenPlayer({ media, settings, dict, onExit, onDele
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [goToNext, goToPrev, onExit, currentMedia?.type]);
+  }, [goToNext, goToPrev, onExit]);
 
-  useEffect(() => {
-    const handleClick = () => {
-      setShowControls((prev) => !prev);
-    };
-
-    document.addEventListener('click', handleClick);
-    return () => document.removeEventListener('click', handleClick);
-  }, []);
+  const handleContainerClick = (e: React.MouseEvent) => {
+    // Only toggle controls if clicking the background or the media (not controls)
+    if ((e.target as HTMLElement).closest('.player-controls')) return;
+    setShowControls((prev) => !prev);
+  };
 
   if (!currentMedia) {
     return (
@@ -181,115 +181,131 @@ export default function FullscreenPlayer({ media, settings, dict, onExit, onDele
   }
 
   return (
-    <div className="fixed inset-0 bg-black z-50 overflow-hidden">
+    <div
+      className="fixed inset-0 bg-black z-[100] overflow-hidden cursor-none"
+      style={{ cursor: showControls ? 'default' : 'none' }}
+      onClick={handleContainerClick}
+    >
       <div className="absolute inset-0">
-        {currentMedia.type === 'image' ? (
-          <img
-            src={currentMedia.url}
-            alt={currentMedia.title || ''}
-            className="w-full h-full object-cover"
-            draggable={false}
-          />
-        ) : (
-          <video
-            ref={videoRef}
-            className="w-full h-full object-cover"
-            muted
-            playsInline
-            draggable={false}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentMedia.url}
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
+            className="w-full h-full"
           >
-            <source src={currentMedia.url} type="video/mp4" />
-          </video>
-        )}
+            {currentMedia.type === 'image' ? (
+              <img
+                src={currentMedia.url}
+                alt={currentMedia.title || ''}
+                className="w-full h-full object-contain"
+                draggable={false}
+              />
+            ) : (
+              <video
+                ref={videoRef}
+                src={currentMedia.url}
+                className="w-full h-full object-contain"
+                playsInline
+                autoPlay={isPlaying}
+                draggable={false}
+              />
+            )}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
-      {settings.showInfo && currentMedia.title && (
-        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 text-white/80 text-center">
-          <p className="text-lg font-medium backdrop-blur-sm bg-black/30 px-4 py-2 rounded-full">
-            {currentMedia.title}
-          </p>
-        </div>
-      )}
-
-      {showControls && (
-        <>
-          <div className="absolute top-6 right-6 flex gap-2">
-            <button
-              onClick={onExit}
-              className="w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white transition-all group"
-              title={dict.frame.exitFullscreen}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs text-white/70 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                {dict.frame.exitFullscreen}
-              </span>
-            </button>
-          </div>
-
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-6">
-            <button
-              onClick={goToPrev}
-              className="w-12 h-12 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white transition-all"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-
-            <button
-              onClick={() => setIsPlaying(!isPlaying)}
-              className="w-16 h-16 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white transition-all"
-            >
-              {isPlaying ? (
-                <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-                </svg>
-              ) : (
-                <svg className="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-              )}
-            </button>
-
-            <button
-              onClick={goToNext}
-              className="w-12 h-12 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white transition-all"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
-
-          <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex gap-2">
-            {media.map((_, index) => (
+      <AnimatePresence>
+        {showControls && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="player-controls absolute inset-0 pointer-events-none"
+          >
+            {/* Top Bar */}
+            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black/60 to-transparent p-8 flex justify-between items-start pointer-events-auto">
+              <div className="text-white">
+                <h3 className="text-xl font-medium drop-shadow-md">{currentMedia.title || ''}</h3>
+                <p className="text-sm text-white/60">{currentIndex + 1} / {media.length}</p>
+              </div>
               <button
-                key={index}
-                onClick={() => {
-                  setCurrentIndex(index);
-                  setProgress(0);
-                }}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  index === currentIndex ? 'bg-white w-6' : 'bg-white/50'
-                }`}
-              />
-            ))}
-          </div>
+                onClick={(e) => { e.stopPropagation(); onExit(); }}
+                className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all group"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
 
-          {currentMedia.type === 'video' && (
-            <div className="absolute bottom-32 left-1/2 -translate-x-1/2 w-4/5">
-              <div className="h-1 bg-white/30 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-white transition-all"
-                  style={{ width: `${progress}%` }}
-                />
+            {/* Bottom Controls */}
+            <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-black/60 to-transparent p-8 flex flex-col items-center justify-end pointer-events-auto">
+              {/* Progress Bar for Video */}
+              {currentMedia.type === 'video' && (
+                <div className="w-full max-w-4xl mb-8 px-4">
+                  <div className="h-1.5 bg-white/20 rounded-full overflow-hidden group/progress cursor-pointer relative">
+                    <motion.div
+                      className="absolute inset-y-0 left-0 bg-white"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Control Buttons */}
+              <div className="flex items-center gap-8">
+                <button
+                  onClick={(e) => { e.stopPropagation(); goToPrev(); }}
+                  className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+
+                <button
+                  onClick={(e) => { e.stopPropagation(); setIsPlaying(!isPlaying); }}
+                  className="w-20 h-20 rounded-full bg-white text-black hover:scale-105 active:scale-95 flex items-center justify-center transition-all shadow-xl"
+                >
+                  {isPlaying ? (
+                    <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+                    </svg>
+                  ) : (
+                    <svg className="w-10 h-10 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  )}
+                </button>
+
+                <button
+                  onClick={(e) => { e.stopPropagation(); goToNext(); }}
+                  className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Indicators */}
+              <div className="flex gap-2.5 mt-8">
+                {media.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={(e) => { e.stopPropagation(); setCurrentIndex(index); setProgress(0); }}
+                    className={`h-1.5 rounded-full transition-all duration-500 ${index === currentIndex ? 'bg-white w-8' : 'bg-white/30 w-1.5'
+                      }`}
+                  />
+                ))}
               </div>
             </div>
-          )}
-        </>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <audio ref={audioRef} loop />
     </div>
