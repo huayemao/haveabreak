@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import { MediaItem, FrameSettings } from '../types';
 import { Dictionary } from '@/dictionaries';
@@ -15,6 +16,10 @@ interface FullscreenPlayerProps {
 }
 
 export default function FullscreenPlayer({ media, settings, dict, onExit, onDelete, startPaused = false, startIndex = 0 }: FullscreenPlayerProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [currentIndex, setCurrentIndex] = useState(startIndex);
   const [isPlaying, setIsPlaying] = useState(startPaused ? false : settings.autoPlay);
   const [showControls, setShowControls] = useState(true);
@@ -23,25 +28,35 @@ export default function FullscreenPlayer({ media, settings, dict, onExit, onDele
   const audioRef = useRef<HTMLAudioElement>(null);
   const controlsTimeoutRef = useRef<number | null>(null);
   const slideIntervalRef = useRef<number | null>(null);
-  const progressIntervalRef = useRef<number | null>(null);
 
   // Lock body scroll when player is open
   useScrollLock();
 
-  const currentMedia = media[currentIndex] || media[0];
+  const updateUrl = useCallback((params: Record<string, string | null>) => {
+    const newParams = new URLSearchParams(searchParams.toString());
+    Object.entries(params).forEach(([key, value]) => {
+      if (value === null) {
+        newParams.delete(key);
+      } else {
+        newParams.set(key, value);
+      }
+    });
+    router.push(`${pathname}?${newParams.toString()}`, { scroll: false });
+  }, [pathname, router, searchParams]);
 
-  const shuffleMedia = useCallback(() => {
-    if (settings.shuffle && media.length > 1) {
-      const shuffled = [...media].sort(() => Math.random() - 0.5);
-      setCurrentIndex(shuffled.indexOf(currentMedia) || 0);
-    }
-  }, [settings.shuffle, media, currentMedia]);
+  useEffect(() => {
+    updateUrl({
+      index: currentIndex > 0 ? currentIndex.toString() : null,
+      paused: !isPlaying ? 'true' : null
+    });
+  }, [currentIndex, isPlaying, updateUrl]);
+
+  const currentMedia = media[currentIndex] || media[0];
 
   const goToNext = useCallback(() => {
     if (media.length === 0) return;
     setCurrentIndex((prev) => (prev + 1) % media.length);
     setProgress(0);
-    // shuffleMedia(); // Commented out to avoid confusion during sequential playback
   }, [media.length]);
 
   const goToPrev = useCallback(() => {
@@ -113,13 +128,12 @@ export default function FullscreenPlayer({ media, settings, dict, onExit, onDele
       if (isPlaying) {
         videoRef.current.play().catch(err => {
           console.warn('Auto-play blocked or failed:', err);
-          // If auto-play fails (e.g. browser policy), we might need to show a play button or stay paused
         });
       } else {
         videoRef.current.pause();
       }
     }
-  }, [currentMedia?.type, isPlaying, currentIndex]); // Added currentIndex to re-trigger on slide change
+  }, [currentMedia?.type, isPlaying, currentIndex]);
 
   useEffect(() => {
     if (currentMedia?.type === 'video' && videoRef.current) {
@@ -139,7 +153,7 @@ export default function FullscreenPlayer({ media, settings, dict, onExit, onDele
         video.removeEventListener('ended', goToNext);
       };
     }
-  }, [currentMedia?.type, currentMedia?.url, goToNext]); // Re-bind when URL changes
+  }, [currentMedia?.type, currentMedia?.url, goToNext]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -167,7 +181,6 @@ export default function FullscreenPlayer({ media, settings, dict, onExit, onDele
   }, [goToNext, goToPrev, onExit]);
 
   const handleContainerClick = (e: React.MouseEvent) => {
-    // Only toggle controls if clicking the background or the media (not controls)
     if ((e.target as HTMLElement).closest('.player-controls')) return;
     setShowControls((prev) => !prev);
   };

@@ -1,12 +1,12 @@
 "use client";
 import { useState, useCallback } from 'react';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import Lightbox from 'yet-another-react-lightbox';
 import Video from 'yet-another-react-lightbox/plugins/video';
 import { MediaItem, MediaType } from '../types';
 import { Dictionary } from '@/dictionaries';
 import 'yet-another-react-lightbox/styles.css';
 import MediaCard from './MediaCard';
-import AddMediaModal from './AddMediaModal';
 import { useScrollLock } from '../utils/useScrollLock';
 
 interface MediaGalleryProps {
@@ -28,9 +28,12 @@ export default function MediaGallery({
   dict,
   showAddButton = true,
 }: MediaGalleryProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [showAddModal, setShowAddModal] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -80,6 +83,12 @@ export default function MediaGallery({
     setSelectedId(null);
   };
 
+  const openAddModal = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('modal', 'add');
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -91,7 +100,7 @@ export default function MediaGallery({
         </div>
         {showAddButton && (
           <button
-            onClick={() => setShowAddModal(true)}
+            onClick={openAddModal}
             className="neumorphic-button-primary px-4 py-2 flex items-center gap-2"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,7 +121,7 @@ export default function MediaGallery({
           <p className="text-fg-muted mb-4">{dict.frame.noMedia}</p>
           {showAddButton && (
             <button
-              onClick={() => setShowAddModal(true)}
+              onClick={openAddModal}
               className="neumorphic-button text-sm"
             >
               {dict.frame.addMedia}
@@ -206,14 +215,6 @@ export default function MediaGallery({
           </div>
         </div>
       )}
-
-      <AddMediaModal
-        isOpen={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        onAdd={onAdd}
-        onAddUrlList={onAddUrlList}
-        dict={dict}
-      />
     </div>
   );
-}
+}

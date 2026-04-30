@@ -1,18 +1,17 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { Collection, MediaItem, MediaType } from '../types';
 import { Dictionary } from '@/dictionaries';
 import MediaThumbnail from './MediaThumbnail';
 import CollectionDetail from './CollectionDetail';
 import { useScrollLock } from '../utils/useScrollLock';
 
-type ViewMode = 'list' | 'detail';
-
 interface CollectionManagerProps {
   collections: Collection[];
   media: MediaItem[];
   selectedCollectionId: string | null;
-  onSelect: (id: string) => void;
+  onSelect: (id: string | null) => void;
   onCreate: (name: string, description?: string, mediaIds?: string[]) => void;
   onUpdate: (id: string, updates: Partial<Collection>) => void;
   onDelete: (id: string) => void;
@@ -39,11 +38,16 @@ export default function CollectionManager({
   onMediaDelete,
   dict,
 }: CollectionManagerProps) {
-  const [viewMode, setViewMode] = useState<ViewMode>('list');
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showShareModal, setShowShareModal] = useState(false);
-  const [editingCollection, setEditingCollection] = useState<Collection | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const modalType = searchParams.get('modal');
+  const editingId = searchParams.get('editId');
+  const showAddModal = modalType === 'add-collection';
+  const showEditModal = modalType === 'edit-collection';
+  const showShareModal = modalType === 'share-collection';
+  
   const [newName, setNewName] = useState('');
   const [newDesc, setNewDesc] = useState('');
   const [selectedMediaIds, setSelectedMediaIds] = useState<string[]>([]);
@@ -52,6 +56,25 @@ export default function CollectionManager({
   useScrollLock(showAddModal || showEditModal || showShareModal || !!confirmDeleteId);
   const [copied, setCopied] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+
+  const editingCollection = useMemo(() => {
+    if (editingId) {
+      return collections.find(c => c.id === editingId) || null;
+    }
+    return null;
+  }, [editingId, collections]);
+
+  useEffect(() => {
+    if (showEditModal && editingCollection) {
+      setNewName(editingCollection.name);
+      setNewDesc(editingCollection.description || '');
+      setSelectedMediaIds([...editingCollection.mediaIds]);
+    } else if (showAddModal) {
+      setNewName('');
+      setNewDesc('');
+      setSelectedMediaIds([]);
+    }
+  }, [showEditModal, showAddModal, editingCollection]);
 
   useEffect(() => {
     const handleClickOutside = () => {
@@ -64,13 +87,25 @@ export default function CollectionManager({
     }
   }, [activeDropdown]);
 
+  const updateUrl = (params: Record<string, string | null>) => {
+    const newParams = new URLSearchParams(searchParams.toString());
+    Object.entries(params).forEach(([key, value]) => {
+      if (value === null) {
+        newParams.delete(key);
+      } else {
+        newParams.set(key, value);
+      }
+    });
+    const queryString = newParams.toString();
+    router.push(queryString ? `${pathname}?${queryString}` : pathname, { scroll: false });
+  };
+
+  const closeModal = () => updateUrl({ modal: null, editId: null });
+
   const handleCreate = () => {
     if (newName.trim()) {
       onCreate(newName.trim(), newDesc.trim() || undefined, selectedMediaIds);
-      setNewName('');
-      setNewDesc('');
-      setSelectedMediaIds([]);
-      setShowAddModal(false);
+      closeModal();
     }
   };
 
@@ -81,17 +116,12 @@ export default function CollectionManager({
         description: newDesc.trim() || undefined,
         mediaIds: selectedMediaIds,
       });
-      setEditingCollection(null);
-      setNewName('');
-      setNewDesc('');
-      setSelectedMediaIds([]);
-      setShowEditModal(false);
+      closeModal();
     }
   };
 
-  const handleShare = (collection: Collection) => {
-    setEditingCollection(collection);
-    setShowShareModal(true);
+  const handleShareModal = (collection: Collection) => {
+    updateUrl({ modal: 'share-collection', editId: collection.id });
   };
 
   const copyShareLink = () => {
@@ -102,7 +132,7 @@ export default function CollectionManager({
         mediaIds: editingCollection.mediaIds,
       });
       const encoded = btoa(shareData);
-      const link = `${window.location.origin}/frame?share=${encoded}`;
+      const link = `${window.location.origin}${pathname}?share=${encoded}`;
       navigator.clipboard.writeText(link);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -110,11 +140,7 @@ export default function CollectionManager({
   };
 
   const openEditModal = (collection: Collection) => {
-    setEditingCollection(collection);
-    setNewName(collection.name);
-    setNewDesc(collection.description || '');
-    setSelectedMediaIds([...collection.mediaIds]);
-    setShowEditModal(true);
+    updateUrl({ modal: 'edit-collection', editId: collection.id });
   };
 
   const toggleMediaSelection = (id: string) => {
@@ -125,17 +151,15 @@ export default function CollectionManager({
 
   const handleCollectionClick = (collection: Collection) => {
     onSelect(collection.id);
-    setViewMode('detail');
   };
 
   const handleBack = () => {
-    setViewMode('list');
-    onSelect('');
+    onSelect(null);
   };
 
   const selectedCollection = collections.find((c) => c.id === selectedCollectionId);
 
-  if (viewMode === 'detail' && selectedCollection) {
+  if (selectedCollectionId && selectedCollection) {
     return (
       <CollectionDetail
         collection={selectedCollection}
@@ -158,7 +182,7 @@ export default function CollectionManager({
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold text-fg-primary">{dict.frame.collections}</h2>
         <button
-          onClick={() => setShowAddModal(true)}
+          onClick={() => updateUrl({ modal: 'add-collection' })}
           className="neumorphic-button px-4 py-2 text-sm"
         >
           {dict.frame.addCollection}
@@ -218,7 +242,7 @@ export default function CollectionManager({
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleShare(collection);
+                            handleShareModal(collection);
                             setActiveDropdown(null);
                           }}
                           className="w-full px-4 py-2 text-left text-sm text-fg-primary hover:bg-gray-100 flex items-center gap-2"
@@ -347,7 +371,7 @@ export default function CollectionManager({
 
             <div className="flex gap-3 mt-6">
               <button
-                onClick={() => setShowAddModal(false)}
+                onClick={closeModal}
                 className="flex-1 neumorphic-button"
               >
                 {dict.frame.cancel}
@@ -416,10 +440,7 @@ export default function CollectionManager({
 
             <div className="flex gap-3 mt-6">
               <button
-                onClick={() => {
-                  setShowEditModal(false);
-                  setEditingCollection(null);
-                }}
+                onClick={closeModal}
                 className="flex-1 neumorphic-button"
               >
                 {dict.frame.cancel}
@@ -445,7 +466,7 @@ export default function CollectionManager({
               <input
                 type="text"
                 readOnly
-                value={`${window.location.origin}/frame?share=${btoa(JSON.stringify({
+                value={`${window.location.origin}${pathname}?share=${btoa(JSON.stringify({
                   id: editingCollection.id,
                   name: editingCollection.name,
                   mediaIds: editingCollection.mediaIds,
@@ -462,10 +483,7 @@ export default function CollectionManager({
 
             <div className="flex gap-3 mt-6">
               <button
-                onClick={() => {
-                  setShowShareModal(false);
-                  setEditingCollection(null);
-                }}
+                onClick={closeModal}
                 className="flex-1 neumorphic-button"
               >
                 {dict.frame.cancel}

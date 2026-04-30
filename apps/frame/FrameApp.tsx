@@ -1,26 +1,16 @@
 "use client";
-import { useState, useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useMemo, Suspense } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { MediaItem, Collection, FrameSettings, MediaType } from './types';
-import {
-  getStoredMedia,
-  addMedia,
-  deleteMedia,
-  getCollections,
-  createCollection,
-  updateCollection,
-  deleteCollection,
-  getSettings,
-  saveSettings,
-  exportData,
-  importData,
-  importUrlList,
-} from './storage';
+import { exportData } from './storage';
 import { Dictionary } from '@/dictionaries';
 import FullscreenPlayer from './components/FullscreenPlayer';
 import MediaGallery from './components/MediaGallery';
 import CollectionManager from './components/CollectionManager';
 import SettingsPanel from './components/SettingsPanel';
 import Downloader from './components/Downloader';
+import AddMediaModal from './components/AddMediaModal';
+import { useFrameStore } from './store';
 
 type ViewMode = 'gallery' | 'collections' | 'settings' | 'download';
 
@@ -28,91 +18,57 @@ interface FrameAppProps {
   dict: Dictionary;
 }
 
-export default function FrameApp({ dict }: FrameAppProps) {
-  const [media, setMedia] = useState<MediaItem[]>([]);
-  const [collections, setCollections] = useState<Collection[]>([]);
-  const [settings, setSettings] = useState<FrameSettings>({
-    autoPlay: true,
-    slideInterval: 5000,
-    showInfo: false,
-    shuffle: false,
-    filterByOrientation: true,
-    backgroundMusicEnabled: false,
-    volume: 0.3,
-  });
-  const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<ViewMode>('gallery');
-  const [showFullscreen, setShowFullscreen] = useState(false);
-  const [startPaused, setStartPaused] = useState(false);
-  const [startIndex, setStartIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+function FrameAppContent({ dict }: FrameAppProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  
+  // Zustand Store
+  const {
+    media,
+    collections,
+    settings,
+    isLoading,
+    loadData,
+    addMedia,
+    deleteMedia,
+    createCollection,
+    updateCollection,
+    deleteCollection,
+    updateSettings,
+    importData,
+    importUrlList
+  } = useFrameStore();
+
+  // URL States (Soft Navigation)
+  const viewMode = (searchParams.get('view') as ViewMode) || 'gallery';
+  const showFullscreen = searchParams.get('player') === 'true';
+  const showAddModal = searchParams.get('modal') === 'add';
+  const selectedCollectionId = searchParams.get('collection');
+  const startIndex = parseInt(searchParams.get('index') || '0', 10);
+  const startPaused = searchParams.get('paused') === 'true';
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
-  const loadData = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const [mediaData, collectionsData, settingsData] = await Promise.all([
-        getStoredMedia(),
-        getCollections(),
-        getSettings(),
-      ]);
-      setMedia(mediaData);
-      setCollections(collectionsData);
-      setSettings(settingsData);
-    } catch (error) {
-      console.error('Failed to load data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const updateUrl = useCallback((params: Record<string, string | null>) => {
+    const newParams = new URLSearchParams(searchParams.toString());
+    Object.entries(params).forEach(([key, value]) => {
+      if (value === null) {
+        newParams.delete(key);
+      } else {
+        newParams.set(key, value);
+      }
+    });
+    const queryString = newParams.toString();
+    router.push(queryString ? `${pathname}?${queryString}` : pathname, { scroll: false });
+  }, [pathname, router, searchParams]);
 
-  const handleAddMedia = async (url: string, type: MediaType, title?: string) => {
-    try {
-      const newItem = await addMedia(url, type, title);
-      setMedia((prev) => [...prev, newItem]);
-    } catch (error) {
-      console.error('Failed to add media:', error);
-    }
-  };
-
-  const handleDeleteMedia = async (id: string) => {
-    await deleteMedia(id);
-    setMedia((prev) => prev.filter((m) => m.id !== id));
-    setCollections((prev) =>
-      prev.map((col) => ({
-        ...col,
-        mediaIds: col.mediaIds.filter((mid) => mid !== id),
-      }))
-    );
-  };
-
-  const handleCreateCollection = async (name: string, description?: string, mediaIds?: string[]) => {
-    const newCollection = await createCollection(name, description, mediaIds);
-    setCollections((prev) => [...prev, newCollection]);
-  };
-
-  const handleUpdateCollection = async (id: string, updates: Partial<Collection>) => {
-    await updateCollection(id, updates);
-    setCollections((prev) =>
-      prev.map((col) => (col.id === id ? { ...col, ...updates, updatedAt: Date.now() } : col))
-    );
-  };
-
-  const handleDeleteCollection = async (id: string) => {
-    await deleteCollection(id);
-    setCollections((prev) => prev.filter((col) => col.id !== id));
-    if (selectedCollectionId === id) {
-      setSelectedCollectionId(null);
-    }
-  };
-
-  const handleUpdateSettings = (newSettings: FrameSettings) => {
-    saveSettings(newSettings);
-    setSettings(newSettings);
-  };
+  const setViewMode = (mode: ViewMode) => updateUrl({ view: mode === 'gallery' ? null : mode });
+  const setShowFullscreen = (show: boolean) => updateUrl({ player: show ? 'true' : null });
+  const setSelectedCollectionId = (id: string | null) => updateUrl({ collection: id });
+  const handleCloseModal = () => updateUrl({ modal: null });
 
   const handleExport = async () => {
     const data = await exportData();
@@ -127,57 +83,57 @@ export default function FrameApp({ dict }: FrameAppProps) {
     window.URL.revokeObjectURL(url);
   };
 
-  const handleImport = (data: string) => {
-    importData(data);
-    loadData();
-  };
-
-  const handleImportUrlList = async (urls: string[]) => {
-    await importUrlList(urls);
-    loadData();
-  };
-
-  const filterMediaByOrientation = (mediaList: MediaItem[]) => {
+  const filterMediaByOrientation = useCallback((mediaList: MediaItem[]) => {
     if (!settings.filterByOrientation) return mediaList;
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
     const targetOrientation = isMobile ? 'portrait' : 'landscape';
     return mediaList.filter(item => item.orientation === targetOrientation || item.orientation === 'square');
-  };
+  }, [settings.filterByOrientation]);
 
   const handleStartSlideshow = (paused = false, index = 0) => {
     const filtered = filterMediaByOrientation(media);
     const originalMedia = media[index];
+    let finalIndex = 0;
     if (originalMedia) {
       const filteredIndex = filtered.findIndex(item => item.id === originalMedia.id);
-      setStartIndex(filteredIndex >= 0 ? filteredIndex : 0);
-    } else {
-      setStartIndex(0);
+      finalIndex = filteredIndex >= 0 ? filteredIndex : 0;
     }
-    setStartPaused(paused);
-    setShowFullscreen(true);
+    
+    updateUrl({
+      player: 'true',
+      paused: paused ? 'true' : null,
+      index: finalIndex > 0 ? finalIndex.toString() : null,
+      collection: null
+    });
   };
 
-  const handlePlayCollection = (collection: Collection, paused = false, startIndex = 0) => {
-    setSelectedCollectionId(collection.id);
+  const handlePlayCollection = (collection: Collection, paused = false, index = 0) => {
     const collectionMedia = media.filter((m) => collection.mediaIds.includes(m.id));
     const filtered = filterMediaByOrientation(collectionMedia);
-    const originalMedia = collectionMedia[startIndex];
+    const originalMedia = collectionMedia[index];
+    let finalIndex = 0;
     if (originalMedia) {
       const filteredIndex = filtered.findIndex(item => item.id === originalMedia.id);
-      setStartIndex(filteredIndex >= 0 ? filteredIndex : 0);
-    } else {
-      setStartIndex(0);
+      finalIndex = filteredIndex >= 0 ? filteredIndex : 0;
     }
-    setStartPaused(paused);
-    setShowFullscreen(true);
+
+    updateUrl({
+      player: 'true',
+      paused: paused ? 'true' : null,
+      index: finalIndex > 0 ? finalIndex.toString() : null,
+      collection: collection.id
+    });
   };
 
   const handleExitFullscreen = () => {
-    setShowFullscreen(false);
-    setStartPaused(false);
+    updateUrl({
+      player: null,
+      paused: null,
+      index: null
+    });
   };
 
-  const getCurrentMedia = () => {
+  const currentMedia = useMemo(() => {
     let mediaList: MediaItem[];
     if (selectedCollectionId) {
       const collection = collections.find((col) => col.id === selectedCollectionId);
@@ -190,9 +146,7 @@ export default function FrameApp({ dict }: FrameAppProps) {
       mediaList = media;
     }
     return filterMediaByOrientation(mediaList);
-  };
-
-  const currentMedia = getCurrentMedia();
+  }, [selectedCollectionId, collections, media, filterMediaByOrientation]);
 
   if (isLoading) {
     return (
@@ -204,7 +158,6 @@ export default function FrameApp({ dict }: FrameAppProps) {
       </div>
     );
   }
-
 
   return (
     <div className="min-h-screen bg-bg-base">
@@ -293,7 +246,7 @@ export default function FrameApp({ dict }: FrameAppProps) {
           <div className="sm:hidden mt-3 pt-3 border-t border-border">
             <div className="grid grid-cols-2 gap-4">
               <button
-                onClick={() => { setViewMode('gallery');  }}
+                onClick={() => setViewMode('gallery')}
                 className={`flex items-center justify-center gap-2 px-4 py-2 rounded-xl transition-all ${viewMode === 'gallery'
                     ? 'bg-accent text-white'
                     : 'neumorphic-button'
@@ -306,7 +259,7 @@ export default function FrameApp({ dict }: FrameAppProps) {
               </button>
 
               <button
-                onClick={() => { setViewMode('collections');  }}
+                onClick={() => setViewMode('collections')}
                 className={`flex items-center justify-center gap-2 px-4 py-2 rounded-xl transition-all ${viewMode === 'collections'
                     ? 'bg-accent text-white'
                     : 'neumorphic-button'
@@ -319,7 +272,7 @@ export default function FrameApp({ dict }: FrameAppProps) {
               </button>
 
               <button
-                onClick={() => { setViewMode('download');  }}
+                onClick={() => setViewMode('download')}
                 className={`flex items-center justify-center gap-2 px-4 py-2 rounded-xl transition-all ${viewMode === 'download'
                     ? 'bg-accent text-white'
                     : 'neumorphic-button'
@@ -332,7 +285,7 @@ export default function FrameApp({ dict }: FrameAppProps) {
               </button>
 
               <button
-                onClick={() => { setViewMode('settings');  }}
+                onClick={() => setViewMode('settings')}
                 className={`flex items-center justify-center gap-2 px-4 py-2 rounded-xl transition-all ${viewMode === 'settings'
                     ? 'bg-accent text-white'
                     : 'neumorphic-button'
@@ -352,9 +305,9 @@ export default function FrameApp({ dict }: FrameAppProps) {
         {viewMode === 'gallery' && (
           <MediaGallery
             media={media}
-            onDelete={handleDeleteMedia}
-            onAdd={handleAddMedia}
-            onAddUrlList={handleImportUrlList}
+            onDelete={deleteMedia}
+            onAdd={addMedia}
+            onAddUrlList={importUrlList}
             onPlay={(paused, index) => handleStartSlideshow(paused, index)}
             dict={dict}
           />
@@ -366,14 +319,14 @@ export default function FrameApp({ dict }: FrameAppProps) {
             media={media}
             selectedCollectionId={selectedCollectionId}
             onSelect={setSelectedCollectionId}
-            onCreate={handleCreateCollection}
-            onUpdate={handleUpdateCollection}
-            onDelete={handleDeleteCollection}
+            onCreate={createCollection}
+            onUpdate={updateCollection}
+            onDelete={deleteCollection}
             onShare={() => { }}
             onPlay={handlePlayCollection}
-            onMediaAdd={handleAddMedia}
-            onMediaAddUrlList={handleImportUrlList}
-            onMediaDelete={handleDeleteMedia}
+            onMediaAdd={addMedia}
+            onMediaAddUrlList={importUrlList}
+            onMediaDelete={deleteMedia}
             dict={dict}
           />
         )}
@@ -385,9 +338,9 @@ export default function FrameApp({ dict }: FrameAppProps) {
         {viewMode === 'settings' && (
           <SettingsPanel
             settings={settings}
-            onUpdate={handleUpdateSettings}
+            onUpdate={updateSettings}
             onExport={handleExport}
-            onImport={handleImport}
+            onImport={importData}
             dict={dict}
           />
         )}
@@ -399,11 +352,27 @@ export default function FrameApp({ dict }: FrameAppProps) {
           settings={settings}
           dict={dict}
           onExit={handleExitFullscreen}
-          onDelete={handleDeleteMedia}
+          onDelete={deleteMedia}
           startPaused={startPaused}
           startIndex={startIndex}
         />
       )}
+
+      <AddMediaModal
+        isOpen={showAddModal}
+        onClose={handleCloseModal}
+        onAdd={addMedia}
+        onAddUrlList={importUrlList}
+        dict={dict}
+      />
     </div>
+  );
+}
+
+export default function FrameApp(props: FrameAppProps) {
+  return (
+    <Suspense fallback={null}>
+      <FrameAppContent {...props} />
+    </Suspense>
   );
 }

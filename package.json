@@ -30,7 +30,8 @@
     "server-only": "^0.0.1",
     "shadcn": "^4.5.0",
     "tailwind-merge": "^3.3.1",
-    "yet-another-react-lightbox": "^3.31.0"
+    "yet-another-react-lightbox": "^3.31.0",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.1.11",
