@@ -7,10 +7,21 @@ const SETTINGS_STORAGE_KEY = 'frame_settings';
 // 不能删除
 console.log(presets)
 
-export async function getOrientationFromUrl(url: string): Promise<'landscape' | 'portrait' | 'square'> {
+export async function getOrientationFromUrl(url: string, type?: 'image' | 'video'): Promise<'landscape' | 'portrait' | 'square'> {
   return new Promise((resolve) => {
-    if (url.includes('.mp4') || url.includes('.webm') || url.includes('.mov')) {
-      resolve('landscape');
+    if (type === 'video' || url.includes('.mp4') || url.includes('.webm') || url.includes('.mov')) {
+      const video = document.createElement('video');
+      video.onloadedmetadata = () => {
+        const ratio = video.videoWidth / video.videoHeight;
+        if (ratio > 1.1) resolve('landscape');
+        else if (ratio < 0.9) resolve('portrait');
+        else resolve('square');
+      };
+      video.onerror = () => {
+        resolve('landscape');
+      };
+      video.crossOrigin = 'anonymous';
+      video.src = url;
       return;
     }
 
@@ -54,7 +65,7 @@ export function saveMedia(media: MediaItem[]): void {
 
 export async function addMedia(url: string, type: 'image' | 'video', title?: string): Promise<MediaItem> {
   const media = await getStoredMedia();
-  const orientation = await getOrientationFromUrl(url);
+  const orientation = await getOrientationFromUrl(url, type);
 
   const newItem: MediaItem = {
     id: generateId(),
