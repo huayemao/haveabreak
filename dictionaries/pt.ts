@@ -91,6 +91,7 @@ export const pt = {
     exitFullscreen: 'Sair de Tela Cheia',
     enterFullscreen: 'Tela Cheia',
     loading: 'Carregando...',
+    importing: 'Importando...',
     error: 'Erro',
     unsupportedType: 'Tipo de mídia não suportado',
     importFailed: 'Importação falhou',

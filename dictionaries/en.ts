@@ -91,6 +91,7 @@ export const en = {
     exitFullscreen: 'Exit Fullscreen',
     enterFullscreen: 'Enter Fullscreen',
     loading: 'Loading...',
+    importing: 'Importing...',
     error: 'Error',
     unsupportedType: 'Unsupported media type',
     importFailed: 'Import failed',

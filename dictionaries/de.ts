@@ -91,6 +91,7 @@ export const de = {
     exitFullscreen: 'Vollbild Beenden',
     enterFullscreen: 'Vollbild',
     loading: 'Laden...',
+    importing: 'Importieren...',
     error: 'Fehler',
     unsupportedType: 'Nicht unterstützter Medientyp',
     importFailed: 'Import fehlgeschlagen',

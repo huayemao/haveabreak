@@ -188,19 +188,15 @@ export function importData(data: string): void {
   }
 }
 
-export async function importUrlList(urls: string[]): Promise<MediaItem[]> {
+export async function importUrlList(urls: string[], type: 'image' | 'video'): Promise<MediaItem[]> {
   const results: MediaItem[] = [];
 
   for (const url of urls) {
     const trimmedUrl = url.trim();
     if (!trimmedUrl) continue;
 
-    const isVideo = trimmedUrl.toLowerCase().endsWith('.mp4') ||
-      trimmedUrl.toLowerCase().endsWith('.webm') ||
-      trimmedUrl.toLowerCase().endsWith('.mov');
-
     try {
-      const item = await addMedia(trimmedUrl, isVideo ? 'video' : 'image');
+      const item = await addMedia(trimmedUrl, type);
       results.push(item);
     } catch {
       continue;

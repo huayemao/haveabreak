@@ -19,6 +19,7 @@ interface FrameState {
   collections: Collection[];
   settings: FrameSettings;
   isLoading: boolean;
+  isImporting: boolean;
 
   // Actions
   loadData: () => Promise<void>;
@@ -29,7 +30,7 @@ interface FrameState {
   deleteCollection: (id: string) => Promise<void>;
   updateSettings: (settings: FrameSettings) => void;
   importData: (data: string) => void;
-  importUrlList: (urls: string[]) => Promise<void>;
+  importUrlList: (urls: string[], type: MediaType) => Promise<void>;
 }
 
 export const useFrameStore = create<FrameState>((set, get) => ({
@@ -45,6 +46,7 @@ export const useFrameStore = create<FrameState>((set, get) => ({
     volume: 0.3,
   },
   isLoading: true,
+  isImporting: false,
 
   loadData: async () => {
     set({ isLoading: true });
@@ -129,8 +131,15 @@ export const useFrameStore = create<FrameState>((set, get) => ({
     get().loadData();
   },
 
-  importUrlList: async (urls) => {
-    await storageImportUrlList(urls);
-    get().loadData();
+  importUrlList: async (urls, type) => {
+    set({ isImporting: true });
+    try {
+      const newItems = await storageImportUrlList(urls, type);
+      set((state) => ({ media: [...state.media, ...newItems] }));
+    } catch (error) {
+      console.error('Failed to import media:', error);
+    } finally {
+      set({ isImporting: false });
+    }
   },
 }));

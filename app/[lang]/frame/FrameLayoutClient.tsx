@@ -26,6 +26,7 @@ export default function FrameLayoutClient({
     collections,
     settings,
     isLoading,
+    isImporting,
     loadData,
     addMedia,
     deleteMedia,
@@ -291,6 +292,7 @@ export default function FrameLayoutClient({
         onClose={handleCloseModal}
         onAdd={addMedia}
         onAddUrlList={importUrlList}
+        isImporting={isImporting}
         dict={dict}
       />
     </div>

@@ -91,6 +91,7 @@ export const ja = {
     exitFullscreen: '全画面終了',
     enterFullscreen: '全画面',
     loading: '読み込み中...',
+    importing: 'インポート中...',
     error: 'エラー',
     unsupportedType: 'サポートされていないメディアタイプ',
     importFailed: 'インポート失敗',

@@ -91,6 +91,7 @@ export const ko = {
     exitFullscreen: '전체 화면 종료',
     enterFullscreen: '전체 화면',
     loading: '로딩 중...',
+    importing: '가져오는 중...',
     error: '오류',
     unsupportedType: '지원되지 않는 미디어 유형',
     importFailed: '가져오기 실패',

@@ -91,6 +91,7 @@ export const es = {
     exitFullscreen: 'Salir de Pantalla Completa',
     enterFullscreen: 'Pantalla Completa',
     loading: 'Cargando...',
+    importing: 'Importando...',
     error: 'Error',
     unsupportedType: 'Tipo de medio no compatible',
     importFailed: 'Importación fallida',

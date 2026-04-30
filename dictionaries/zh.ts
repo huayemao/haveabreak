@@ -91,6 +91,7 @@ export const zh = {
     exitFullscreen: '退出全屏',
     enterFullscreen: '进入全屏',
     loading: '加载中...',
+    importing: '导入中...',
     error: '错误',
     unsupportedType: '不支持的媒体类型',
     importFailed: '导入失败',

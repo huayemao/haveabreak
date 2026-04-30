@@ -91,6 +91,7 @@ export const it = {
     exitFullscreen: 'Esci da Schermo Intero',
     enterFullscreen: 'Schermo Intero',
     loading: 'Carargamento...',
+    importing: 'Importazione...',
     error: 'Errore',
     unsupportedType: 'Tipo media non supportato',
     importFailed: 'Importazione fallita',

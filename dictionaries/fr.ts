@@ -91,6 +91,7 @@ export const fr = {
     exitFullscreen: 'Quitter Plein Écran',
     enterFullscreen: 'Plein Écran',
     loading: 'Chargement...',
+    importing: 'Importation...',
     error: 'Erreur',
     unsupportedType: 'Type média non supporté',
     importFailed: 'Importation échouée',

@@ -91,6 +91,7 @@ export const ru = {
     exitFullscreen: 'Выйти из полноэкранного режима',
     enterFullscreen: 'Полноэкранный режим',
     loading: 'Загрузка...',
+    importing: 'Импорт...',
     error: 'Ошибка',
     unsupportedType: 'Неподдерживаемый тип медиа',
     importFailed: 'Импорт не удался',
