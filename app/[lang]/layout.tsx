@@ -1,7 +1,10 @@
 import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans, DM_Sans } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/react';
 import '../globals.css';
 import { locales, getDictionary, Locale } from '@/dictionaries';
+
+
 
 const plusJakartaSans = Plus_Jakarta_Sans({ 
   subsets: ['latin'],
@@ -61,6 +64,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${plusJakartaSans.variable} ${dmSans.variable}`}>
       <body suppressHydrationWarning>{children}</body>
+      <Analytics />
     </html>
   );
 }
