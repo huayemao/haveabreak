@@ -3,10 +3,9 @@ import { useFrameStore } from '@/apps/frame/store';
 import MediaGallery from '@/apps/frame/components/MediaGallery';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useCallback } from 'react';
-import { Dictionary } from '@/dictionaries';
 import { MediaItem } from '@/apps/frame/types';
 
-export default function GalleryPageClient({ dict }: { dict: Dictionary }) {
+export default function GalleryPageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -63,7 +62,6 @@ export default function GalleryPageClient({ dict }: { dict: Dictionary }) {
       onAdd={addMedia}
       onAddUrlList={importUrlList}
       onPlay={(paused, index) => handleStartSlideshow(paused, index)}
-      dict={dict}
     />
   );
 }

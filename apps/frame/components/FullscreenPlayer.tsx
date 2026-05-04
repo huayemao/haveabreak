@@ -1,21 +1,21 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'motion/react';
-import { MediaItem, FrameSettings } from '../types';
-import { Dictionary } from '@/dictionaries';
+import { useTranslations } from 'next-intl';
 import { useScrollLock } from '../utils/useScrollLock';
+import { AnimatePresence, motion } from 'motion/react';
+import { usePathname, useSearchParams, useRouter } from 'next/navigation';
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { MediaItem, FrameSettings } from '../types';
 
 interface FullscreenPlayerProps {
   media: MediaItem[];
   settings: FrameSettings;
-  dict: Dictionary;
   onExit: () => void;
   onDelete?: (id: string) => void;
   startPaused?: boolean;
   startIndex?: number;
 }
 
-export default function FullscreenPlayer({ media, settings, dict, onExit, onDelete, startPaused = false, startIndex = 0 }: FullscreenPlayerProps) {
+export default function FullscreenPlayer({ media, settings, onExit, onDelete, startPaused = false, startIndex = 0 }: FullscreenPlayerProps) {
+  const t = useTranslations();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -175,7 +175,7 @@ export default function FullscreenPlayer({ media, settings, dict, onExit, onDele
   if (!currentMedia) {
     return (
       <div className="fixed inset-0 bg-black flex items-center justify-center">
-        <p className="text-white text-xl">{dict.frame.noMedia}</p>
+        <p className="text-white text-xl">{t('frame.noMedia')}</p>
       </div>
     );
   }

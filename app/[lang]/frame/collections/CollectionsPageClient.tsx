@@ -3,14 +3,11 @@ import { useFrameStore } from '@/apps/frame/store';
 import CollectionManager from '@/apps/frame/components/CollectionManager';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useCallback } from 'react';
-import { Dictionary } from '@/dictionaries';
 import { Collection, MediaItem } from '@/apps/frame/types';
 
 export default function CollectionsPageClient({ 
-  dict, 
   selectedCollectionId = null 
 }: { 
-  dict: Dictionary;
   selectedCollectionId?: string | null;
 }) {
   const router = useRouter();
@@ -91,7 +88,6 @@ export default function CollectionsPageClient({
       onMediaAdd={addMedia}
       onMediaAddUrlList={importUrlList}
       onMediaDelete={deleteMedia}
-      dict={dict}
     />
   );
 }

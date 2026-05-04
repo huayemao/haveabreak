@@ -1,13 +1,9 @@
-'use client';
-
+import { useTranslations } from 'next-intl';
+import InterruptedDisplay from './InterruptedDisplay';
 import { motion } from 'motion/react';
 import { useState, useEffect } from 'react';
-import CircularProgress from './CircularProgress';
-import { Dictionary } from '@/dictionaries';
-import InterruptedDisplay from './InterruptedDisplay';
 
 interface TimerDisplayProps {
-  dict: Dictionary;
   timeLeft: number;
   totalSeconds: number;
   onStop: () => void;
@@ -21,7 +17,7 @@ function formatTime(seconds: number) {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-export default function TimerDisplay({ dict, timeLeft, totalSeconds, onStop, isInterrupted = false, tips }: TimerDisplayProps) {
+export default function TimerDisplay({ timeLeft, totalSeconds, onStop, isInterrupted = false, tips }: TimerDisplayProps) {
   const progress = (timeLeft / totalSeconds) * 100;
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
   
@@ -76,7 +72,7 @@ export default function TimerDisplay({ dict, timeLeft, totalSeconds, onStop, isI
 
       {/* Interrupt overlay */}
       {isInterrupted && (
-        <InterruptedDisplay dict={dict} />
+        <InterruptedDisplay />
       )}
 
     </motion.div>

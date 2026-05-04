@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { Collection, MediaItem, MediaType } from '../types';
-import { Dictionary } from '@/dictionaries';
+import { useTranslations } from 'next-intl';
 import MediaThumbnail from './MediaThumbnail';
 import CollectionDetail from './CollectionDetail';
 import { useScrollLock } from '../utils/useScrollLock';
@@ -20,7 +20,6 @@ interface CollectionManagerProps {
   onMediaAdd: (url: string, type: MediaType, title?: string) => void;
   onMediaAddUrlList: (urls: string[], type: MediaType) => void;
   onMediaDelete: (id: string) => void;
-  dict: Dictionary;
 }
 
 export default function CollectionManager({
@@ -36,8 +35,8 @@ export default function CollectionManager({
   onMediaAdd,
   onMediaAddUrlList,
   onMediaDelete,
-  dict,
 }: CollectionManagerProps) {
+  const t = useTranslations();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -172,7 +171,6 @@ export default function CollectionManager({
         onMediaAdd={onMediaAdd}
         onMediaAddUrlList={onMediaAddUrlList}
         onMediaDelete={onMediaDelete}
-        dict={dict}
       />
     );
   }
@@ -180,18 +178,18 @@ export default function CollectionManager({
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold text-fg-primary">{dict.frame.collections}</h2>
+        <h2 className="text-xl font-bold text-fg-primary">{t('frame.collections')}</h2>
         <button
           onClick={() => updateUrl({ modal: 'add-collection' })}
           className="neumorphic-button px-4 py-2 text-sm"
         >
-          {dict.frame.addCollection}
+          {t('frame.addCollection')}
         </button>
       </div>
 
       {collections.length === 0 ? (
         <div className="text-center py-12 text-fg-muted">
-          {dict.frame.noCollections}
+          {t('frame.noCollections')}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -250,7 +248,7 @@ export default function CollectionManager({
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                           </svg>
-                          {dict.frame.share}
+                          {t('frame.share')}
                         </button>
                         <button
                           onClick={(e) => {
@@ -263,7 +261,7 @@ export default function CollectionManager({
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                           </svg>
-                          {dict.frame.edit}
+                          {t('frame.edit')}
                         </button>
                         <button
                           onClick={(e) => {
@@ -276,7 +274,7 @@ export default function CollectionManager({
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                           </svg>
-                          {dict.frame.delete}
+                          {t('frame.delete')}
                         </button>
                       </div>
                     )}
@@ -289,8 +287,8 @@ export default function CollectionManager({
               )}
 
               <div className="flex items-center justify-between text-sm text-fg-muted">
-                <span>{collection.mediaIds.length} {dict.frame.mediaLibrary}</span>
-                <span>{(collection.slideInterval / 1000).toFixed(0)}s {dict.frame.slideInterval}</span>
+                <span>{collection.mediaIds.length} {t('frame.mediaLibrary')}</span>
+                <span>{(collection.slideInterval / 1000).toFixed(0)}s {t('frame.slideInterval')}</span>
               </div>
 
               <div className="mt-3 flex flex-wrap gap-2">
@@ -319,33 +317,33 @@ export default function CollectionManager({
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="neumorphic-dialog p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto">
-            <h3 className="text-lg font-bold mb-4">{dict.frame.addCollection}</h3>
+            <h3 className="text-lg font-bold mb-4">{t('frame.addCollection')}</h3>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">{dict.frame.collectionName}</label>
+                <label className="block text-sm font-medium mb-2">{t('frame.collectionName')}</label>
                 <input
                   type="text"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  placeholder={dict.frame.collectionName}
+                  placeholder={t('frame.collectionName')}
                   className="neumorphic-input w-full"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">{dict.frame.collectionDesc}</label>
+                <label className="block text-sm font-medium mb-2">{t('frame.collectionDesc')}</label>
                 <textarea
                   value={newDesc}
                   onChange={(e) => setNewDesc(e.target.value)}
-                  placeholder={dict.frame.collectionDesc}
+                  placeholder={t('frame.collectionDesc')}
                   rows={2}
                   className="neumorphic-input w-full resize-none"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">{dict.frame.selectMedia}</label>
+                <label className="block text-sm font-medium mb-2">{t('frame.selectMedia')}</label>
                 <div className="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto">
                   {media.map((item) => (
                     <div
@@ -374,13 +372,13 @@ export default function CollectionManager({
                 onClick={closeModal}
                 className="flex-1 neumorphic-button"
               >
-                {dict.frame.cancel}
+                {t('frame.cancel')}
               </button>
               <button
                 onClick={handleCreate}
                 className="flex-1 neumorphic-button-primary"
               >
-                {dict.frame.save}
+                {t('frame.save')}
               </button>
             </div>
           </div>
@@ -390,11 +388,11 @@ export default function CollectionManager({
       {showEditModal && editingCollection && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="neumorphic-dialog p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto">
-            <h3 className="text-lg font-bold mb-4">{dict.frame.edit}</h3>
+            <h3 className="text-lg font-bold mb-4">{t('frame.edit')}</h3>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">{dict.frame.collectionName}</label>
+                <label className="block text-sm font-medium mb-2">{t('frame.collectionName')}</label>
                 <input
                   type="text"
                   value={newName}
@@ -404,7 +402,7 @@ export default function CollectionManager({
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">{dict.frame.collectionDesc}</label>
+                <label className="block text-sm font-medium mb-2">{t('frame.collectionDesc')}</label>
                 <textarea
                   value={newDesc}
                   onChange={(e) => setNewDesc(e.target.value)}
@@ -414,7 +412,7 @@ export default function CollectionManager({
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">{dict.frame.selectMedia}</label>
+                <label className="block text-sm font-medium mb-2">{t('frame.selectMedia')}</label>
                 <div className="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto">
                   {media.map((item) => (
                     <div
@@ -443,13 +441,13 @@ export default function CollectionManager({
                 onClick={closeModal}
                 className="flex-1 neumorphic-button"
               >
-                {dict.frame.cancel}
+                {t('frame.cancel')}
               </button>
               <button
                 onClick={handleUpdate}
                 className="flex-1 neumorphic-button-primary"
               >
-                {dict.frame.save}
+                {t('frame.save')}
               </button>
             </div>
           </div>
@@ -459,7 +457,7 @@ export default function CollectionManager({
       {showShareModal && editingCollection && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="neumorphic-dialog p-6 max-w-md w-full">
-            <h3 className="text-lg font-bold mb-2">{dict.frame.shareCollection}</h3>
+            <h3 className="text-lg font-bold mb-2">{t('frame.shareCollection')}</h3>
             <p className="text-sm text-fg-muted mb-4">{editingCollection.name}</p>
             
             <div className="relative">
@@ -477,7 +475,7 @@ export default function CollectionManager({
                 onClick={copyShareLink}
                 className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 bg-accent text-white rounded-lg text-sm hover:bg-accent-light transition-colors"
               >
-                {copied ? dict.frame.copiedToClipboard : dict.frame.copy}
+                {copied ? t('frame.copiedToClipboard') : t('frame.copy')}
               </button>
             </div>
 
@@ -486,7 +484,7 @@ export default function CollectionManager({
                 onClick={closeModal}
                 className="flex-1 neumorphic-button"
               >
-                {dict.frame.cancel}
+                {t('frame.cancel')}
               </button>
             </div>
           </div>
@@ -496,14 +494,14 @@ export default function CollectionManager({
       {confirmDeleteId && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="neumorphic-dialog p-6 max-w-sm w-full">
-            <h3 className="text-lg font-bold mb-4">{dict.frame.confirmDelete}</h3>
-            <p className="mb-6">{dict.frame.confirmDeleteCollection}</p>
+            <h3 className="text-lg font-bold mb-4">{t('frame.confirmDelete')}</h3>
+            <p className="mb-6">{t('frame.confirmDeleteCollection')}</p>
             <div className="flex gap-3">
               <button
                 onClick={() => setConfirmDeleteId(null)}
                 className="flex-1 neumorphic-button"
               >
-                {dict.frame.cancel}
+                {t('frame.cancel')}
               </button>
               <button
                 onClick={() => {
@@ -512,7 +510,7 @@ export default function CollectionManager({
                 }}
                 className="flex-1 neumorphic-button-destructive"
               >
-                {dict.frame.delete}
+                {t('frame.delete')}
               </button>
             </div>
           </div>

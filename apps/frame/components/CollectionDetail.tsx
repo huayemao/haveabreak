@@ -1,7 +1,7 @@
 "use client";
 import { Collection, MediaItem, MediaType } from '../types';
-import { Dictionary } from '@/dictionaries';
 import MediaGallery from './MediaGallery';
+import { useTranslations } from 'next-intl';
 
 interface CollectionDetailProps {
   collection: Collection;
@@ -14,7 +14,6 @@ interface CollectionDetailProps {
   onMediaAdd: (url: string, type: MediaType, title?: string) => void;
   onMediaAddUrlList: (urls: string[], type: MediaType) => void;
   onMediaDelete: (id: string) => void;
-  dict: Dictionary;
 }
 
 export default function CollectionDetail({
@@ -28,8 +27,8 @@ export default function CollectionDetail({
   onMediaAdd,
   onMediaAddUrlList,
   onMediaDelete,
-  dict,
 }: CollectionDetailProps) {
+  const t = useTranslations();
   const collectionMedia = media.filter((m) => collection.mediaIds.includes(m.id));
 
   return (
@@ -53,7 +52,7 @@ export default function CollectionDetail({
           <button
             onClick={() => onShare(collection)}
             className="w-10 h-10 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center transition-colors"
-            title={dict.frame.share}
+            title={t('frame.share')}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -62,7 +61,7 @@ export default function CollectionDetail({
           <button
             onClick={() => onPlay(collection, false, 0)}
             className="w-10 h-10 rounded-full bg-accent hover:bg-accent-light flex items-center justify-center text-white transition-colors"
-            title={dict.frame.slideshow}
+            title={t('frame.slideshow')}
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M8 5v14l11-7z" />
@@ -72,8 +71,8 @@ export default function CollectionDetail({
       </div>
 
       <div className="flex items-center gap-6 text-sm text-fg-muted">
-        <span>{collectionMedia.length} {dict.frame.mediaLibrary}</span>
-        <span>{(collection.slideInterval / 1000).toFixed(0)}s {dict.frame.slideInterval}</span>
+        <span>{collectionMedia.length} {t('frame.mediaLibrary')}</span>
+        <span>{(collection.slideInterval / 1000).toFixed(0)}s {t('frame.slideInterval')}</span>
       </div>
 
       <MediaGallery
@@ -82,9 +81,8 @@ export default function CollectionDetail({
         onAdd={onMediaAdd}
         onAddUrlList={onMediaAddUrlList}
         onPlay={(paused, startIndex) => onPlay(collection, paused, startIndex)}
-        dict={dict}
         showAddButton={true}
       />
     </div>
   );
-}
+}

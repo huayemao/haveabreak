@@ -1,5 +1,5 @@
 "use client";
-import { Dictionary } from '@/dictionaries';
+import { useTranslations } from 'next-intl';
 import { MediaType } from '../types';
 import { ImportResultItem } from '../utils/mediaDetector';
 
@@ -9,7 +9,6 @@ interface ImportResultDialogProps {
   onClose: () => void;
   onConfirm: () => void;
   onRetry: () => void;
-  dict: Dictionary;
 }
 
 export default function ImportResultDialog({
@@ -18,8 +17,8 @@ export default function ImportResultDialog({
   onClose,
   onConfirm,
   onRetry,
-  dict,
 }: ImportResultDialogProps) {
+  const t = useTranslations();
   if (!isOpen) return null;
 
   const successCount = results.filter(item => item.status === 'success').length;
@@ -30,7 +29,7 @@ export default function ImportResultDialog({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="neumorphic-dialog p-6 max-w-md w-full">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-bold">{dict.frame.importResult}</h3>
+          <h3 className="text-lg font-bold">{t('frame.importResult')}</h3>
           <button
             onClick={onClose}
             className="text-fg-muted hover:text-fg-primary transition-colors"
@@ -44,13 +43,13 @@ export default function ImportResultDialog({
         <div className="mb-4 p-3 rounded-xl bg-muted/50">
           <div className="flex justify-between text-sm">
             <span className="text-fg-muted">
-              {dict.frame.total}: {results.length}
+              {t('frame.total')}: {results.length}
             </span>
             <span className="text-green-600">
-              {dict.frame.success}: {successCount}
+              {t('frame.success')}: {successCount}
             </span>
             <span className="text-red-600">
-              {dict.frame.failed}: {failedCount}
+              {t('frame.failed')}: {failedCount}
             </span>
           </div>
         </div>
@@ -79,7 +78,7 @@ export default function ImportResultDialog({
                   <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                     item.detectedType === 'image' ? 'bg-accent text-white' : 'bg-purple-500 text-white'
                   }`}>
-                    {item.detectedType === 'image' ? dict.frame.image : dict.frame.video}
+                    {item.detectedType === 'image' ? t('frame.image') : t('frame.video')}
                   </span>
                 )}
                 {item.status === 'failed' && (
@@ -92,7 +91,7 @@ export default function ImportResultDialog({
               </div>
               {item.status === 'success' && item.originalType !== item.detectedType && (
                 <p className="text-xs text-blue-600">
-                  {dict.frame.autoDetected}: {item.detectedType === 'image' ? dict.frame.image : dict.frame.video}
+                  {t('frame.autoDetected')}: {item.detectedType === 'image' ? t('frame.image') : t('frame.video')}
                 </p>
               )}
               {item.status === 'failed' && item.error && (
@@ -109,21 +108,21 @@ export default function ImportResultDialog({
               disabled={isDetecting}
               className="flex-1 neumorphic-button disabled:opacity-50"
             >
-              {dict.frame.retry}
+              {t('frame.retry')}
             </button>
           )}
           <button
             onClick={onClose}
             className={`${failedCount > 0 ? '' : 'flex-1'} neumorphic-button`}
           >
-            {dict.frame.cancel}
+            {t('frame.cancel')}
           </button>
           <button
             onClick={onConfirm}
             disabled={successCount === 0 || isDetecting}
             className="flex-1 neumorphic-button-primary disabled:opacity-50"
           >
-            {dict.frame.confirm} ({successCount})
+            {t('frame.confirm')} ({successCount})
           </button>
         </div>
       </div>

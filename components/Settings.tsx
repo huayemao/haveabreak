@@ -1,17 +1,9 @@
-'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Dictionary } from '@/dictionaries';
+import { DialogContent, DialogHeader, Dialog, DialogTrigger, DialogTitle } from './ui/dialog';
 
 interface SettingsProps {
-  dict: Dictionary;
   customTips: string[];
   onTipsChange: (tips: string[]) => void;
   disabledPresetTips: string[];
@@ -40,12 +32,12 @@ export const loadDisabledPresets = (): string[] => {
 };
 
 export default function Settings({
-  dict,
   customTips,
   onTipsChange,
   disabledPresetTips,
   onDisabledPresetTipsChange,
 }: SettingsProps) {
+  const t = useTranslations();
   const [open, setOpen] = useState(false);
   const [newTip, setNewTip] = useState('');
 
@@ -86,20 +78,20 @@ export default function Settings({
             className="neumorphic-button mt-4 px-6 py-3 text-base font-medium"
             onClick={() => setOpen(true)}
           >
-            {dict.settingsBtn}
+            {t('settingsBtn')}
           </button>
         </DialogTrigger>
         <DialogContent className="neumorphic-dialog border-none bg-transparent p-0 overflow-hidden max-w-lg md:max-w-xl lg:max-w-2xl">
           <div className="p-6 space-y-6">
             <DialogHeader className="text-center pb-4">
               <DialogTitle className="text-2xl font-bold text-fg-primary">
-                {dict.settingsTitle}
+                {t('settingsTitle')}
               </DialogTitle>
             </DialogHeader>
 
             {/* Tips Section */}
             <div className="space-y-4">
-              <h3 className="font-bold text-fg-primary text-lg">{dict.tipsSection}</h3>
+              <h3 className="font-bold text-fg-primary text-lg">{t('tipsSection')}</h3>
 
               {/* Add new custom tip */}
               <div className="flex gap-3">
@@ -108,7 +100,7 @@ export default function Settings({
                   value={newTip}
                   onChange={(e) => setNewTip(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder={dict.addNewTip}
+                  placeholder={t('addNewTip')}
                   maxLength={100}
                   className="neumorphic-input flex-1 text-fg-primary placeholder-fg-muted"
                 />
@@ -116,15 +108,15 @@ export default function Settings({
                   onClick={handleAddTip}
                   className="neumorphic-button-primary px-6 py-2 font-medium text-white min-w-[60px]"
                 >
-                  {dict.addBtn}
+                  {t('addBtn')}
                 </button>
               </div>
 
               {/* Preset tips */}
               <div className="space-y-2">
-                <h4 className="font-semibold text-fg-muted text-sm">{dict.presetTips}</h4>
+                <h4 className="font-semibold text-fg-muted text-sm">{t('presetTips')}</h4>
                 <div className="space-y-2 max-h-72 overflow-y-auto pr-2">
-                  {dict.timerTips.map((tip, index) => (
+                  {(t.raw('timerTips') as string[]).map((tip, index) => (
                     <div
                       key={index}
                       className={`flex items-center justify-between p-3 rounded-xl transition-all duration-300 ${
@@ -140,7 +132,7 @@ export default function Settings({
                         onClick={() => togglePresetTip(tip)}
                         className="neumorphic-button text-xs px-3 py-1"
                       >
-                        {disabledPresetTips.includes(tip) ? 'Enable' : 'Disable'}
+                        {disabledPresetTips.includes(tip) ? (t('enable') || 'Enable') : (t('disable') || 'Disable')}
                       </button>
                     </div>
                   ))}
@@ -150,7 +142,7 @@ export default function Settings({
               {/* Custom tips */}
               {customTips.length > 0 ? (
                 <div className="space-y-2">
-                  <h4 className="font-semibold text-fg-muted text-sm">{dict.customTips}</h4>
+                  <h4 className="font-semibold text-fg-muted text-sm">{t('customTips')}</h4>
                   <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
                     {customTips.map((tip, index) => (
                       <div
@@ -166,7 +158,7 @@ export default function Settings({
                           onClick={() => handleDeleteCustomTip(tip)}
                           className="neumorphic-button-destructive neumorphic-button text-xs px-3 py-1"
                         >
-                          Delete
+                          {t('frame.delete')}
                         </button>
                       </div>
                     ))}
@@ -174,7 +166,7 @@ export default function Settings({
                 </div>
               ) : (
                 <p className="text-fg-muted text-sm text-center py-2">
-                  {dict.noCustomTips}
+                  {t('noCustomTips')}
                 </p>
               )}
             </div>

@@ -1,22 +1,20 @@
-"use client";
-import { useEffect, useCallback, useMemo, Suspense } from 'react';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import Link from 'next/link';
+"use client"
+import { useTranslations, useLocale } from 'next-intl';
+import { Link } from '@/i18n/routing';
 import { useFrameStore } from '@/apps/frame/store';
-import { Dictionary } from '@/dictionaries';
 import { MediaItem } from '@/apps/frame/types';
 import FullscreenPlayer from '@/apps/frame/components/FullscreenPlayer';
 import AddMediaModal from '@/apps/frame/components/AddMediaModal';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useCallback, useMemo, Suspense } from 'react';
 
 export default function FrameLayoutClient({
   children,
-  dict,
-  lang
 }: {
   children: React.ReactNode;
-  dict: Dictionary;
-  lang: string;
 }) {
+  const t = useTranslations();
+  const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -111,14 +109,14 @@ export default function FrameLayoutClient({
       <div className="min-h-screen bg-bg-base flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-fg-muted">{dict.frame.loading}</p>
+          <p className="text-fg-muted">{t('frame.loading')}</p>
         </div>
       </div>
     );
   }
 
-  const baseRoute = `/${lang}/frame`;
-  const isGallery = pathname === `${baseRoute}/gallery` ;
+  const baseRoute = `/frame`;
+  const isGallery = pathname === `${baseRoute}/gallery`;
   const isCollections = pathname.startsWith(`${baseRoute}/collections`) || pathname === baseRoute;
   const isDownload = pathname === `${baseRoute}/download`;
   const isSettings = pathname === `${baseRoute}/settings`;
@@ -132,9 +130,9 @@ export default function FrameLayoutClient({
               <Link href={baseRoute}>
                 <div>
                   <h1 className="text-lg font-bold text-fg-primary font-display">
-                    {dict.frame.appTitle}
+                    {t('frame.appTitle')}
                   </h1>
-                  <p className="text-xs text-fg-muted hidden sm:block">{dict.frame.appSubtitle}</p>
+                  <p className="text-xs text-fg-muted hidden sm:block">{t('frame.appSubtitle')}</p>
                 </div>
               </Link>
             </div>
@@ -151,7 +149,7 @@ export default function FrameLayoutClient({
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                   </svg>
-                  <span className="hidden md:inline text-sm">{dict.frame.collections}</span>
+                  <span className="hidden md:inline text-sm">{t('frame.collections')}</span>
                 </Link>
 
                 <Link
@@ -164,7 +162,7 @@ export default function FrameLayoutClient({
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                   </svg>
-                  <span className="hidden md:inline text-sm">{dict.frame.mediaLibrary}</span>
+                  <span className="hidden md:inline text-sm">{t('frame.mediaLibrary')}</span>
                 </Link>
 
 
@@ -179,7 +177,7 @@ export default function FrameLayoutClient({
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                   </svg>
-                  <span className="hidden md:inline text-sm">{dict.frame.download}</span>
+                  <span className="hidden md:inline text-sm">{t('frame.download')}</span>
                 </Link>
 
                 <Link
@@ -192,7 +190,7 @@ export default function FrameLayoutClient({
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                   </svg>
-                  <span className="hidden md:inline text-sm">{dict.frame.settings}</span>
+                  <span className="hidden md:inline text-sm">{t('frame.settings')}</span>
                 </Link>
               </div>
 
@@ -204,7 +202,7 @@ export default function FrameLayoutClient({
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z" />
                   </svg>
-                  <span className="hidden sm:inline text-sm">{dict.frame.slideshow}</span>
+                  <span className="hidden sm:inline text-sm">{t('frame.slideshow')}</span>
                 </button>
               )}
             </div>
@@ -222,7 +220,7 @@ export default function FrameLayoutClient({
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                 </svg>
-                <span className="text-sm">{dict.frame.collections}</span>
+                <span className="text-sm">{t('frame.collections')}</span>
               </Link>
               <Link
                 href={`${baseRoute}/gallery`}
@@ -234,7 +232,7 @@ export default function FrameLayoutClient({
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                 </svg>
-                <span className="text-sm">{dict.frame.mediaLibrary}</span>
+                <span className="text-sm">{t('frame.mediaLibrary')}</span>
               </Link>
 
 
@@ -249,7 +247,7 @@ export default function FrameLayoutClient({
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
-                <span className="text-sm">{dict.frame.download}</span>
+                <span className="text-sm">{t('frame.download')}</span>
               </Link>
 
               <Link
@@ -262,7 +260,7 @@ export default function FrameLayoutClient({
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 </svg>
-                <span className="text-sm">{dict.frame.settings}</span>
+                <span className="text-sm">{t('frame.settings')}</span>
               </Link>
             </div>
           </div>
@@ -279,7 +277,6 @@ export default function FrameLayoutClient({
         <FullscreenPlayer
           media={currentMedia}
           settings={settings}
-          dict={dict}
           onExit={handleExitFullscreen}
           onDelete={deleteMedia}
           startPaused={startPaused}
@@ -293,7 +290,6 @@ export default function FrameLayoutClient({
         onAdd={addMedia}
         onAddUrlList={importUrlList}
         isImporting={isImporting}
-        dict={dict}
       />
     </div>
   );

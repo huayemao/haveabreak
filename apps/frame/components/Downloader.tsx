@@ -1,13 +1,13 @@
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { MediaItem } from '../types';
-import { Dictionary } from '@/dictionaries';
 
 interface DownloaderProps {
   media: MediaItem[];
-  dict: Dictionary;
 }
 
-export default function Downloader({ media, dict }: DownloaderProps) {
+export default function Downloader({ media }: DownloaderProps) {
+  const t = useTranslations();
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [downloadProgress, setDownloadProgress] = useState<Record<string, number>>({});
   const [showComplete, setShowComplete] = useState(false);
@@ -67,27 +67,27 @@ export default function Downloader({ media, dict }: DownloaderProps) {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold text-fg-primary">{dict.frame.download}</h2>
+        <h2 className="text-xl font-bold text-fg-primary">{t('frame.download')}</h2>
         {media.length > 0 && (
           <button
             onClick={downloadAll}
             disabled={downloadingId !== null}
             className="neumorphic-button px-4 py-2 text-sm disabled:opacity-50"
           >
-            {dict.frame.download} All
+            {t('frame.downloadAll') || 'Download All'}
           </button>
         )}
       </div>
 
       {showComplete && (
         <div className="p-4 rounded-xl bg-accent-sec/20 text-accent-sec text-center">
-          {dict.frame.downloadComplete}
+          {t('frame.downloadComplete')}
         </div>
       )}
 
       {media.length === 0 ? (
         <div className="text-center py-12 text-fg-muted">
-          {dict.frame.noMedia}
+          {t('frame.noMedia')}
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -135,7 +135,7 @@ export default function Downloader({ media, dict }: DownloaderProps) {
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                       </svg>
-                      {dict.frame.download}
+                      {t('frame.download')}
                     </span>
                   )}
                 </button>

@@ -1,6 +1,6 @@
 "use client";
 import { MediaItem } from '../types';
-import { Dictionary } from '@/dictionaries';
+import { useTranslations } from 'next-intl';
 import {
   ContextMenu,
   ContextMenuContent,
@@ -18,7 +18,6 @@ interface MediaCardProps {
   onSelect: (item: MediaItem, index: number) => void;
   onDelete: (id: string) => void;
   onPlay?: (paused: boolean, startIndex?: number) => void;
-  dict: Dictionary;
 }
 
 export default function MediaCard({
@@ -28,16 +27,16 @@ export default function MediaCard({
   onSelect,
   onDelete,
   onPlay,
-  dict,
 }: MediaCardProps) {
+  const t = useTranslations();
   const getOrientationLabel = (orientation: string) => {
     switch (orientation) {
       case 'landscape':
-        return dict.frame.landscape;
+        return t('frame.landscape');
       case 'portrait':
-        return dict.frame.portrait;
+        return t('frame.portrait');
       case 'square':
-        return dict.frame.square;
+        return t('frame.square');
       default:
         return '';
     }
@@ -71,7 +70,7 @@ export default function MediaCard({
               )}
               <div className="flex gap-1 mt-1">
                 <span className="text-xs px-2 py-0.5 bg-white/20 rounded-full text-white">
-                  {item.type === 'image' ? dict.frame.image : dict.frame.video}
+                  {item.type === 'image' ? t('frame.image') : t('frame.video')}
                 </span>
                 <span className="text-xs px-2 py-0.5 bg-white/20 rounded-full text-white">
                   {getOrientationLabel(item.orientation)}
@@ -88,7 +87,7 @@ export default function MediaCard({
             className="gap-2"
           >
             <Play className="w-4 h-4" />
-            {dict.frame.slideshow}
+            {t('frame.slideshow')}
           </ContextMenuItem>
         )}
         <ContextMenuSeparator />
@@ -97,7 +96,7 @@ export default function MediaCard({
           className="gap-2 text-red-500 focus:text-red-500"
         >
           <Trash2 className="w-4 h-4" />
-          {dict.frame.delete}
+          {t('frame.delete')}
         </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>

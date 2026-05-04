@@ -4,7 +4,7 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import Lightbox from 'yet-another-react-lightbox';
 import Video from 'yet-another-react-lightbox/plugins/video';
 import { MediaItem, MediaType } from '../types';
-import { Dictionary } from '@/dictionaries';
+import { useTranslations } from 'next-intl';
 import 'yet-another-react-lightbox/styles.css';
 import MediaCard from './MediaCard';
 import { useScrollLock } from '../utils/useScrollLock';
@@ -15,7 +15,6 @@ interface MediaGalleryProps {
   onAdd: (url: string, type: MediaType, title?: string) => void;
   onAddUrlList: (urls: string[], type: MediaType) => void;
   onPlay?: (paused: boolean, startIndex?: number) => void;
-  dict: Dictionary;
   showAddButton?: boolean;
 }
 
@@ -25,9 +24,9 @@ export default function MediaGallery({
   onAdd,
   onAddUrlList,
   onPlay,
-  dict,
   showAddButton = true,
 }: MediaGalleryProps) {
+  const t = useTranslations();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -93,9 +92,9 @@ export default function MediaGallery({
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-xl font-bold text-fg-primary">{dict.frame.mediaLibrary}</h2>
+          <h2 className="text-xl font-bold text-fg-primary">{t('frame.mediaLibrary')}</h2>
           <p className="text-sm text-fg-muted mt-1">
-            {dict.frame.totalMedia}: {media.length}
+            {t('frame.totalMedia')}: {media.length}
           </p>
         </div>
         {showAddButton && (
@@ -106,7 +105,7 @@ export default function MediaGallery({
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
-            {dict.frame.addMedia}
+            {t('frame.addMedia')}
           </button>
         )}
       </div>
@@ -118,13 +117,13 @@ export default function MediaGallery({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           </div>
-          <p className="text-fg-muted mb-4">{dict.frame.noMedia}</p>
+          <p className="text-fg-muted mb-4">{t('frame.noMedia')}</p>
           {showAddButton && (
             <button
               onClick={openAddModal}
               className="neumorphic-button text-sm"
             >
-              {dict.frame.addMedia}
+              {t('frame.addMedia')}
             </button>
           )}
         </div>
@@ -139,7 +138,6 @@ export default function MediaGallery({
               onSelect={handleMediaClick}
               onDelete={handleDelete}
               onPlay={onPlay}
-              dict={dict}
             />
           ))}
         </div>
@@ -163,7 +161,7 @@ export default function MediaGallery({
                         onPlay(true, currentIndex);
                       }}
                       className="w-11 h-11 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 shadow-lg transition-all pointer-events-auto"
-                      title={dict.frame.slideshow || 'Slideshow'}
+                      title={t('frame.slideshow') || 'Slideshow'}
                     >
                       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z" />
@@ -173,7 +171,7 @@ export default function MediaGallery({
                   <button
                     onClick={() => setShowDeleteConfirm(true)}
                     className="w-11 h-11 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 shadow-lg transition-all pointer-events-auto"
-                    title={dict.frame.delete || 'Delete'}
+                    title={t('frame.delete') || 'Delete'}
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -189,14 +187,14 @@ export default function MediaGallery({
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="neumorphic-dialog p-6 max-w-sm w-full">
-            <h3 className="text-lg font-bold mb-4">{dict.frame.confirmDelete || 'Confirm Delete'}</h3>
-            <p className="mb-6">{dict.frame.confirmDeleteMedia || 'Are you sure you want to delete this media?'}</p>
+            <h3 className="text-lg font-bold mb-4">{t('frame.confirmDelete') || 'Confirm Delete'}</h3>
+            <p className="mb-6">{t('frame.confirmDeleteMedia') || 'Are you sure you want to delete this media?'}</p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
                 className="flex-1 neumorphic-button"
               >
-                {dict.frame.cancel || 'Cancel'}
+                {t('frame.cancel') || 'Cancel'}
               </button>
               <button
                 onClick={() => {
@@ -209,7 +207,7 @@ export default function MediaGallery({
                 }}
                 className="flex-1 neumorphic-button-destructive"
               >
-                {dict.frame.delete || 'Delete'}
+                {t('frame.delete') || 'Delete'}
               </button>
             </div>
           </div>

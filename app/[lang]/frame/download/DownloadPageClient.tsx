@@ -3,10 +3,9 @@ import { useFrameStore } from '@/apps/frame/store';
 import Downloader from '@/apps/frame/components/Downloader';
 import { useCallback, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Dictionary } from '@/dictionaries';
 import { MediaItem } from '@/apps/frame/types';
 
-export default function DownloadPageClient({ dict }: { dict: Dictionary }) {
+export default function DownloadPageClient() {
   const searchParams = useSearchParams();
   const {
     media,
@@ -39,6 +38,6 @@ export default function DownloadPageClient({ dict }: { dict: Dictionary }) {
   }, [selectedCollectionId, collections, media, filterMediaByOrientation]);
 
   return (
-    <Downloader media={currentMedia} dict={dict} />
+    <Downloader media={currentMedia}  />
   );
 }

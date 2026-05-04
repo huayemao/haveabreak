@@ -2,9 +2,8 @@
 import { useFrameStore } from '@/apps/frame/store';
 import SettingsPanel from '@/apps/frame/components/SettingsPanel';
 import { exportData } from '@/apps/frame/storage';
-import { Dictionary } from '@/dictionaries';
 
-export default function SettingsPageClient({ dict }: { dict: Dictionary }) {
+export default function SettingsPageClient() {
   const {
     settings,
     updateSettings,
@@ -12,6 +11,7 @@ export default function SettingsPageClient({ dict }: { dict: Dictionary }) {
   } = useFrameStore();
 
   const handleExport = async () => {
+    // ... same as before ...
     const data = await exportData();
     const blob = new Blob([data], { type: 'application/json' });
     const url = window.URL.createObjectURL(blob);
@@ -30,7 +30,6 @@ export default function SettingsPageClient({ dict }: { dict: Dictionary }) {
       onUpdate={updateSettings}
       onExport={handleExport}
       onImport={importData}
-      dict={dict}
     />
   );
 }

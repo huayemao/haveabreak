@@ -1,13 +1,8 @@
-'use client';
-
 import { motion } from 'motion/react';
-import { Dictionary } from '@/dictionaries';
+import { useTranslations } from 'next-intl';
 
-interface InterruptedDisplayProps {
-  dict: Dictionary;
-}
-
-export default function InterruptedDisplay({ dict }: InterruptedDisplayProps) {
+export default function InterruptedDisplay() {
+  const t = useTranslations();
   return (
     <motion.div
       key="interrupted"
@@ -16,8 +11,8 @@ export default function InterruptedDisplay({ dict }: InterruptedDisplayProps) {
       exit={{ opacity: 0, y: -50 }}
       className="text-center space-y-6 absolute -bottom-64 w-xs"
     >
-      <h2 className="font-display text-4xl font-extrabold">{dict.moveWarning}</h2>
-      <p className="  text-lg max-w-xs mx-auto text-red-400">{dict.moveWarningDesc}</p>
+      <h2 className="font-display text-4xl font-extrabold">{t('moveWarning')}</h2>
+      <p className="  text-lg max-w-xs mx-auto text-red-400">{t('moveWarningDesc')}</p>
     </motion.div>
   );
 }

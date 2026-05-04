@@ -2,16 +2,16 @@
 
 import { useEffect, useState, useRef } from 'react';
 import confetti from 'canvas-confetti';
-import { Dictionary } from '@/dictionaries';
+import { useTranslations } from 'next-intl';
 import { AnimatePresence } from 'motion/react';
 import TimeSelector from '@/components/TimeSelector';
 import TimerDisplay from '@/components/TimerDisplay';
-import InterruptedDisplay from '@/components/InterruptedDisplay';
 import FinishedDisplay from '@/components/FinishedDisplay';
 import LandingSection from '@/components/LandingSection';
 import { loadCustomTips, loadDisabledPresets } from '@/components/Settings';
 
-export default function TimerApp({ dict }: { dict: Dictionary }) {
+export default function TimerApp() {
+  const t = useTranslations();
   const [isRunning, setIsRunning] = useState(false);
   const [isInterrupted, setIsInterrupted] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
@@ -30,7 +30,8 @@ export default function TimerApp({ dict }: { dict: Dictionary }) {
     setDisabledPresetTips(disabled);
   }, []);
 
-  const enabledPresetTips = dict.timerTips.filter(tip => !disabledPresetTips.includes(tip));
+  const timerTips = t.raw('timerTips') as string[];
+  const enabledPresetTips = timerTips.filter(tip => !disabledPresetTips.includes(tip));
   const allTips = [...enabledPresetTips, ...customTips];
 
   useEffect(() => {
@@ -166,7 +167,6 @@ export default function TimerApp({ dict }: { dict: Dictionary }) {
           <AnimatePresence mode="wait">
             {!isRunning && !isInterrupted && !isFinished && (
               <TimeSelector
-                dict={dict}
                 selectedMinutes={selectedMinutes}
                 onSelect={setSelectedMinutes}
                 onStart={startTimer}
@@ -179,7 +179,6 @@ export default function TimerApp({ dict }: { dict: Dictionary }) {
 
             {(isRunning || isInterrupted) && (
               <TimerDisplay
-                dict={dict}
                 timeLeft={timeLeft}
                 totalSeconds={selectedMinutes * 60}
                 onStop={stopTimer}
@@ -190,7 +189,6 @@ export default function TimerApp({ dict }: { dict: Dictionary }) {
 
             {isFinished && (
               <FinishedDisplay
-                dict={dict}
                 onRestart={startTimer}
               />
             )}
@@ -200,7 +198,7 @@ export default function TimerApp({ dict }: { dict: Dictionary }) {
 
       <AnimatePresence>
         {!isRunning && !isFinished && !isInterrupted && (
-          <LandingSection dict={dict} />
+          <LandingSection />
         )}
       </AnimatePresence>
     </main>
