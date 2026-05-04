@@ -32,24 +32,27 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
   // Lock body scroll when player is open
   useScrollLock();
 
-  const updateUrl = useCallback((params: Record<string, string | null>) => {
-    const newParams = new URLSearchParams(searchParams.toString());
-    Object.entries(params).forEach(([key, value]) => {
-      if (value === null) {
-        newParams.delete(key);
-      } else {
-        newParams.set(key, value);
-      }
-    });
-    router.push(`${pathname}?${newParams.toString()}`, { scroll: false });
-  }, [pathname, router, searchParams]);
-
   useEffect(() => {
-    updateUrl({
-      index: currentIndex > 0 ? currentIndex.toString() : null,
-      paused: !isPlaying ? 'true' : null
-    });
-  }, [currentIndex, isPlaying, updateUrl]);
+    const newParams = new URLSearchParams(searchParams.toString());
+    const targetIndex = currentIndex > 0 ? currentIndex.toString() : null;
+    const targetPaused = !isPlaying ? 'true' : null;
+
+    let changed = false;
+    if (newParams.get('index') !== targetIndex) {
+      if (targetIndex === null) newParams.delete('index');
+      else newParams.set('index', targetIndex);
+      changed = true;
+    }
+    if (newParams.get('paused') !== targetPaused) {
+      if (targetPaused === null) newParams.delete('paused');
+      else newParams.set('paused', targetPaused);
+      changed = true;
+    }
+
+    if (changed) {
+      router.replace(`${pathname}?${newParams.toString()}`, { scroll: false });
+    }
+  }, [currentIndex, isPlaying, pathname, router, searchParams]);
 
   const currentMedia = media[currentIndex] || media[0];
 
@@ -124,15 +127,21 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
   }, [isPlaying, currentMedia?.type, settings.slideInterval, goToNext]);
 
   useEffect(() => {
-    if (currentMedia?.type === 'video' && videoRef.current) {
+    const video = videoRef.current;
+    if (currentMedia?.type === 'video' && video) {
       if (isPlaying) {
-        videoRef.current.play().catch(err => {
+        video.play().catch(err => {
           console.warn('Auto-play blocked or failed:', err);
         });
       } else {
-        videoRef.current.pause();
+        video.pause();
       }
     }
+    return () => {
+      if (video) {
+        video.pause();
+      }
+    };
   }, [isPlaying, currentMedia?.url]);
 
   const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
@@ -187,13 +196,13 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
       onClick={handleContainerClick}
     >
       <div className="absolute inset-0">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="popLayout">
           <motion.div
             key={currentMedia.url}
-            initial={{ opacity: 0, scale: 1.05 }}
+            initial={{ opacity: 0, scale: 1.02 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
             className="w-full h-full"
           >
             {currentMedia.type === 'image' ? (
@@ -210,7 +219,6 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
                 src={currentMedia.url}
                 className="w-full h-full object-cover"
                 playsInline
-                autoPlay={isPlaying}
                 onTimeUpdate={handleTimeUpdate}
                 onEnded={goToNext}
                 draggable={false}
