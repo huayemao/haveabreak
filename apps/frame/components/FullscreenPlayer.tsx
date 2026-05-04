@@ -133,27 +133,14 @@ export default function FullscreenPlayer({ media, settings, dict, onExit, onDele
         videoRef.current.pause();
       }
     }
-  }, [currentMedia?.type, isPlaying, currentIndex]);
+  }, [isPlaying, currentMedia?.url]);
 
-  useEffect(() => {
-    if (currentMedia?.type === 'video' && videoRef.current) {
-      const video = videoRef.current;
-
-      const updateProgress = () => {
-        if (video.duration) {
-          setProgress((video.currentTime / video.duration) * 100);
-        }
-      };
-
-      video.addEventListener('timeupdate', updateProgress);
-      video.addEventListener('ended', goToNext);
-
-      return () => {
-        video.removeEventListener('timeupdate', updateProgress);
-        video.removeEventListener('ended', goToNext);
-      };
+  const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const video = e.currentTarget;
+    if (video.duration) {
+      setProgress((video.currentTime / video.duration) * 100);
     }
-  }, [currentMedia?.type, currentMedia?.url, goToNext]);
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -218,11 +205,14 @@ export default function FullscreenPlayer({ media, settings, dict, onExit, onDele
               />
             ) : (
               <video
+                key={currentMedia.url}
                 ref={videoRef}
                 src={currentMedia.url}
                 className="w-full h-full object-cover"
                 playsInline
                 autoPlay={isPlaying}
+                onTimeUpdate={handleTimeUpdate}
+                onEnded={goToNext}
                 draggable={false}
               />
             )}
