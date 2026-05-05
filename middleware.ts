@@ -5,7 +5,7 @@ export default createMiddleware(routing);
 
 export const config = {
   matcher: [
-    // Skip all internal paths (_next)
-    '/((?!_next|api|favicon.ico).*)',
+    // Skip all internal paths (_next) and static files
+    '/((?!_next|api|favicon.ico|manifest.webmanifest|sitemap.xml|robots.txt).*)',
   ],
 }

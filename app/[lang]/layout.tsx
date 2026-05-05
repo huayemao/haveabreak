@@ -62,7 +62,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
         { url: '/api/icon?size=180', sizes: '180x180', type: 'image/png' },
       ]
     },
-    manifest: '/manifest.webmanifest',
+    manifest: `/api/manifest?lang=${lang}`,
     openGraph: {
       title: messages.title,
       description: messages.seoDesc,
