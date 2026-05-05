@@ -7,11 +7,13 @@ import LanguageSwitcher from './LanguageSwitcher';
 import { usePathname } from 'next/navigation';
 import { Home, Frame, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useNavbar } from '@/context/NavbarContext';
 
 export default function Navbar() {
   const t = useTranslations();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const { isHidden } = useNavbar();
 
   const isRoot = !pathname.includes('/frame');
   const isFrame = pathname.includes('/frame');
@@ -27,7 +29,16 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-7xl px-4 flex flex-col items-center pointer-events-none">
+    <motion.nav
+      initial={false}
+      animate={{
+        y: isHidden ? -100 : 0,
+        opacity: isHidden ? 0 : 1,
+        pointerEvents: isHidden ? 'none' : 'auto'
+      }}
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
+      className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-7xl px-4 flex flex-col items-center pointer-events-none"
+    >
       {/* Desktop & Mobile Main Pill */}
       <div className="flex items-center gap-2 sm:gap-6 px-4 sm:px-6 py-2.5 rounded-full bg-bg-base shadow-extruded backdrop-blur-md bg-opacity-90 border border-white/10 relative z-50 pointer-events-auto mx-auto">
 
@@ -117,6 +128,6 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+    </motion.nav>
   );
 }

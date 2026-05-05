@@ -6,6 +6,7 @@ import { routing } from '@/i18n/routing';
 import { useRouter, usePathname } from '@/i18n/routing';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Globe } from 'lucide-react';
+import { useNavbar } from '@/context/NavbarContext';
 
 const { locales } = routing;
 
@@ -16,6 +17,7 @@ export default function LanguageBanner() {
   const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
   const [detectedLocale, setDetectedLocale] = useState<string | null>(null);
+  const { isHidden } = useNavbar();
 
   useEffect(() => {
     // 1. Check if user has a stored preference
@@ -63,16 +65,15 @@ export default function LanguageBanner() {
     it: 'Italiano',
   };
 
-  if (!isVisible || !detectedLocale) return null;
-
   return (
     <AnimatePresence>
-      <motion.div
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: -100, opacity: 0 }}
-        className="fixed top-0 inset-x-0 z-[100] p-4 flex justify-center pointer-events-none"
-      >
+      {isVisible && detectedLocale && !isHidden && (
+        <motion.div
+          initial={{ y: -100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -100, opacity: 0 }}
+          className="fixed top-0 inset-x-0 z-[100] p-4 flex justify-center pointer-events-none"
+        >
         <div className="bg-white/90 backdrop-blur-md border border-white/20 shadow-xl rounded-2xl p-4 flex items-center gap-4 max-w-lg pointer-events-auto">
           <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 shrink-0">
             <Globe className="w-5 h-5" />
@@ -103,6 +104,7 @@ export default function LanguageBanner() {
           </div>
         </div>
       </motion.div>
+      )}
     </AnimatePresence>
   );
 }

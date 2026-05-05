@@ -9,6 +9,8 @@ import { getMessages } from 'next-intl/server';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import Navbar from '@/components/Navbar';
 import LanguageBanner from '@/components/LanguageBanner';
+import { NavbarProvider } from '@/context/NavbarContext';
+import LayoutContent from '@/components/LayoutContent';
 import { notFound } from 'next/navigation';
 
 const { locales } = routing;
@@ -99,11 +101,13 @@ export default async function RootLayout({
     <html lang={lang} className={`${plusJakartaSans.variable} ${dmSans.variable}`}>
       <body suppressHydrationWarning className="bg-[#E0E5EC] text-slate-900 antialiased">
         <NextIntlClientProvider messages={messages}>
-          <LanguageBanner />
-          <Navbar />
-          <div className="pt-28">
-            {children}
-          </div>
+          <NavbarProvider>
+            <LanguageBanner />
+            <Navbar />
+            <LayoutContent>
+              {children}
+            </LayoutContent>
+          </NavbarProvider>
         </NextIntlClientProvider>
         <Analytics />
       </body>

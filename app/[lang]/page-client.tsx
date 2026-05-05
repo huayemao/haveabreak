@@ -9,9 +9,11 @@ import TimerDisplay from '@/components/TimerDisplay';
 import FinishedDisplay from '@/components/FinishedDisplay';
 import LandingSection from '@/components/LandingSection';
 import { loadCustomTips, loadDisabledPresets } from '@/components/Settings';
+import { useNavbar } from '@/context/NavbarContext';
 
 export default function TimerApp() {
   const t = useTranslations();
+  const { setIsHidden } = useNavbar();
   const [isRunning, setIsRunning] = useState(false);
   const [isInterrupted, setIsInterrupted] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
@@ -33,6 +35,10 @@ export default function TimerApp() {
   const timerTips = t.raw('timerTips') as string[];
   const enabledPresetTips = timerTips.filter(tip => !disabledPresetTips.includes(tip));
   const allTips = [...enabledPresetTips, ...customTips];
+
+  useEffect(() => {
+    setIsHidden(isRunning);
+  }, [isRunning, setIsHidden]);
 
   useEffect(() => {
     if (isRunning) {
@@ -155,14 +161,14 @@ export default function TimerApp() {
   };
 
   return (
-    <main className="min-h-screen  relative overflow-x-hidden">
+    <main className="flex-1 relative overflow-x-hidden flex flex-col p-8">
 
       {/* <div className="absolute inset-x-0 top-0 h-screen z-0 flex items-center justify-center pointer-events-none opacity-50">
         <div className="w-[120vw] h-[120vw] max-w-[800px] max-h-[800px] rounded-full shadow-extruded absolute" />
         <div className="w-[80vw] h-[80vw] max-w-[500px] max-h-[500px] rounded-full shadow-inset-deep absolute" />
       </div> */}
 
-      <div className="min-h-[calc(100vh-5rem)] flex flex-col items-center justify-center z-10 relative">
+      <div className="flex-1 flex flex-col items-center justify-center z-10 relative">
         <div className="w-full max-w-md mx-auto flex flex-col items-center text-center space-y-12">
           <AnimatePresence mode="wait">
             {!isRunning && !isInterrupted && !isFinished && (
