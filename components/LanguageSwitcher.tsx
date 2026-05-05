@@ -13,6 +13,7 @@ export default function LanguageSwitcher() {
   const pathname = usePathname();
 
   const handleLocaleChange = (newLocale: string) => {
+    localStorage.setItem('user-locale', newLocale);
     router.replace(pathname, { locale: newLocale });
   };
 

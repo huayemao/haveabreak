@@ -18,19 +18,28 @@ export default function LanguageBanner() {
   const [detectedLocale, setDetectedLocale] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if dismissed in this session
-    const isDismissed = sessionStorage.getItem('language-banner-dismissed');
-    if (isDismissed) return;
+    // 1. Check if user has a stored preference
+    const storedLocale = localStorage.getItem('user-locale');
+    if (storedLocale && storedLocale !== currentLocale && locales.includes(storedLocale as any)) {
+      // Auto-redirect to stored preference
+      router.replace(pathname, { locale: storedLocale });
+      return;
+    }
+
+    // 2. Check if banner was dismissed persistently
+    const isDismissed = localStorage.getItem('language-banner-dismissed');
+    if (isDismissed || storedLocale) return;
 
     const browserLang = navigator.language.split('-')[0];
     if (browserLang !== currentLocale && locales.includes(browserLang as any)) {
       setDetectedLocale(browserLang);
       setIsVisible(true);
     }
-  }, [currentLocale]);
+  }, [currentLocale, pathname, router]);
 
   const handleSwitch = () => {
     if (detectedLocale) {
+      localStorage.setItem('user-locale', detectedLocale);
       router.replace(pathname, { locale: detectedLocale });
       setIsVisible(false);
     }
@@ -38,7 +47,7 @@ export default function LanguageBanner() {
 
   const handleDismiss = () => {
     setIsVisible(false);
-    sessionStorage.setItem('language-banner-dismissed', 'true');
+    localStorage.setItem('language-banner-dismissed', 'true');
   };
 
   const localeNames: Record<string, string> = {
