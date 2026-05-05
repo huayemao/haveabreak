@@ -4,6 +4,7 @@ import { useLocale } from 'next-intl';
 import { routing } from '@/i18n/routing';
 import { useRouter, usePathname } from '@/i18n/routing';
 import { Globe } from 'lucide-react';
+import { useNavbar } from '@/context/NavbarContext';
 
 const { locales } = routing;
 
@@ -12,9 +13,14 @@ export default function LanguageSwitcher() {
   const router = useRouter();
   const pathname = usePathname();
 
+  const { setIsPageTransitioning } = useNavbar();
+
   const handleLocaleChange = (newLocale: string) => {
     localStorage.setItem('user-locale', newLocale);
-    router.replace(pathname, { locale: newLocale });
+    setIsPageTransitioning(true);
+    setTimeout(() => {
+      router.replace(pathname, { locale: newLocale });
+    }, 500);
   };
 
   const localeNames: Record<string, string> = {

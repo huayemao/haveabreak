@@ -38,11 +38,11 @@ export default function TimerDisplay({ timeLeft, totalSeconds, onStop, isInterru
   return (
     <motion.div
       key="running"
-      initial={{ opacity: 0, scale: 0.9 }}
+      initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 1.1 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
-      className="flex flex-col items-center justify-center flex-1 h-screen relative"
+      exit={{ opacity: 0, scale: 1.05 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      className="flex flex-col items-center justify-center w-full flex-1 relative"
     >
       <div className='relative w-full h-64 flex justify-center items-center'>
         {/* Circular progress - centered */}

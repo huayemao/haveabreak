@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import confetti from 'canvas-confetti';
 import { useTranslations } from 'next-intl';
-import { AnimatePresence } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 import TimeSelector from '@/components/TimeSelector';
 import TimerDisplay from '@/components/TimerDisplay';
 import FinishedDisplay from '@/components/FinishedDisplay';
@@ -161,50 +161,56 @@ export default function TimerApp() {
   };
 
   return (
-    <main className="flex-1 relative overflow-x-hidden flex flex-col p-8">
+    <main className="flex-1 relative overflow-x-hidden flex flex-col">
 
-      {/* <div className="absolute inset-x-0 top-0 h-screen z-0 flex items-center justify-center pointer-events-none opacity-50">
-        <div className="w-[120vw] h-[120vw] max-w-[800px] max-h-[800px] rounded-full shadow-extruded absolute" />
-        <div className="w-[80vw] h-[80vw] max-w-[500px] max-h-[500px] rounded-full shadow-inset-deep absolute" />
-      </div> */}
-
-      <div className="flex-1 flex flex-col items-center justify-center z-10 relative">
-        <div className="w-full max-w-md mx-auto flex flex-col items-center text-center space-y-12">
-          <AnimatePresence mode="wait">
-            {!isRunning && !isInterrupted && !isFinished && (
-              <TimeSelector
-                selectedMinutes={selectedMinutes}
-                onSelect={setSelectedMinutes}
-                onStart={startTimer}
-                customTips={customTips}
-                onTipsChange={setCustomTips}
-                disabledPresetTips={disabledPresetTips}
-                onDisabledPresetTipsChange={setDisabledPresetTips}
-              />
-            )}
-
-            {(isRunning || isInterrupted) && (
-              <TimerDisplay
-                timeLeft={timeLeft}
-                totalSeconds={selectedMinutes * 60}
-                onStop={stopTimer}
-                isInterrupted={isInterrupted}
-                tips={allTips}
-              />
-            )}
-
-            {isFinished && (
-              <FinishedDisplay
-                onRestart={startTimer}
-              />
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-
-      <AnimatePresence>
-        {!isRunning && !isFinished && !isInterrupted && (
-          <LandingSection />
+      <AnimatePresence mode="wait">
+        {!isRunning && !isInterrupted && !isFinished ? (
+          <motion.div
+            key="idle"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="flex-1 flex flex-col p-8 pt-32 sm:pt-40"
+          >
+            <div className="flex-1 flex flex-col items-center justify-center z-10 relative">
+              <div className="w-full max-w-md mx-auto flex flex-col items-center text-center space-y-12">
+                <TimeSelector
+                  selectedMinutes={selectedMinutes}
+                  onSelect={setSelectedMinutes}
+                  onStart={startTimer}
+                  customTips={customTips}
+                  onTipsChange={setCustomTips}
+                  disabledPresetTips={disabledPresetTips}
+                  onDisabledPresetTipsChange={setDisabledPresetTips}
+                />
+              </div>
+            </div>
+            <LandingSection />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="running-or-finished"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="flex-1 flex flex-col"
+          >
+            <div className="flex-1 flex flex-col items-center justify-center z-10 relative">
+              {isFinished ? (
+                <div className="w-full max-w-md mx-auto flex flex-col items-center text-center">
+                  <FinishedDisplay onRestart={startTimer} />
+                </div>
+              ) : (
+                <TimerDisplay
+                  timeLeft={timeLeft}
+                  totalSeconds={selectedMinutes * 60}
+                  onStop={stopTimer}
+                  isInterrupted={isInterrupted}
+                  tips={allTips}
+                />
+              )}
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </main>
