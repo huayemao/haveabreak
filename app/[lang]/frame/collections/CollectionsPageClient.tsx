@@ -1,7 +1,8 @@
 "use client";
 import { useFrameStore } from '@/apps/frame/store';
 import CollectionManager from '@/apps/frame/components/CollectionManager';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useRouter, usePathname } from '@/i18n/routing';
 import { useCallback } from 'react';
 import { Collection, MediaItem } from '@/apps/frame/types';
 
@@ -43,6 +44,7 @@ export default function CollectionsPageClient({
       }
     });
     const queryString = newParams.toString();
+    // Use the locale-aware pathname and router
     router.push(queryString ? `${pathname}?${queryString}` : pathname, { scroll: false });
   }, [pathname, router, searchParams]);
 
@@ -66,11 +68,17 @@ export default function CollectionsPageClient({
 
   const handleSelectCollection = (id: string | null) => {
     if (id) {
-      router.push(`${pathname}/${id}`);
+      // The router from @/i18n/routing automatically handles the locale prefix.
+      // pathname here is the locale-aware one (e.g. /en/frame/collections).
+      // next-intl's router.push expects a path without the locale prefix if it's already configured to handle it,
+      // but if we pass a full path starting with the current locale-aware pathname, we need to ensure it's handled correctly.
+      // Usually, with next-intl's router, it's better to use relative paths or strip the locale from the pathname.
+      
+      // However, if we use the Link component or router from routing.ts, 
+      // we should be able to just push the subpath if we know the structure.
+      router.push(`/frame/collections/${id}`);
     } else {
-      // If we are in a detail view, going back means going to /collections
-      const base = pathname.split('/collections')[0];
-      router.push(`${base}/collections`);
+      router.push(`/frame/collections`);
     }
   };
 
