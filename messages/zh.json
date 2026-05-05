@@ -113,5 +113,9 @@
     "cannotDetectType": "无法识别媒体类型"
   },
   "enable": "启用",
-  "disable": "禁用"
+  "disable": "禁用",
+  "nav": {
+    "home": "首页",
+    "frame": "画框"
+  }
 }

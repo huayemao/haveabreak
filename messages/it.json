@@ -113,5 +113,9 @@
     "cannotDetectType": "Impossibile rilevare il tipo di media"
   },
   "enable": "Abilita",
-  "disable": "Disabilita"
+  "disable": "Disabilita",
+  "nav": {
+    "home": "Home",
+    "frame": "Cornice"
+  }
 }

@@ -162,7 +162,7 @@ export default function TimerApp() {
         <div className="w-[80vw] h-[80vw] max-w-[500px] max-h-[500px] rounded-full shadow-inset-deep absolute" />
       </div> */}
 
-      <div className="h-screen flex flex-col items-center justify-center z-10 relative">
+      <div className="min-h-[calc(100vh-5rem)] flex flex-col items-center justify-center z-10 relative">
         <div className="w-full max-w-md mx-auto flex flex-col items-center text-center space-y-12">
           <AnimatePresence mode="wait">
             {!isRunning && !isInterrupted && !isFinished && (

@@ -31,19 +31,26 @@ export default function LanguageSwitcher() {
   };
 
   return (
-    <div className="flex items-center gap-2 bg-white/50 backdrop-blur-sm border border-white/20 rounded-full px-3 py-1.5 shadow-sm">
-      <Globe className="w-4 h-4 text-slate-500" />
-      <select
-        value={locale}
-        onChange={(e) => handleLocaleChange(e.target.value)}
-        className="bg-transparent text-sm font-medium text-slate-700 outline-none cursor-pointer"
-      >
-        {locales.map((l) => (
-          <option key={l} value={l}>
-            {localeNames[l] || l}
-          </option>
-        ))}
-      </select>
+    <div className="flex items-center gap-2 bg-bg-base shadow-inset-sm rounded-full px-4 py-1.5 transition-all group hover:shadow-inset">
+      <Globe className="w-4 h-4 text-accent transition-transform group-hover:rotate-12" />
+      <div className="relative">
+        <select
+          value={locale}
+          onChange={(e) => handleLocaleChange(e.target.value)}
+          className="bg-transparent text-sm font-medium text-fg-primary outline-none cursor-pointer appearance-none pr-4 font-sans"
+        >
+          {locales.map((l) => (
+            <option key={l} value={l} className="bg-bg-base text-fg-primary">
+              {localeNames[l] || l.toUpperCase()}
+            </option>
+          ))}
+        </select>
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none">
+          <svg className="w-3 h-3 text-fg-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </div>
     </div>
   );
 }

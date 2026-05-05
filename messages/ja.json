@@ -113,5 +113,9 @@
     "cannotDetectType": "メディアタイプを検出できません"
   },
   "enable": "有効化",
-  "disable": "無効化"
+  "disable": "無効化",
+  "nav": {
+    "home": "ホーム",
+    "frame": "フレーム"
+  }
 }

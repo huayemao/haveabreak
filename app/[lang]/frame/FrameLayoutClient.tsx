@@ -123,7 +123,7 @@ export default function FrameLayoutClient({
 
   return (
     <div className="min-h-screen bg-bg-base">
-      <header className="sticky top-0 z-40 bg-bg-base/80 backdrop-blur-lg border-b border-border">
+      <header className="z-30 bg-bg-base/90 backdrop-blur-lg border-b border-white/10 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">

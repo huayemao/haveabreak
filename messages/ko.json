@@ -113,5 +113,9 @@
     "cannotDetectType": "미디어 유형을 감지할 수 없습니다"
   },
   "enable": "활성화",
-  "disable": "비활성화"
+  "disable": "비활성화",
+  "nav": {
+    "home": "홈",
+    "frame": "프레임"
+  }
 }

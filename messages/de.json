@@ -113,5 +113,9 @@
     "cannotDetectType": "Medientyp kann nicht erkannt werden"
   },
   "enable": "Aktivieren",
-  "disable": "Deaktivieren"
+  "disable": "Deaktivieren",
+  "nav": {
+    "home": "Startseite",
+    "frame": "Rahmen"
+  }
 }

@@ -7,6 +7,7 @@ import { getDictionary, Locale } from '@/dictionaries';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import Navbar from '@/components/Navbar';
 import LanguageBanner from '@/components/LanguageBanner';
 import { notFound } from 'next/navigation';
 
@@ -99,10 +100,10 @@ export default async function RootLayout({
       <body suppressHydrationWarning className="bg-[#E0E5EC] text-slate-900 antialiased">
         <NextIntlClientProvider messages={messages}>
           <LanguageBanner />
-          <div className="fixed top-6 right-6 z-50">
-            <LanguageSwitcher />
+          <Navbar />
+          <div className="pt-28">
+            {children}
           </div>
-          {children}
         </NextIntlClientProvider>
         <Analytics />
       </body>

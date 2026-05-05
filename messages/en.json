@@ -113,5 +113,9 @@
     "cannotDetectType": "Cannot detect media type"
   },
   "enable": "Enable",
-  "disable": "Disable"
+  "disable": "Disable",
+  "nav": {
+    "home": "Home",
+    "frame": "Frame"
+  }
 }

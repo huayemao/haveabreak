@@ -113,5 +113,9 @@
     "cannotDetectType": "Não é possível detectar o tipo de mídia"
   },
   "enable": "Ativar",
-  "disable": "Desativar"
+  "disable": "Desativar",
+  "nav": {
+    "home": "Início",
+    "frame": "Quadro"
+  }
 }

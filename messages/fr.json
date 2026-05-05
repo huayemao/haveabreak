@@ -113,5 +113,9 @@
     "cannotDetectType": "Impossible de détecter le type de média"
   },
   "enable": "Activer",
-  "disable": "Désactiver"
+  "disable": "Désactiver",
+  "nav": {
+    "home": "Accueil",
+    "frame": "Cadre"
+  }
 }

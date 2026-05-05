@@ -113,5 +113,9 @@
     "cannotDetectType": "No se puede detectar el tipo de medio"
   },
   "enable": "Activar",
-  "disable": "Desactivar"
+  "disable": "Desactivar",
+  "nav": {
+    "home": "Inicio",
+    "frame": "Marco"
+  }
 }
