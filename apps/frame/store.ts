@@ -23,7 +23,7 @@ interface FrameState {
 
   // Actions
   loadData: () => Promise<void>;
-  addMedia: (url: string, type: MediaType, title?: string) => Promise<void>;
+  addMedia: (url: string, type: MediaType, title?: string, collectionId?: string) => Promise<MediaItem | void>;
   deleteMedia: (id: string) => Promise<void>;
   createCollection: (name: string, description?: string, mediaIds?: string[]) => Promise<void>;
   updateCollection: (id: string, updates: Partial<Collection>) => Promise<void>;
@@ -64,10 +64,19 @@ export const useFrameStore = create<FrameState>((set, get) => ({
     }
   },
 
-  addMedia: async (url, type, title) => {
+  addMedia: async (url, type, title, collectionId) => {
     try {
       const newItem = await storageAddMedia(url, type, title);
       set((state) => ({ media: [...state.media, newItem] }));
+      if (collectionId) {
+        const collection = get().collections.find(c => c.id === collectionId);
+        if (collection && !collection.mediaIds.includes(newItem.id)) {
+          await get().updateCollection(collectionId, {
+            mediaIds: [...collection.mediaIds, newItem.id]
+          });
+        }
+      }
+      return newItem;
     } catch (error) {
       console.error('Failed to add media:', error);
     }

@@ -93,7 +93,7 @@ export default function CollectionsPageClient({
       onDelete={deleteCollection}
       onShare={() => { }}
       onPlay={handlePlayCollection}
-      onMediaAdd={addMedia}
+      onMediaAdd={(url, type, title) => addMedia(url, type, title, selectedCollectionId || undefined)}
       onMediaAddUrlList={importUrlList}
       onMediaDelete={deleteMedia}
     />
