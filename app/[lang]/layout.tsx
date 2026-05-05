@@ -12,6 +12,7 @@ import LanguageBanner from '@/components/LanguageBanner';
 import { NavbarProvider } from '@/context/NavbarContext';
 import LayoutContent from '@/components/LayoutContent';
 import { notFound } from 'next/navigation';
+import { Toaster } from '@/components/ui/sonner';
 
 const { locales } = routing;
 
@@ -109,6 +110,7 @@ export default async function RootLayout({
             </LayoutContent>
           </NavbarProvider>
         </NextIntlClientProvider>
+        <Toaster position="bottom-center" />
         <Analytics />
       </body>
     </html>
