@@ -3,7 +3,7 @@ import { Plus_Jakarta_Sans, DM_Sans } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import '../globals.css';
 import { routing } from '@/i18n/routing';
-import { getDictionary, Locale } from '@/dictionaries';
+import { Locale } from '@/i18n';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import LanguageSwitcher from '@/components/LanguageSwitcher';

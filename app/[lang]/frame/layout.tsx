@@ -2,7 +2,7 @@ import FrameLayoutClient from './FrameLayoutClient';
 import { Suspense } from 'react';
 import { Metadata } from 'next';
 import { getMessages } from 'next-intl/server';
-import { Locale } from '@/dictionaries';
+import { Locale } from '@/i18n';
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
