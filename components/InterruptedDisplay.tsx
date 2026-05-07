@@ -3,14 +3,16 @@
 import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function InterruptedDisplay() {
   const t = useTranslations();
   const toastIdRef = useRef<string | number | null>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     toastIdRef.current = toast.error(t('moveWarning'), {
-      description: t('moveWarningDesc'),
+      description: isMobile ? t('moveWarningDescMobile') : t('moveWarningDesc'),
       duration: Infinity, // Keep visible as long as component is mounted
     });
 
@@ -19,7 +21,7 @@ export default function InterruptedDisplay() {
         toast.dismiss(toastIdRef.current);
       }
     };
-  }, [t]);
+  }, [t, isMobile]);
 
   return null;
 }

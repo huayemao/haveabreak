@@ -2,6 +2,8 @@
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { DialogContent, DialogHeader, Dialog, DialogTrigger, DialogTitle } from './ui/dialog';
+import { useTimerStore } from '@/store/timerStore';
+import { toast } from 'sonner';
 
 interface SettingsProps {
   customTips: string[];
@@ -9,27 +11,6 @@ interface SettingsProps {
   disabledPresetTips: string[];
   onDisabledPresetTipsChange: (tips: string[]) => void;
 }
-
-const STORAGE_KEY_CUSTOM = 'haveabreak_custom_tips';
-const STORAGE_KEY_DISABLED_PRESETS = 'haveabreak_disabled_presets';
-
-export const loadCustomTips = (): string[] => {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY_CUSTOM);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-};
-
-export const loadDisabledPresets = (): string[] => {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY_DISABLED_PRESETS);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-};
 
 export default function Settings({
   customTips,
@@ -40,20 +21,23 @@ export default function Settings({
   const t = useTranslations();
   const [open, setOpen] = useState(false);
   const [newTip, setNewTip] = useState('');
+  
+  const { settings, setTipIntervalSeconds } = useTimerStore();
+  const [localInterval, setLocalInterval] = useState(settings.tipIntervalSeconds);
 
   const handleAddTip = () => {
     if (newTip.trim() && newTip.trim().length <= 100) {
       const updatedTips = [...customTips, newTip.trim()];
       onTipsChange(updatedTips);
-      localStorage.setItem(STORAGE_KEY_CUSTOM, JSON.stringify(updatedTips));
       setNewTip('');
+      toast.success(t('tipAdded'));
     }
   };
 
   const handleDeleteCustomTip = (tip: string) => {
     const updatedTips = customTips.filter(t => t !== tip);
     onTipsChange(updatedTips);
-    localStorage.setItem(STORAGE_KEY_CUSTOM, JSON.stringify(updatedTips));
+    toast.success(t('tipDeleted'));
   };
 
   const togglePresetTip = (tip: string) => {
@@ -61,7 +45,18 @@ export default function Settings({
       ? disabledPresetTips.filter(t => t !== tip)
       : [...disabledPresetTips, tip];
     onDisabledPresetTipsChange(updatedDisabled);
-    localStorage.setItem(STORAGE_KEY_DISABLED_PRESETS, JSON.stringify(updatedDisabled));
+    const isDisabled = updatedDisabled.includes(tip);
+    toast.success(isDisabled ? t('presetTipDisabled') : t('presetTipEnabled'));
+  };
+
+  const handleIntervalChange = () => {
+    if (localInterval >= 3 && localInterval <= 60) {
+      setTipIntervalSeconds(localInterval);
+      toast.success(t('settingsApplied'), {
+        description: t('tipIntervalDescription', { seconds: localInterval }),
+      });
+      setOpen(false);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -169,6 +164,36 @@ export default function Settings({
                   {t('noCustomTips')}
                 </p>
               )}
+            </div>
+
+            {/* Tip Interval Settings */}
+            <div className="border-t border-fg-muted/20 pt-4 space-y-4">
+              <h3 className="font-bold text-fg-primary text-lg">{t('tipIntervalSection')}</h3>
+              <div className="flex items-center gap-4">
+                <input
+                  type="range"
+                  min="3"
+                  max="60"
+                  value={localInterval}
+                  onChange={(e) => setLocalInterval(Number(e.target.value))}
+                  className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                />
+                <div className="flex items-center gap-2">
+                  <span className="text-lg font-semibold text-fg-primary w-12 text-right">
+                    {localInterval}
+                  </span>
+                  <span className="text-sm text-fg-muted">{t('tipIntervalSeconds')}</span>
+                </div>
+              </div>
+              <button
+                onClick={handleIntervalChange}
+                className="neumorphic-button-primary px-6 py-2 font-medium text-white w-full"
+              >
+                {t('applySettings')}
+              </button>
+              <p className="text-xs text-fg-muted text-center">
+                {t('tipIntervalDescription', { seconds: localInterval })}
+              </p>
             </div>
 
             {/* Future configuration sections can be added here */}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
 import { useTranslations } from 'next-intl';
 import { AnimatePresence, motion } from 'motion/react';
@@ -8,33 +8,33 @@ import TimeSelector from '@/components/TimeSelector';
 import TimerDisplay from '@/components/TimerDisplay';
 import FinishedDisplay from '@/components/FinishedDisplay';
 import LandingSection from '@/components/LandingSection';
-import { loadCustomTips, loadDisabledPresets } from '@/components/Settings';
 import { useNavbar } from '@/context/NavbarContext';
+import { useTimerStore } from '@/store/timerStore';
 
 export default function TimerApp() {
   const t = useTranslations();
   const { setIsHidden } = useNavbar();
-  const [isRunning, setIsRunning] = useState(false);
-  const [isInterrupted, setIsInterrupted] = useState(false);
-  const [isFinished, setIsFinished] = useState(false);
-
-  const [selectedMinutes, setSelectedMinutes] = useState(5);
-  const [timeLeft, setTimeLeft] = useState(selectedMinutes * 60);
-  const [customTips, setCustomTips] = useState<string[]>([]);
-  const [disabledPresetTips, setDisabledPresetTips] = useState<string[]>([]);
+  const {
+    settings,
+    isRunning,
+    isInterrupted,
+    isFinished,
+    timeLeft,
+    startTimer,
+    stopTimer,
+    interruptTimer,
+    tickTimer,
+    setSelectedMinutes,
+    addCustomTip,
+    removeCustomTip,
+    togglePresetTip,
+  } = useTimerStore();
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    const custom = loadCustomTips();
-    const disabled = loadDisabledPresets();
-    setCustomTips(custom);
-    setDisabledPresetTips(disabled);
-  }, []);
-
   const timerTips = t.raw('timerTips') as string[];
-  const enabledPresetTips = timerTips.filter(tip => !disabledPresetTips.includes(tip));
-  const allTips = [...enabledPresetTips, ...customTips];
+  const enabledPresetTips = timerTips.filter(tip => !settings.disabledPresetTips.includes(tip));
+  const allTips = [...enabledPresetTips, ...settings.customTips];
 
   useEffect(() => {
     setIsHidden(isRunning);
@@ -56,13 +56,7 @@ export default function TimerApp() {
       }
 
       timerRef.current = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            handleComplete();
-            return 0;
-          }
-          return prev - 1;
-        });
+        tickTimer();
       }, 1000);
 
       const handleMovement = () => {
@@ -87,33 +81,23 @@ export default function TimerApp() {
         window.removeEventListener('touchstart', handleMovement);
       };
     }
-  }, [isRunning, isFinished, isInterrupted]);
+  }, [isRunning, isFinished, isInterrupted, tickTimer]);
 
   const handleInterrupt = () => {
-    setIsInterrupted(true);
-    setIsRunning(false);
     if (timerRef.current) clearInterval(timerRef.current);
-    setTimeLeft(selectedMinutes * 60);
-    setIsRunning(true);
-
-    setTimeout(() => {
-      setIsInterrupted(false);
-    }, 3000);
+    interruptTimer();
   };
 
-  const handleComplete = () => {
-    setIsFinished(true);
-    setIsRunning(false);
-    if (timerRef.current) clearInterval(timerRef.current);
-
-    triggerConfetti();
-
-    try {
-      if (document.fullscreenElement) {
-        document.exitFullscreen().catch(() => { });
-      }
-    } catch (e) { }
-  };
+  useEffect(() => {
+    if (isFinished) {
+      triggerConfetti();
+      try {
+        if (document.fullscreenElement) {
+          document.exitFullscreen().catch(() => { });
+        }
+      } catch (e) { }
+    }
+  }, [isFinished]);
 
   const triggerConfetti = () => {
     const duration = 3000;
@@ -142,22 +126,24 @@ export default function TimerApp() {
     frame();
   };
 
-  const startTimer = () => {
-    setTimeLeft(selectedMinutes * 60);
-    setIsRunning(true);
-    setIsInterrupted(false);
-    setIsFinished(false);
-  };
-
-  const stopTimer = () => {
-    setIsRunning(false);
+  const handleStopTimer = () => {
     if (timerRef.current) clearInterval(timerRef.current);
-    setTimeLeft(selectedMinutes * 60);
+    stopTimer();
     try {
       if (document.fullscreenElement) {
         document.exitFullscreen().catch(() => { });
       }
     } catch (e) { }
+  };
+
+  const handleTipsChange = (tips: string[]) => {
+    settings.customTips.forEach(tip => removeCustomTip(tip));
+    tips.forEach(tip => addCustomTip(tip));
+  };
+
+  const handleDisabledPresetTipsChange = (tips: string[]) => {
+    settings.disabledPresetTips.forEach(tip => togglePresetTip(tip));
+    tips.forEach(tip => togglePresetTip(tip));
   };
 
   return (
@@ -175,13 +161,13 @@ export default function TimerApp() {
             <div className="flex-1 flex flex-col items-center justify-center z-10 relative">
               <div className="w-full max-w-md mx-auto flex flex-col items-center text-center space-y-12">
                 <TimeSelector
-                  selectedMinutes={selectedMinutes}
+                  selectedMinutes={settings.selectedMinutes}
                   onSelect={setSelectedMinutes}
                   onStart={startTimer}
-                  customTips={customTips}
-                  onTipsChange={setCustomTips}
-                  disabledPresetTips={disabledPresetTips}
-                  onDisabledPresetTipsChange={setDisabledPresetTips}
+                  customTips={settings.customTips}
+                  onTipsChange={handleTipsChange}
+                  disabledPresetTips={settings.disabledPresetTips}
+                  onDisabledPresetTipsChange={handleDisabledPresetTipsChange}
                 />
               </div>
             </div>
@@ -203,8 +189,8 @@ export default function TimerApp() {
               ) : (
                 <TimerDisplay
                   timeLeft={timeLeft}
-                  totalSeconds={selectedMinutes * 60}
-                  onStop={stopTimer}
+                  totalSeconds={settings.selectedMinutes * 60}
+                  onStop={handleStopTimer}
                   isInterrupted={isInterrupted}
                   tips={allTips}
                 />

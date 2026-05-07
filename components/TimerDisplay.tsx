@@ -2,6 +2,7 @@ import { useTranslations } from 'next-intl';
 import InterruptedDisplay from './InterruptedDisplay';
 import { motion } from 'motion/react';
 import { useState, useEffect } from 'react';
+import { useTimerStore } from '@/store/timerStore';
 
 interface TimerDisplayProps {
   timeLeft: number;
@@ -20,6 +21,7 @@ function formatTime(seconds: number) {
 export default function TimerDisplay({ timeLeft, totalSeconds, onStop, isInterrupted = false, tips }: TimerDisplayProps) {
   const progress = (timeLeft / totalSeconds) * 100;
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
+  const { settings } = useTimerStore();
   
   const displayTips = tips;
 
@@ -28,10 +30,10 @@ export default function TimerDisplay({ timeLeft, totalSeconds, onStop, isInterru
       setCurrentTipIndex((prevIndex) => 
         (prevIndex + 1) % displayTips.length
       );
-    }, 5000);
+    }, settings.tipIntervalSeconds * 1000);
 
     return () => clearInterval(interval);
-  }, [displayTips.length]);
+  }, [displayTips.length, settings.tipIntervalSeconds]);
 
   const currentTip = displayTips[currentTipIndex];
 
