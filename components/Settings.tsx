@@ -76,8 +76,8 @@ export default function Settings({
             {t('settingsBtn')}
           </button>
         </DialogTrigger>
-        <DialogContent className="neumorphic-dialog border-none bg-transparent p-0 overflow-hidden max-w-lg md:max-w-xl lg:max-w-2xl">
-          <div className="p-6 space-y-6">
+        <DialogContent className="neumorphic-dialog border-none bg-transparent p-0 overflow-hidden max-w-lg md:max-w-xl lg:max-w-2xl max-h-[90vh]">
+          <div className="p-6 space-y-6 overflow-y-auto max-h-[calc(90vh-2rem)]">
             <DialogHeader className="text-center pb-4">
               <DialogTitle className="text-2xl font-bold text-fg-primary">
                 {t('settingsTitle')}
@@ -110,7 +110,7 @@ export default function Settings({
               {/* Preset tips */}
               <div className="space-y-2">
                 <h4 className="font-semibold text-fg-muted text-sm">{t('presetTips')}</h4>
-                <div className="space-y-2 max-h-72 overflow-y-auto pr-2">
+                <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
                   {(t.raw('timerTips') as string[]).map((tip, index) => (
                     <div
                       key={index}
