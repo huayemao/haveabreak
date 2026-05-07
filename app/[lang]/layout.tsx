@@ -110,7 +110,7 @@ export default async function RootLayout({
             </LayoutContent>
           </NavbarProvider>
         </NextIntlClientProvider>
-        <Toaster position="bottom-center" />
+        <Toaster position="top-center" />
         <Analytics />
       </body>
     </html>

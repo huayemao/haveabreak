@@ -37,8 +37,8 @@ export default function TimerApp() {
   const allTips = [...enabledPresetTips, ...settings.customTips];
 
   useEffect(() => {
-    setIsHidden(isRunning);
-  }, [isRunning, setIsHidden]);
+    setIsHidden(isRunning || isInterrupted);
+  }, [isRunning, isInterrupted, setIsHidden]);
 
   useEffect(() => {
     if (isRunning) {
