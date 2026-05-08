@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans, DM_Sans } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
+import { SerwistProvider } from '@serwist/turbopack/react';
 import '../globals.css';
 import { routing } from '@/i18n/routing';
 import { Locale } from '@/i18n';
@@ -101,15 +102,17 @@ export default async function RootLayout({
   return (
     <html lang={lang} className={`${plusJakartaSans.variable} ${dmSans.variable}`}>
       <body suppressHydrationWarning className="bg-[#E0E5EC] text-slate-900 antialiased">
-        <NextIntlClientProvider messages={messages}>
-          <NavbarProvider>
-            <LanguageBanner />
-            <Navbar />
-            <LayoutContent>
-              {children}
-            </LayoutContent>
-          </NavbarProvider>
-        </NextIntlClientProvider>
+        <SerwistProvider swUrl="/serwist/sw.js">
+          <NextIntlClientProvider messages={messages}>
+            <NavbarProvider>
+              <LanguageBanner />
+              <Navbar />
+              <LayoutContent>
+                {children}
+              </LayoutContent>
+            </NavbarProvider>
+          </NextIntlClientProvider>
+        </SerwistProvider>
         <Toaster position="top-center" />
         <Analytics />
       </body>
