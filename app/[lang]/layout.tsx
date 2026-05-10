@@ -90,17 +90,18 @@ export default async function RootLayout({
   const resolvedParams = await params;
   const { lang } = resolvedParams;
 
-  // Validate that the incoming `lang` parameter is valid
   if (!locales.includes(lang as any)) {
     notFound();
   }
 
-  // Providing all messages to the client
-  // side is the easiest way to get started
   const messages = await getMessages();
 
   return (
     <html lang={lang} className={`${plusJakartaSans.variable} ${dmSans.variable}`}>
+      <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/satouriko/LxgwWenKai_Webfonts@v1.101/dist/LXGWWenKai-Regular.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/satouriko/LxgwWenKai_Webfonts@v1.101/dist/LXGWWenKai-Bold.css" />
+      </head>
       <body suppressHydrationWarning className="bg-[#E0E5EC] text-slate-900 antialiased">
         <SerwistProvider swUrl="/serwist/sw.js">
           <NextIntlClientProvider messages={messages}>
