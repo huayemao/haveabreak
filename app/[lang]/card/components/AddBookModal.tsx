@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Book } from '@/apps/card/types';
 import { motion, AnimatePresence } from 'motion/react';
@@ -10,15 +10,29 @@ interface AddBookModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAdd: (book: Omit<Book, 'id' | 'createdAt'>) => void;
+  editingBook?: Book | null;
 }
 
-export default function AddBookModal({ isOpen, onClose, onAdd }: AddBookModalProps) {
+export default function AddBookModal({ isOpen, onClose, onAdd, editingBook }: AddBookModalProps) {
   const t = useTranslations();
-  const [title, setTitle] = useState('');
-  const [author, setAuthor] = useState('');
-  const [cover, setCover] = useState('https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=200');
-  const [publisher, setPublisher] = useState('');
-  const [isbn, setIsbn] = useState('');
+
+  const [title, setTitle] = useState(editingBook ? editingBook.title : '');
+  const [author, setAuthor] = useState(editingBook ? editingBook.author : '');
+  const [translator, setTranslator] = useState(editingBook?.translator || '');
+  const [cover, setCover] = useState(editingBook?.cover || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=200');
+  const [publisher, setPublisher] = useState(editingBook?.publisher || '');
+  const [isbn, setIsbn] = useState(editingBook?.isbn || '');
+
+  useEffect(() => {
+    if (!isOpen && !editingBook) {
+      setTitle('');
+      setAuthor('');
+      setTranslator('');
+      setCover('https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=200');
+      setPublisher('');
+      setIsbn('');
+    }
+  }, [isOpen, editingBook]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,13 +43,17 @@ export default function AddBookModal({ isOpen, onClose, onAdd }: AddBookModalPro
       author,
       cover,
       publisher: publisher || 'Unknown',
-      isbn: isbn || 'N/A'
+      isbn: isbn || 'N/A',
+      translator: translator || undefined
     });
-    
-    setTitle('');
-    setAuthor('');
-    setPublisher('');
-    setIsbn('');
+
+    if (!editingBook) {
+      setTitle('');
+      setAuthor('');
+      setTranslator('');
+      setPublisher('');
+      setIsbn('');
+    }
     onClose();
   };
 
@@ -50,7 +68,7 @@ export default function AddBookModal({ isOpen, onClose, onAdd }: AddBookModalPro
             onClick={onClose}
             className="absolute inset-0 bg-bg-base/60 backdrop-blur-md"
           />
-          
+
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -60,7 +78,7 @@ export default function AddBookModal({ isOpen, onClose, onAdd }: AddBookModalPro
             <div className="flex items-center justify-between px-8 py-6 border-b border-white/10">
               <h2 className="text-xl font-bold text-fg-primary font-display flex items-center gap-2">
                 <BookIcon className="w-5 h-5 text-accent" />
-                {t('card.addBook', { defaultValue: 'Add New Book' })}
+                {editingBook ? t('card.editBook', { defaultValue: 'Edit Book' }) : t('card.addBook', { defaultValue: 'Add New Book' })}
               </h2>
               <button onClick={onClose} className="w-10 h-10 rounded-full neumorphic-button flex items-center justify-center">
                 <X className="w-5 h-5" />
@@ -75,6 +93,10 @@ export default function AddBookModal({ isOpen, onClose, onAdd }: AddBookModalPro
               <div className="space-y-2">
                 <label className="text-sm font-bold text-fg-muted">{t('card.formAuthor', { defaultValue: 'Author' })}</label>
                 <input required value={author} onChange={(e) => setAuthor(e.target.value)} className="w-full p-3 rounded-xl bg-bg-base shadow-inset outline-none text-fg-primary" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-fg-muted">{t('card.formTranslator', { defaultValue: 'Translator' })}</label>
+                <input value={translator} onChange={(e) => setTranslator(e.target.value)} className="w-full p-3 rounded-xl bg-bg-base shadow-inset outline-none text-fg-primary" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -92,7 +114,7 @@ export default function AddBookModal({ isOpen, onClose, onAdd }: AddBookModalPro
               </div>
               <div className="pt-4">
                 <button type="submit" className="w-full py-4 rounded-2xl bg-accent text-white font-bold shadow-extruded-sm hover:scale-[1.02] active:scale-[0.98] transition-all">
-                  {t('card.addBookBtn', { defaultValue: 'Add Book' })}
+                  {editingBook ? t('card.saveBook', { defaultValue: 'Save Changes' }) : t('card.addBookBtn', { defaultValue: 'Add Book' })}
                 </button>
               </div>
             </form>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Quote, Book } from '@/apps/card/types';
 import { motion, AnimatePresence } from 'motion/react';
@@ -10,21 +10,27 @@ interface AddQuoteModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAdd: (quote: Omit<Quote, 'id' | 'createdAt'>) => void;
-  bookId: string | null;
+  bookId?: string | null;
   books: Book[];
+  editingQuote?: Quote | null;
 }
 
-export default function AddQuoteModal({ isOpen, onClose, onAdd, bookId: initialBookId, books }: AddQuoteModalProps) {
+export default function AddQuoteModal({ isOpen, onClose, onAdd, bookId: initialBookId, books, editingQuote }: AddQuoteModalProps) {
   const t = useTranslations();
-  const [content, setContent] = useState('');
-  const [bookId, setBookId] = useState(initialBookId || '');
-  const [chapter, setChapter] = useState('');
-  const [page, setPage] = useState('');
 
-  // Sync with initialBookId when modal opens
-  useState(() => {
-    if (initialBookId) setBookId(initialBookId);
-  });
+  const [content, setContent] = useState(editingQuote ? editingQuote.content : '');
+  const [bookId, setBookId] = useState(editingQuote ? editingQuote.bookId : initialBookId || '');
+  const [chapter, setChapter] = useState(editingQuote?.chapter || '');
+  const [page, setPage] = useState(editingQuote?.page || '');
+
+  useEffect(() => {
+    if (!isOpen && !editingQuote) {
+      setContent('');
+      setBookId(initialBookId || '');
+      setChapter('');
+      setPage('');
+    }
+  }, [isOpen, editingQuote, initialBookId]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,10 +42,12 @@ export default function AddQuoteModal({ isOpen, onClose, onAdd, bookId: initialB
       chapter: chapter || undefined,
       page: page || undefined
     });
-    
-    setContent('');
-    setChapter('');
-    setPage('');
+
+    if (!editingQuote) {
+      setContent('');
+      setChapter('');
+      setPage('');
+    }
     onClose();
   };
 
@@ -64,7 +72,7 @@ export default function AddQuoteModal({ isOpen, onClose, onAdd, bookId: initialB
             <div className="flex items-center justify-between px-8 py-6 border-b border-white/10">
               <h2 className="text-xl font-bold text-fg-primary font-display flex items-center gap-2">
                 <QuoteIcon className="w-5 h-5 text-accent" />
-                {t('card.addQuote', { defaultValue: 'Add New Quote' })}
+                {editingQuote ? t('card.editQuote', { defaultValue: 'Edit Quote' }) : t('card.addQuote', { defaultValue: 'Add New Quote' })}
               </h2>
               <button onClick={onClose} className="w-10 h-10 rounded-full neumorphic-button flex items-center justify-center">
                 <X className="w-5 h-5" />
@@ -72,12 +80,12 @@ export default function AddQuoteModal({ isOpen, onClose, onAdd, bookId: initialB
             </div>
 
             <form onSubmit={handleSubmit} className="p-8 space-y-6">
-              {!initialBookId && (
+              {!initialBookId && !editingQuote && (
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-fg-muted">{t('card.selectBook', { defaultValue: 'Select Book' })}</label>
-                  <select 
-                    required 
-                    value={bookId} 
+                  <select
+                    required
+                    value={bookId}
                     onChange={(e) => setBookId(e.target.value)}
                     className="w-full p-3 rounded-xl bg-bg-base shadow-inset outline-none text-fg-primary appearance-none"
                   >
@@ -134,7 +142,7 @@ export default function AddQuoteModal({ isOpen, onClose, onAdd, bookId: initialB
 
               <div className="pt-2">
                 <button type="submit" className="w-full py-4 rounded-2xl bg-accent text-white font-bold shadow-extruded-sm hover:scale-[1.02] active:scale-[0.98] transition-all">
-                  {t('card.addQuoteBtn', { defaultValue: 'Add Quote' })}
+                  {editingQuote ? t('card.saveQuote', { defaultValue: 'Save Changes' }) : t('card.addQuoteBtn', { defaultValue: 'Add Quote' })}
                 </button>
               </div>
             </form>

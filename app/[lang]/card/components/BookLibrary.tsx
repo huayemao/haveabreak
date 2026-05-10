@@ -3,8 +3,23 @@
 import { useCardStore } from '@/apps/card/store';
 import { useTranslations } from 'next-intl';
 import { Plus, Book as BookIcon, ChevronRight } from 'lucide-react';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu';
+import { Edit3, Trash2 } from 'lucide-react';
+import { Book } from '@/apps/card/types';
 
-export default function BookLibrary({ onAddBook }: { onAddBook: () => void }) {
+interface BookLibraryProps {
+  onAddBook: () => void;
+  onEditBook?: (book: Book) => void;
+  onDeleteBook?: (bookId: string) => void;
+}
+
+export default function BookLibrary({ onAddBook, onEditBook, onDeleteBook }: BookLibraryProps) {
   const { books, setView } = useCardStore();
   const t = useTranslations();
 
@@ -29,21 +44,39 @@ export default function BookLibrary({ onAddBook }: { onAddBook: () => void }) {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {books.map((book) => (
-            <div
-              key={book.id}
-              onClick={() => setView('detail', book.id)}
-              className="group relative bg-bg-base rounded-[32px] p-6 shadow-extruded hover:shadow-extruded-lg transition-all duration-300 cursor-pointer flex flex-col items-center"
-            >
-              <div className="relative w-32 h-44 mb-4 rounded-xl overflow-hidden shadow-extruded-sm group-hover:scale-105 transition-transform duration-500">
-                <img src={book.cover} alt={book.title} className="w-full h-full object-cover" />
-              </div>
-              <h3 className="text-lg font-bold text-fg-primary text-center line-clamp-1 mb-1">{book.title}</h3>
-              <p className="text-xs text-fg-muted text-center line-clamp-1">{book.author}</p>
-              
-              <div className="mt-4 flex items-center gap-1 text-[10px] font-bold text-accent opacity-0 group-hover:opacity-100 transition-opacity">
-                VIEW DETAILS <ChevronRight className="w-3 h-3" />
-              </div>
-            </div>
+            <ContextMenu key={book.id}>
+              <ContextMenuTrigger>
+                <div
+                  onClick={() => setView('detail', book.id)}
+                  className="group relative bg-bg-base rounded-[32px] p-6 shadow-extruded hover:shadow-extruded-lg transition-all duration-300 cursor-pointer flex flex-col items-center"
+                >
+                  <div className="relative w-32 h-44 mb-4 rounded-xl overflow-hidden shadow-extruded-sm group-hover:scale-105 transition-transform duration-500">
+                    <img src={book.cover} alt={book.title} className="w-full h-full object-cover" />
+                  </div>
+                  <h3 className="text-lg font-bold text-fg-primary text-center line-clamp-1 mb-1">{book.title}</h3>
+                  <p className="text-xs text-fg-muted text-center line-clamp-1">{book.author}</p>
+
+                  <div className="mt-4 flex items-center gap-1 text-[10px] font-bold text-accent opacity-0 group-hover:opacity-100 transition-opacity">
+                    VIEW DETAILS <ChevronRight className="w-3 h-3" />
+                  </div>
+                </div>
+              </ContextMenuTrigger>
+              <ContextMenuContent className="w-48">
+                {onEditBook && (
+                  <ContextMenuItem onClick={() => onEditBook(book)} className="gap-2">
+                    <Edit3 className="w-4 h-4" />
+                    Edit
+                  </ContextMenuItem>
+                )}
+                <ContextMenuSeparator />
+                {onDeleteBook && (
+                  <ContextMenuItem onClick={() => onDeleteBook(book.id)} className="gap-2 text-red-500 focus:text-red-500">
+                    <Trash2 className="w-4 h-4" />
+                    Delete
+                  </ContextMenuItem>
+                )}
+              </ContextMenuContent>
+            </ContextMenu>
           ))}
         </div>
       )}

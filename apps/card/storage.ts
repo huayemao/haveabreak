@@ -85,6 +85,58 @@ export async function deleteQuote(id: string): Promise<void> {
   saveQuotes(quotes);
 }
 
+export async function updateBook(id: string, updates: Partial<Book>): Promise<Book | void> {
+  try {
+    const books = await getStoredBooks();
+    const index = books.findIndex(b => b.id === id);
+    if (index !== -1) {
+      books[index] = { ...books[index], ...updates };
+      saveBooks(books);
+      return books[index];
+    }
+  } catch (e) {
+    console.error('Failed to update book', e);
+  }
+}
+
+export async function updateQuote(id: string, updates: Partial<Quote>): Promise<Quote | void> {
+  try {
+    const quotes = await getStoredQuotes();
+    const index = quotes.findIndex(q => q.id === id);
+    if (index !== -1) {
+      quotes[index] = { ...quotes[index], ...updates };
+      saveQuotes(quotes);
+      return quotes[index];
+    }
+  } catch (e) {
+    console.error('Failed to update quote', e);
+  }
+}
+
+export async function exportData(): Promise<string> {
+  const books = await getStoredBooks();
+  const quotes = await getStoredQuotes();
+  const settings = await getSettings();
+  return JSON.stringify({ books, quotes, settings }, null, 2);
+}
+
+export function importData(data: string): void {
+  try {
+    const parsed = JSON.parse(data);
+    if (parsed.books) {
+      saveBooks(parsed.books);
+    }
+    if (parsed.quotes) {
+      saveQuotes(parsed.quotes);
+    }
+    if (parsed.settings) {
+      saveSettings(parsed.settings);
+    }
+  } catch {
+    throw new Error('Invalid data format');
+  }
+}
+
 export async function getSettings(): Promise<CardSettings> {
   if (typeof window === 'undefined') return presets.settings;
   const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);

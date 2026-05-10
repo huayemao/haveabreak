@@ -2,29 +2,41 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { useCardStore, selectQuotesWithBooks } from '@/apps/card/store';
+import { Book, Quote } from '@/apps/card/types';
 import QuoteCard from './components/QuoteCard';
 import BookLibrary from './components/BookLibrary';
 import BookDetail from './components/BookDetail';
 import AddBookModal from './components/AddBookModal';
 import AddQuoteModal from './components/AddQuoteModal';
+import CardSettingsPanel from './components/CardSettingsPanel';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTranslations } from 'next-intl';
-import { Plus, Library, Sparkles, ChevronUp, ChevronDown } from 'lucide-react';
+import { Plus, Library, Sparkles, ChevronUp, ChevronDown, Settings } from 'lucide-react';
 
 export default function CardPageClient() {
-  const { 
-    books, 
-    quotes, 
-    currentView, 
-    selectedBookId, 
-    setView, 
-    addBook, 
-    addQuote 
+  const {
+    books,
+    quotes,
+    currentView,
+    selectedBookId,
+    setView,
+    addBook,
+    addQuote,
+    updateBook,
+    updateQuote,
+    deleteBook,
+    deleteQuote,
+    exportData,
+    importData,
+    loadData
   } = useCardStore();
-  
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isBookModalOpen, setIsBookModalOpen] = useState(false);
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [editingBook, setEditingBook] = useState<Book | null>(null);
+  const [editingQuote, setEditingQuote] = useState<Quote | null>(null);
   const t = useTranslations();
 
   const quotesWithBooks = useMemo(() => selectQuotesWithBooks({ books, quotes } as any), [books, quotes]);
@@ -54,12 +66,98 @@ export default function CardPageClient() {
     }
   };
 
+  const handleEditBook = useCallback((book: Book) => {
+    setEditingBook(book);
+    setIsBookModalOpen(true);
+  }, []);
+
+  const handleDeleteBook = useCallback((bookId: string) => {
+    if (confirm(t('card.confirmDeleteBook', { defaultValue: 'Are you sure you want to delete this book and all its quotes?' }))) {
+      deleteBook(bookId);
+    }
+  }, [deleteBook, t]);
+
+  const handleEditQuote = useCallback((quoteId: string) => {
+    const quote = quotes.find(q => q.id === quoteId);
+    if (quote) {
+      setEditingQuote(quote);
+      setIsQuoteModalOpen(true);
+    }
+  }, [quotes]);
+
+  const handleDeleteQuote = useCallback((quoteId: string) => {
+    if (confirm(t('card.confirmDeleteQuote', { defaultValue: 'Are you sure you want to delete this quote?' }))) {
+      deleteQuote(quoteId);
+    }
+  }, [deleteQuote, t]);
+
+  const handleBookModalClose = () => {
+    setIsBookModalOpen(false);
+    setEditingBook(null);
+  };
+
+  const handleQuoteModalClose = () => {
+    setIsQuoteModalOpen(false);
+    setEditingQuote(null);
+  };
+
+  const handleBookSubmit = useCallback(async (bookData: Omit<Book, 'id' | 'createdAt'>) => {
+    if (editingBook) {
+      await updateBook(editingBook.id, bookData);
+    } else {
+      await addBook(bookData);
+    }
+    handleBookModalClose();
+  }, [editingBook, updateBook, addBook]);
+
+  const handleQuoteSubmit = useCallback(async (quoteData: Omit<Quote, 'id' | 'createdAt'>) => {
+    if (editingQuote) {
+      await updateQuote(editingQuote.id, quoteData);
+    } else {
+      await addQuote(quoteData);
+    }
+    handleQuoteModalClose();
+  }, [editingQuote, updateQuote, addQuote]);
+
+  const handleExport = useCallback(async () => {
+    const data = await exportData();
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'card-data.json';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  }, [exportData]);
+
+  const handleImport = useCallback(async (data: string) => {
+    importData(data);
+    await loadData();
+  }, [importData, loadData]);
+
   const renderContent = () => {
     switch (currentView) {
       case 'library':
-        return <BookLibrary onAddBook={() => setIsBookModalOpen(true)} />;
+        return (
+          <BookLibrary
+            onAddBook={() => setIsBookModalOpen(true)}
+            onEditBook={handleEditBook}
+            onDeleteBook={handleDeleteBook}
+          />
+        );
       case 'detail':
-        return <BookDetail onAddQuote={() => setIsQuoteModalOpen(true)} />;
+        return (
+          <BookDetail
+            onAddQuote={() => setIsQuoteModalOpen(true)}
+            onEditQuote={(quote) => {
+              setEditingQuote(quote);
+              setIsQuoteModalOpen(true);
+            }}
+            onDeleteQuote={handleDeleteQuote}
+          />
+        );
       default:
         if (quotesWithBooks.length === 0) {
           return (
@@ -67,7 +165,7 @@ export default function CardPageClient() {
               <div className="p-12 rounded-[32px] bg-bg-base shadow-extruded text-center max-w-md">
                 <Sparkles className="w-12 h-12 text-accent mx-auto mb-4 opacity-50" />
                 <p className="text-fg-muted mb-8">{t('card.noQuotesInFeed', { defaultValue: 'No sentences in your feed. Add some books and quotes first!' })}</p>
-                <button 
+                <button
                   onClick={() => setIsBookModalOpen(true)}
                   className="neumorphic-button-primary px-8 py-3 rounded-2xl flex items-center gap-2 mx-auto font-bold"
                 >
@@ -99,7 +197,12 @@ export default function CardPageClient() {
                   onDragEnd={onDragEnd}
                   className="w-full z-10"
                 >
-                  <QuoteCard card={quotesWithBooks[currentIndex]} isActive={true} />
+                  <QuoteCard
+                    card={quotesWithBooks[currentIndex]}
+                    isActive={true}
+                    onEdit={handleEditQuote}
+                    onDelete={handleDeleteQuote}
+                  />
                 </motion.div>
               </AnimatePresence>
 
@@ -146,7 +249,7 @@ export default function CardPageClient() {
           <Sparkles className="w-5 h-5" />
           <span className="font-bold text-sm hidden sm:inline">{t('card.feed', { defaultValue: 'Feed' })}</span>
         </button>
-        
+
         <div className="w-px h-6 bg-fg-muted/20 mx-2" />
 
         <button
@@ -162,6 +265,16 @@ export default function CardPageClient() {
         <div className="w-px h-6 bg-fg-muted/20 mx-2" />
 
         <button
+          onClick={() => setIsSettingsOpen(true)}
+          className="flex items-center justify-center w-12 h-12 rounded-full bg-bg-base text-fg-muted shadow-extruded-sm hover:scale-110 active:shadow-inset transition-all"
+          title={t('card.settings', { defaultValue: 'Settings' })}
+        >
+          <Settings className="w-5 h-5" />
+        </button>
+
+        <div className="w-px h-6 bg-fg-muted/20 mx-2" />
+
+        <button
           onClick={() => setIsBookModalOpen(true)}
           className="flex items-center justify-center w-12 h-12 rounded-full bg-bg-base text-accent shadow-extruded-sm hover:scale-110 active:shadow-inset transition-all"
           title={t('card.addBook')}
@@ -170,17 +283,25 @@ export default function CardPageClient() {
         </button>
       </div>
 
-      <AddBookModal 
-        isOpen={isBookModalOpen} 
-        onClose={() => setIsBookModalOpen(false)} 
-        onAdd={addBook} 
+      <AddBookModal
+        isOpen={isBookModalOpen}
+        onClose={handleBookModalClose}
+        onAdd={handleBookSubmit}
+        editingBook={editingBook}
       />
-      <AddQuoteModal 
-        isOpen={isQuoteModalOpen} 
-        onClose={() => setIsQuoteModalOpen(false)} 
-        onAdd={addQuote} 
+      <AddQuoteModal
+        isOpen={isQuoteModalOpen}
+        onClose={handleQuoteModalClose}
+        onAdd={handleQuoteSubmit}
         bookId={selectedBookId}
         books={books}
+        editingQuote={editingQuote}
+      />
+      <CardSettingsPanel
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        onExport={handleExport}
+        onImport={handleImport}
       />
     </div>
   );

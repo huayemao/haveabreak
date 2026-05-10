@@ -3,15 +3,29 @@
 import { useCardStore } from '@/apps/card/store';
 import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
-import { ArrowLeft, Plus, Quote, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, Quote, Trash2, Edit3 } from 'lucide-react';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu';
+import { Quote as QuoteType } from '@/apps/card/types';
 
-export default function BookDetail({ onAddQuote }: { onAddQuote: () => void }) {
+interface BookDetailProps {
+  onAddQuote: () => void;
+  onEditQuote?: (quote: QuoteType) => void;
+  onDeleteQuote?: (quoteId: string) => void;
+}
+
+export default function BookDetail({ onAddQuote, onEditQuote, onDeleteQuote }: BookDetailProps) {
   const { books, quotes: allQuotes, selectedBookId, setView, deleteQuote, deleteBook } = useCardStore();
   const t = useTranslations();
 
   const book = books.find((b) => b.id === selectedBookId);
-  const quotes = useMemo(() => 
-    selectedBookId ? allQuotes.filter(q => q.bookId === selectedBookId) : [], 
+  const quotes = useMemo(() =>
+    selectedBookId ? allQuotes.filter(q => q.bookId === selectedBookId) : [],
     [allQuotes, selectedBookId]
   );
 
@@ -21,6 +35,16 @@ export default function BookDetail({ onAddQuote }: { onAddQuote: () => void }) {
     if (confirm(t('card.confirmDeleteBook', { defaultValue: 'Are you sure you want to delete this book and all its quotes?' }))) {
       deleteBook(book.id);
       setView('library');
+    }
+  };
+
+  const handleDeleteQuote = (quoteId: string) => {
+    if (onDeleteQuote) {
+      onDeleteQuote(quoteId);
+    } else {
+      if (confirm(t('card.confirmDeleteQuote', { defaultValue: 'Are you sure you want to delete this quote?' }))) {
+        deleteQuote(quoteId);
+      }
     }
   };
 
@@ -45,7 +69,7 @@ export default function BookDetail({ onAddQuote }: { onAddQuote: () => void }) {
             <span>{book.publisher}</span>
             <span>ISBN: {book.isbn}</span>
           </div>
-          
+
           <div className="mt-8 flex justify-center md:justify-start gap-4">
             <button
               onClick={onAddQuote}
@@ -77,21 +101,32 @@ export default function BookDetail({ onAddQuote }: { onAddQuote: () => void }) {
         ) : (
           <div className="grid gap-6">
             {quotes.map((quote) => (
-              <div key={quote.id} className="relative bg-bg-base p-6 rounded-[24px] shadow-extruded-sm group">
-                <p className="text-fg-primary leading-relaxed mb-4 italic">"{quote.content}"</p>
-                <div className="flex items-center justify-between">
-                  <div className="flex gap-4 text-[10px] font-bold text-accent/70 uppercase tracking-widest">
-                    {quote.chapter && <span>{quote.chapter}</span>}
-                    {quote.page && <span>PAGE {quote.page}</span>}
+              <ContextMenu key={quote.id}>
+                <ContextMenuTrigger>
+                  <div className="relative bg-bg-base p-6 rounded-[24px] shadow-extruded-sm group">
+                    <p className="text-fg-primary leading-relaxed mb-4 italic">&quot;{quote.content}&quot;</p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex gap-4 text-[10px] font-bold text-accent/70 uppercase tracking-widest">
+                        {quote.chapter && <span>{quote.chapter}</span>}
+                        {quote.page && <span>PAGE {quote.page}</span>}
+                      </div>
+                    </div>
                   </div>
-                  <button
-                    onClick={() => deleteQuote(quote.id)}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-fg-muted hover:text-red-500"
-                  >
+                </ContextMenuTrigger>
+                <ContextMenuContent className="w-48">
+                  {onEditQuote && (
+                    <ContextMenuItem onClick={() => onEditQuote(quote)} className="gap-2">
+                      <Edit3 className="w-4 h-4" />
+                      Edit
+                    </ContextMenuItem>
+                  )}
+                  <ContextMenuSeparator />
+                  <ContextMenuItem onClick={() => handleDeleteQuote(quote.id)} className="gap-2 text-red-500 focus:text-red-500">
                     <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
+                    Delete
+                  </ContextMenuItem>
+                </ContextMenuContent>
+              </ContextMenu>
             ))}
           </div>
         )}

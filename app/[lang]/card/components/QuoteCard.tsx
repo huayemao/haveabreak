@@ -4,18 +4,44 @@ import { QuoteWithBook } from '@/apps/card/types';
 import { motion } from 'motion/react';
 import Image from 'next/image';
 import { useCardStore } from '@/apps/card/store';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu';
+import { Edit3, Trash2 } from 'lucide-react';
 
 interface QuoteCardProps {
   card: QuoteWithBook;
   isActive?: boolean;
+  onEdit?: (id: string) => void;
+  onDelete?: (id: string) => void;
 }
 
-export default function QuoteCard({ card, isActive }: QuoteCardProps) {
+export default function QuoteCard({ card, isActive, onEdit, onDelete }: QuoteCardProps) {
   const { content, book, chapter, page } = card;
   const { setView } = useCardStore();
 
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onEdit && card.id) {
+      onEdit(card.id);
+    }
+  };
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onDelete && card.id) {
+      onDelete(card.id);
+    }
+  };
+
   return (
-    <div className="w-full max-w-lg mx-auto min-h-[500px] max-h-[80vh] relative flex flex-col p-6 sm:p-10 rounded-[32px] bg-bg-base shadow-extruded overflow-hidden select-none">
+    <ContextMenu>
+      <ContextMenuTrigger>
+        <div className="w-full max-w-lg mx-auto min-h-[500px] max-h-[80vh] relative flex flex-col p-6 sm:p-10 rounded-[32px] bg-bg-base shadow-extruded overflow-hidden select-none">
       {/* Decorative Circles */}
       <div className="absolute top-[-5%] right-[-5%] w-48 h-48 rounded-full bg-bg-base shadow-inset opacity-30 pointer-events-none" />
       <div className="absolute bottom-[-10%] left-[-10%] w-64 h-64 rounded-full bg-bg-base shadow-extruded-sm opacity-20 pointer-events-none" />
@@ -84,7 +110,7 @@ export default function QuoteCard({ card, isActive }: QuoteCardProps) {
 
       {/* Bottom Glow */}
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-accent/20 to-transparent blur-sm" />
-      
+
       <style jsx global>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 4px;
@@ -97,6 +123,23 @@ export default function QuoteCard({ card, isActive }: QuoteCardProps) {
           border-radius: 10px;
         }
       `}</style>
-    </div>
+        </div>
+      </ContextMenuTrigger>
+      <ContextMenuContent className="w-48">
+        {onEdit && (
+          <ContextMenuItem onClick={handleEdit} className="gap-2">
+            <Edit3 className="w-4 h-4" />
+            Edit
+          </ContextMenuItem>
+        )}
+        <ContextMenuSeparator />
+        {onDelete && (
+          <ContextMenuItem onClick={handleDelete} className="gap-2 text-red-500 focus:text-red-500">
+            <Trash2 className="w-4 h-4" />
+            Delete
+          </ContextMenuItem>
+        )}
+      </ContextMenuContent>
+    </ContextMenu>
   );
 }
