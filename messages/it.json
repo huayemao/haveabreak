@@ -23,6 +23,7 @@
     "Goditi questo momento per te.",
     "Pausa consapevole - sii presente."
   ],
+  "loading": "Carargamento...",
   "settingsBtn": "Impostazioni",
   "settingsTitle": "Impostazioni",
   "tipsSection": "Promemoria",
@@ -126,6 +127,38 @@
   "disable": "Disabilita",
   "nav": {
     "home": "Home",
-    "frame": "Cornice"
+    "frame": "Cornice",
+    "card": "Scheda"
+  },
+  "card": {
+    "loading": "Caricamento...",
+    "pageTitle": "Ispirazione quotidiana",
+    "pageSubtitle": "Scorri verso l'alto o il basso per esplorare frasi belle",
+    "addTitle": "Aggiungi nuova citazione",
+    "addBook": "Aggiungi libro",
+    "addBookBtn": "Aggiungi libro",
+    "addQuote": "Aggiungi citazione",
+    "addQuoteBtn": "Aggiungi citazione",
+    "addFirst": "Aggiungi la tua prima frase",
+    "noCards": "Nessuna frase trovata.",
+    "noQuotesInFeed": "Nessuna frase nel tuo feed. Aggiungi prima alcuni libri e citazioni!",
+    "noBooks": "Nessun libro nella tua biblioteca.",
+    "getStarted": "Inizia",
+    "feed": "Feed",
+    "library": "Biblioteca",
+    "backToLibrary": "Torna alla biblioteca",
+    "quotes": "Citazioni",
+    "noQuotesInBook": "Nessuna citazione per questo libro. Aggiungi la prima!",
+    "confirmDeleteBook": "Sei sicuro di voler eliminare questo libro e tutte le sue citazioni?",
+    "formContent": "Contenuto / Paragrafo",
+    "formContentPlaceholder": "Scrivi qui la bella frase o il paragrafo...",
+    "formBookTitle": "Titolo del libro",
+    "formAuthor": "Autore",
+    "formPublisher": "Editore",
+    "formChapter": "Capitolo",
+    "formPage": "Pagina",
+    "formCover": "URL copertina",
+    "selectBook": "Seleziona libro",
+    "chooseABook": "Scegli un libro..."
   }
 }

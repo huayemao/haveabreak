@@ -23,6 +23,7 @@
     "Aprovecha este momento para ti.",
     "Pausa consciente - estar presente."
   ],
+  "loading": "Cargando...",
   "settingsBtn": "Ajustes",
   "settingsTitle": "Ajustes",
   "tipsSection": "Consejos de recordatorio",
@@ -126,6 +127,38 @@
   "disable": "Desactivar",
   "nav": {
     "home": "Inicio",
-    "frame": "Marco"
+    "frame": "Marco",
+    "card": "Tarjeta"
+  },
+  "card": {
+    "loading": "Cargando...",
+    "pageTitle": "Inspiración diaria",
+    "pageSubtitle": "Desliza hacia arriba o abajo para explorar frases hermosas",
+    "addTitle": "Añadir nueva cita",
+    "addBook": "Añadir libro",
+    "addBookBtn": "Añadir libro",
+    "addQuote": "Añadir cita",
+    "addQuoteBtn": "Añadir cita",
+    "addFirst": "Añade tu primera frase",
+    "noCards": "No se encontraron frases.",
+    "noQuotesInFeed": "No hay frases en tu feed. ¡Añade algunos libros y citas primero!",
+    "noBooks": "Aún no hay libros en tu biblioteca.",
+    "getStarted": "Comenzar",
+    "feed": "Feed",
+    "library": "Biblioteca",
+    "backToLibrary": "Volver a la biblioteca",
+    "quotes": "Citas",
+    "noQuotesInBook": "Aún no hay citas para este libro. ¡Añade la primera!",
+    "confirmDeleteBook": "¿Estás seguro de que quieres eliminar este libro y todas sus citas?",
+    "formContent": "Contenido / Párrafo",
+    "formContentPlaceholder": "Escribe aquí la frase o párrafo hermoso...",
+    "formBookTitle": "Título del libro",
+    "formAuthor": "Autor",
+    "formPublisher": "Editorial",
+    "formChapter": "Capítulo",
+    "formPage": "Página",
+    "formCover": "URL de portada",
+    "selectBook": "Seleccionar libro",
+    "chooseABook": "Elige un libro..."
   }
 }

@@ -23,6 +23,7 @@
     "自分のためにこの瞬間を享受しましょう。",
     "マインドフルな休憩 - 今ここにいましょう。"
   ],
+  "loading": "読み込み中...",
   "settingsBtn": "設定",
   "settingsTitle": "設定",
   "tipsSection": "リマインダー",
@@ -126,6 +127,38 @@
   "disable": "無効化",
   "nav": {
     "home": "ホーム",
-    "frame": "フレーム"
+    "frame": "フレーム",
+    "card": "カード"
+  },
+  "card": {
+    "loading": "読み込み中...",
+    "pageTitle": "今日のインスピレーション",
+    "pageSubtitle": "上下にスワイプして美しい文章を探す",
+    "addTitle": "新しい引用を追加",
+    "addBook": "本を追加",
+    "addBookBtn": "本を追加",
+    "addQuote": "引用を追加",
+    "addQuoteBtn": "引用を追加",
+    "addFirst": "最初の文章を追加",
+    "noCards": "文章が見つかりません。",
+    "noQuotesInFeed": "フィードに文章がありません。まず本と引用を追加してください！",
+    "noBooks": "ライブラリに本がまだありません。",
+    "getStarted": "始める",
+    "feed": "フィード",
+    "library": "ライブラリ",
+    "backToLibrary": "ライブラリに戻る",
+    "quotes": "引用",
+    "noQuotesInBook": "この本にはまだ引用がありません。最初の引用を追加してください！",
+    "confirmDeleteBook": "この本とそのすべての引用を削除してもよろしいですか？",
+    "formContent": "内容 / 段落",
+    "formContentPlaceholder": "ここに美しい文章や段落を書いてください...",
+    "formBookTitle": "本のタイトル",
+    "formAuthor": "著者",
+    "formPublisher": "出版社",
+    "formChapter": "章",
+    "formPage": "ページ",
+    "formCover": "表紙URL",
+    "selectBook": "本を選択",
+    "chooseABook": "本を選んでください..."
   }
 }

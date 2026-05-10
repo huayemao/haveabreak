@@ -109,7 +109,7 @@ export default function FrameLayoutClient({
       <div className="min-h-screen bg-bg-base flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-fg-muted">{t('frame.loading')}</p>
+          <p className="text-fg-muted">{t('loading')}</p>
         </div>
       </div>
     );

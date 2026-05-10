@@ -5,7 +5,7 @@ import { Link } from '@/i18n/routing';
 import { useTranslations } from 'next-intl';
 import LanguageSwitcher from './LanguageSwitcher';
 import { usePathname } from 'next/navigation';
-import { Home, Frame, Menu, X } from 'lucide-react';
+import { Home, Frame, ScrollText, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavbar } from '@/context/NavbarContext';
 
@@ -15,8 +15,9 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { isHidden } = useNavbar();
 
-  const isRoot = !pathname.includes('/frame');
+  const isRoot = !pathname.includes('/frame') && !pathname.includes('/card');
   const isFrame = pathname.includes('/frame');
+  const isCard = pathname.includes('/card');
 
   // Close menu on navigation
   useEffect(() => {
@@ -25,6 +26,7 @@ export default function Navbar() {
 
   const navLinks = [
     { href: '/', label: t('nav.home'), icon: Home, active: isRoot },
+    { href: '/card', label: t('nav.card'), icon: ScrollText, active: isCard },
     { href: '/frame', label: t('nav.frame'), icon: Frame, active: isFrame },
   ];
 

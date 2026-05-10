@@ -23,6 +23,7 @@
     "Nutze diesen Moment für dich.",
     "Achtsame Pause - sei präsent."
   ],
+  "loading": "Laden...",
   "settingsBtn": "Einstellungen",
   "settingsTitle": "Einstellungen",
   "tipsSection": "Erinnerungstipps",
@@ -126,6 +127,38 @@
   "disable": "Deaktivieren",
   "nav": {
     "home": "Startseite",
-    "frame": "Rahmen"
+    "frame": "Rahmen",
+    "card": "Karte"
+  },
+  "card": {
+    "loading": "Laden...",
+    "pageTitle": "Tägliche Inspiration",
+    "pageSubtitle": "Wischen Sie nach oben oder unten, um schöne Sätze zu entdecken",
+    "addTitle": "Neues Zitat hinzufügen",
+    "addBook": "Buch hinzufügen",
+    "addBookBtn": "Buch hinzufügen",
+    "addQuote": "Zitat hinzufügen",
+    "addQuoteBtn": "Zitat hinzufügen",
+    "addFirst": "Fügen Sie Ihren ersten Satz hinzu",
+    "noCards": "Keine Sätze gefunden.",
+    "noQuotesInFeed": "Keine Sätze in Ihrem Feed. Fügen Sie zuerst einige Bücher und Zitate hinzu!",
+    "noBooks": "Noch keine Bücher in Ihrer Bibliothek.",
+    "getStarted": "Loslegen",
+    "feed": "Feed",
+    "library": "Bibliothek",
+    "backToLibrary": "Zurück zur Bibliothek",
+    "quotes": "Zitate",
+    "noQuotesInBook": "Noch keine Zitate für dieses Buch. Fügen Sie Ihr erstes hinzu!",
+    "confirmDeleteBook": "Sind Sie sicher, dass Sie dieses Buch und alle seine Zitate löschen möchten?",
+    "formContent": "Inhalt / Absatz",
+    "formContentPlaceholder": "Schreiben Sie hier den schönen Satz oder Absatz...",
+    "formBookTitle": "Buchtitel",
+    "formAuthor": "Autor",
+    "formPublisher": "Verlag",
+    "formChapter": "Kapitel",
+    "formPage": "Seite",
+    "formCover": "Cover-URL",
+    "selectBook": "Buch auswählen",
+    "chooseABook": "Wählen Sie ein Buch..."
   }
 }

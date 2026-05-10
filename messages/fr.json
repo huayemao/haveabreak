@@ -23,6 +23,7 @@
     "Profitez de ce moment pour vous.",
     "Pause consciente - soyez présent."
   ],
+  "loading": "Chargement...",
   "settingsBtn": "Paramètres",
   "settingsTitle": "Paramètres",
   "tipsSection": "Conseils de rappel",
@@ -126,6 +127,38 @@
   "disable": "Désactiver",
   "nav": {
     "home": "Accueil",
-    "frame": "Cadre"
+    "frame": "Cadre",
+    "card": "Carte"
+  },
+  "card": {
+    "loading": "Chargement...",
+    "pageTitle": "Inspiration quotidienne",
+    "pageSubtitle": "Faites glisser vers le haut ou le bas pour explorer de belles phrases",
+    "addTitle": "Ajouter une nouvelle citation",
+    "addBook": "Ajouter un livre",
+    "addBookBtn": "Ajouter le livre",
+    "addQuote": "Ajouter une citation",
+    "addQuoteBtn": "Ajouter la citation",
+    "addFirst": "Ajoutez votre première phrase",
+    "noCards": "Aucune phrase trouvée.",
+    "noQuotesInFeed": "Aucune phrase dans votre flux. Ajoutez d'abord des livres et des citations !",
+    "noBooks": "Pas encore de livres dans votre bibliothèque.",
+    "getStarted": "Commencer",
+    "feed": "Flux",
+    "library": "Bibliothèque",
+    "backToLibrary": "Retour à la bibliothèque",
+    "quotes": "Citations",
+    "noQuotesInBook": "Pas encore de citations pour ce livre. Ajoutez la première !",
+    "confirmDeleteBook": "Êtes-vous sûr de vouloir supprimer ce livre et toutes ses citations ?",
+    "formContent": "Contenu / Paragraphe",
+    "formContentPlaceholder": "Écrivez ici la belle phrase ou le paragraphe...",
+    "formBookTitle": "Titre du livre",
+    "formAuthor": "Auteur",
+    "formPublisher": "Éditeur",
+    "formChapter": "Chapitre",
+    "formPage": "Page",
+    "formCover": "URL de couverture",
+    "selectBook": "Sélectionner un livre",
+    "chooseABook": "Choisissez un livre..."
   }
 }

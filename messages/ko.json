@@ -23,6 +23,7 @@
     "이 시간을 자신을 위해 즐겨보세요.",
     "마음챙김 휴식 - 현재에 집중하세요."
   ],
+  "loading": "로딩 중...",
   "settingsBtn": "설정",
   "settingsTitle": "설정",
   "tipsSection": "알림",
@@ -126,6 +127,38 @@
   "disable": "비활성화",
   "nav": {
     "home": "홈",
-    "frame": "프레임"
+    "frame": "프레임",
+    "card": "카드"
+  },
+  "card": {
+    "loading": "로딩 중...",
+    "pageTitle": "오늘의 영감",
+    "pageSubtitle": "위아래로 스와이프하여 아름다운 문장 탐색",
+    "addTitle": "새 인용구 추가",
+    "addBook": "책 추가",
+    "addBookBtn": "책 추가",
+    "addQuote": "인용구 추가",
+    "addQuoteBtn": "인용구 추가",
+    "addFirst": "첫 번째 문장 추가",
+    "noCards": "문장을 찾을 수 없습니다.",
+    "noQuotesInFeed": "피드에 문장이 없습니다. 먼저 책과 인용구를 추가하세요!",
+    "noBooks": "아직 라이브러리에 책이 없습니다.",
+    "getStarted": "시작하기",
+    "feed": "피드",
+    "library": "라이브러리",
+    "backToLibrary": "라이브러리로 돌아가기",
+    "quotes": "인용구",
+    "noQuotesInBook": "이 책에는 아직 인용구가 없습니다. 첫 번째를 추가하세요!",
+    "confirmDeleteBook": "이 책과 모든 인용구를 삭제하시겠습니까?",
+    "formContent": "내용 / 단락",
+    "formContentPlaceholder": "여기에 아름다운 문장이나 단락을 입력하세요...",
+    "formBookTitle": "책 제목",
+    "formAuthor": "저자",
+    "formPublisher": "출판사",
+    "formChapter": "장",
+    "formPage": "페이지",
+    "formCover": "표지 URL",
+    "selectBook": "책 선택",
+    "chooseABook": "책을 선택하세요..."
   }
 }

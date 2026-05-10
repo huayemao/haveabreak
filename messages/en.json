@@ -23,6 +23,7 @@
     "Take this moment for yourself.",
     "Mindful pause - be present."
   ],
+  "loading": "Loading...",
   "settingsBtn": "Settings",
   "settingsTitle": "Settings",
   "tipsSection": "Reminder Tips",
@@ -126,6 +127,38 @@
   "disable": "Disable",
   "nav": {
     "home": "Home",
-    "frame": "Frame"
+    "frame": "Frame",
+    "card": "Card"
+  },
+  "card": {
+    "loading": "Loading...",
+    "pageTitle": "Daily Inspiration",
+    "pageSubtitle": "Swipe up or down to explore beautiful paragraphs",
+    "addTitle": "Add New Quote",
+    "addBook": "Add Book",
+    "addBookBtn": "Add Book",
+    "addQuote": "Add Quote",
+    "addQuoteBtn": "Add Quote",
+    "addFirst": "Add Your First Sentence",
+    "noCards": "No sentences found.",
+    "noQuotesInFeed": "No sentences in your feed. Add some books and quotes first!",
+    "noBooks": "No books in your library yet.",
+    "getStarted": "Get Started",
+    "feed": "Feed",
+    "library": "Library",
+    "backToLibrary": "Back to Library",
+    "quotes": "Quotes",
+    "noQuotesInBook": "No quotes for this book yet. Add your first one!",
+    "confirmDeleteBook": "Are you sure you want to delete this book and all its quotes?",
+    "formContent": "Content / Paragraph",
+    "formContentPlaceholder": "Write the beautiful sentence or paragraph here...",
+    "formBookTitle": "Book Title",
+    "formAuthor": "Author",
+    "formPublisher": "Publisher",
+    "formChapter": "Chapter",
+    "formPage": "Page",
+    "formCover": "Cover URL",
+    "selectBook": "Select Book",
+    "chooseABook": "Choose a book..."
   }
 }

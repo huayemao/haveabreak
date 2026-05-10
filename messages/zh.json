@@ -23,6 +23,7 @@
     "享受属于自己的这一刻。",
     "正念休息 - 活在当下。"
   ],
+  "loading": "加载中...",
   "settingsBtn": "设置",
   "settingsTitle": "设置",
   "tipsSection": "提醒文案",
@@ -100,7 +101,6 @@
     "defaultCollection": "默认合集",
     "exitFullscreen": "退出全屏",
     "enterFullscreen": "进入全屏",
-    "loading": "加载中...",
     "importing": "导入中...",
     "error": "错误",
     "unsupportedType": "不支持的媒体类型",
@@ -126,6 +126,38 @@
   "disable": "禁用",
   "nav": {
     "home": "首页",
-    "frame": "画框"
+    "frame": "画框",
+    "card": "卡片"
+  },
+  "card": {
+    "loading": "加载中...",
+    "pageTitle": "每日灵感",
+    "pageSubtitle": "上下滑动，探索优美的段落",
+    "addTitle": "添加新句子",
+    "addBook": "添加图书",
+    "addBookBtn": "确认添加图书",
+    "addQuote": "添加句子",
+    "addQuoteBtn": "确认添加句子",
+    "addFirst": "添加你的第一个句子",
+    "noCards": "暂无句子",
+    "noQuotesInFeed": "你的流里还没有句子。先添加一些书和句子吧！",
+    "noBooks": "你的图书馆里还没有书。",
+    "getStarted": "开始使用",
+    "feed": "发现",
+    "library": "图书馆",
+    "backToLibrary": "返回图书馆",
+    "quotes": "优美句子",
+    "noQuotesInBook": "这本书还没有句子。添加第一个吧！",
+    "confirmDeleteBook": "你确定要删除这本书及其所有句子吗？",
+    "formContent": "内容 / 段落",
+    "formContentPlaceholder": "在这里输入优美的句子或段落...",
+    "formBookTitle": "书名",
+    "formAuthor": "作者",
+    "formPublisher": "出版社",
+    "formChapter": "章节",
+    "formPage": "页码",
+    "formCover": "封面链接",
+    "selectBook": "选择图书",
+    "chooseABook": "选择一本书..."
   }
 }
