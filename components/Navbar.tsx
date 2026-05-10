@@ -42,7 +42,7 @@ export default function Navbar() {
       className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-7xl px-4 flex flex-col items-end md:items-center pointer-events-none"
     >
       {/* Desktop & Mobile Main Pill */}
-      <div className="flex items-center gap-2 sm:gap-6 px-4 sm:px-6 py-2.5 rounded-full bg-bg-base shadow-extruded backdrop-blur-md bg-opacity-90 border border-white/10 relative z-50 pointer-events-auto mx-auto">
+      <div className="flex items-center gap-2 sm:gap-6 px-4 sm:px-6 py-2.5 rounded-full bg-bg-base shadow-extruded backdrop-blur-md bg-opacity-90 border border-white/10 relative z-50 pointer-events-auto md:mx-auto">
         {/* Desktop Links (Hidden on mobile) */}
         <div className="hidden md:flex items-center gap-4">
           {navLinks.map((link) => (
