@@ -37,7 +37,7 @@ export default function CardLayoutClient({
   const isLibrary = pathname.startsWith('/card/library');
 
   return (
-    <div className="min-h-screen bg-bg-base pt-28 pb-24">
+    <div className="min-h-screen bg-bg-base pt-12 md:pt-28 pb-24">
       <main className="max-w-7xl mx-auto px-4 py-6">
         <Suspense fallback={null}>
           {children}

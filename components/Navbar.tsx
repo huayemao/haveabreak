@@ -39,21 +39,10 @@ export default function Navbar() {
         pointerEvents: isHidden ? 'none' : 'auto'
       }}
       transition={{ duration: 0.3, ease: 'easeInOut' }}
-      className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-7xl px-4 flex flex-col items-center pointer-events-none"
+      className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-7xl px-4 flex flex-col items-end md:items-center pointer-events-none"
     >
       {/* Desktop & Mobile Main Pill */}
       <div className="flex items-center gap-2 sm:gap-6 px-4 sm:px-6 py-2.5 rounded-full bg-bg-base shadow-extruded backdrop-blur-md bg-opacity-90 border border-white/10 relative z-50 pointer-events-auto mx-auto">
-
-        {/* Brand / Logo (Always visible) */}
-        <Link
-          href="/"
-          className={`flex items-center gap-2 px-3 py-2 rounded-2xl transition-all duration-300 text-accent hover:scale-105 active:scale-95`}
-        >
-          <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center shadow-extruded-sm">
-            <span className="text-white font-bold text-xs font-display">HB</span>
-          </div>
-        </Link>
-
         {/* Desktop Links (Hidden on mobile) */}
         <div className="hidden md:flex items-center gap-4">
           {navLinks.map((link) => (
