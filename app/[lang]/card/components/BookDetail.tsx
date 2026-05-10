@@ -79,7 +79,7 @@ export default function BookDetail({ onAddQuote, onEditQuote, onDeleteQuote }: B
               {t('card.addQuote', { defaultValue: 'Add Quote' })}
             </button>
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+              <DropdownMenuTrigger>
                 <button className="w-10 h-10 rounded-xl neumorphic-button flex items-center justify-center hover:bg-bg-secondary transition-colors">
                   <MoreHorizontal className="w-5 h-5 text-fg-muted" />
                 </button>
