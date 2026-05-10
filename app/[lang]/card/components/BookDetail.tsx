@@ -3,14 +3,14 @@
 import { useCardStore } from '@/apps/card/store';
 import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
-import { ArrowLeft, Plus, Quote, Trash2, Edit3 } from 'lucide-react';
+import { ArrowLeft, Plus, Quote, Trash2, Edit3, MoreHorizontal } from 'lucide-react';
 import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuSeparator,
-  ContextMenuTrigger,
-} from '@/components/ui/context-menu';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Quote as QuoteType } from '@/apps/card/types';
 
 interface BookDetailProps {
@@ -70,20 +70,27 @@ export default function BookDetail({ onAddQuote, onEditQuote, onDeleteQuote }: B
             <span>ISBN: {book.isbn}</span>
           </div>
 
-          <div className="mt-8 flex justify-center md:justify-start gap-4">
+          <div className="mt-8 flex justify-center md:justify-start gap-3">
             <button
               onClick={onAddQuote}
-              className="neumorphic-button-primary px-6 py-2 rounded-2xl flex items-center gap-2"
+              className="neumorphic-button-primary px-6 py-2.5 rounded-2xl flex items-center gap-2 text-sm font-semibold"
             >
               <Plus className="w-5 h-5" />
               {t('card.addQuote', { defaultValue: 'Add Quote' })}
             </button>
-            <button
-              onClick={handleDeleteBook}
-              className="w-10 h-10 rounded-2xl neumorphic-button text-red-500 flex items-center justify-center hover:bg-red-50"
-            >
-              <Trash2 className="w-5 h-5" />
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="w-10 h-10 rounded-xl neumorphic-button flex items-center justify-center hover:bg-bg-secondary transition-colors">
+                  <MoreHorizontal className="w-5 h-5 text-fg-muted" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-40">
+                <DropdownMenuItem onClick={handleDeleteBook} className="gap-2 text-red-500 focus:text-red-500">
+                  <Trash2 className="w-4 h-4" />
+                  {t('card.deleteBook', { defaultValue: 'Delete Book' })}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
@@ -101,8 +108,8 @@ export default function BookDetail({ onAddQuote, onEditQuote, onDeleteQuote }: B
         ) : (
           <div className="grid gap-6">
             {quotes.map((quote) => (
-              <ContextMenu key={quote.id}>
-                <ContextMenuTrigger>
+              <DropdownMenu key={quote.id}>
+                <DropdownMenuTrigger>
                   <div className="relative bg-bg-base p-6 rounded-[24px] shadow-extruded-sm group">
                     <p className="text-fg-primary leading-relaxed mb-4 italic">&quot;{quote.content}&quot;</p>
                     <div className="flex items-center justify-between">
@@ -112,21 +119,21 @@ export default function BookDetail({ onAddQuote, onEditQuote, onDeleteQuote }: B
                       </div>
                     </div>
                   </div>
-                </ContextMenuTrigger>
-                <ContextMenuContent className="w-48">
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-48">
                   {onEditQuote && (
-                    <ContextMenuItem onClick={() => onEditQuote(quote)} className="gap-2">
+                    <DropdownMenuItem onClick={() => onEditQuote(quote)} className="gap-2">
                       <Edit3 className="w-4 h-4" />
                       Edit
-                    </ContextMenuItem>
+                    </DropdownMenuItem>
                   )}
-                  <ContextMenuSeparator />
-                  <ContextMenuItem onClick={() => handleDeleteQuote(quote.id)} className="gap-2 text-red-500 focus:text-red-500">
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => handleDeleteQuote(quote.id)} className="gap-2 text-red-500 focus:text-red-500">
                     <Trash2 className="w-4 h-4" />
                     Delete
-                  </ContextMenuItem>
-                </ContextMenuContent>
-              </ContextMenu>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ))}
           </div>
         )}

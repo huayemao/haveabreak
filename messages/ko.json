@@ -126,9 +126,9 @@
   "enable": "활성화",
   "disable": "비활성화",
   "nav": {
-    "home": "홈",
-    "frame": "프레임",
-    "card": "카드"
+    "home": "타이머 휴식",
+    "frame": "디지털 액자",
+    "card": "책 발췌"
   },
   "card": {
     "loading": "로딩 중...",
@@ -150,6 +150,7 @@
     "quotes": "인용구",
     "noQuotesInBook": "이 책에는 아직 인용구가 없습니다. 첫 번째를 추가하세요!",
     "confirmDeleteBook": "이 책과 모든 인용구를 삭제하시겠습니까?",
+    "deleteBook": "책 삭제",
     "confirmDeleteQuote": "이 인용구를 삭제하시겠습니까?",
     "formContent": "내용 / 단락",
     "formContentPlaceholder": "여기에 아름다운 문장이나 단락을 입력하세요...",

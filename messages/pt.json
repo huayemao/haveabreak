@@ -126,9 +126,9 @@
   "enable": "Ativar",
   "disable": "Desativar",
   "nav": {
-    "home": "Início",
-    "frame": "Quadro",
-    "card": "Cartão"
+    "home": "Pausa cronometrada",
+    "frame": "Moldura digital",
+    "card": "Trechos de livros"
   },
   "card": {
     "loading": "Carregando...",
@@ -150,6 +150,7 @@
     "quotes": "Citações",
     "noQuotesInBook": "Ainda não há citações para este livro. Adicione a primeira!",
     "confirmDeleteBook": "Tem certeza de que deseja excluir este livro e todas as suas citações?",
+    "deleteBook": "Excluir livro",
     "confirmDeleteQuote": "Tem certeza de que deseja excluir esta citação?",
     "formContent": "Conteúdo / Parágrafo",
     "formContentPlaceholder": "Escreva aqui a frase ou parágrafo bonito...",

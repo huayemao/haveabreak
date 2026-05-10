@@ -126,9 +126,9 @@
   "enable": "Aktivieren",
   "disable": "Deaktivieren",
   "nav": {
-    "home": "Startseite",
-    "frame": "Rahmen",
-    "card": "Karte"
+    "home": "Zeitgesteuerte Pause",
+    "frame": "Digitaler Bilderrahmen",
+    "card": "Buchauszüge"
   },
   "card": {
     "loading": "Laden...",
@@ -150,6 +150,7 @@
     "quotes": "Zitate",
     "noQuotesInBook": "Noch keine Zitate für dieses Buch. Fügen Sie Ihr erstes hinzu!",
     "confirmDeleteBook": "Sind Sie sicher, dass Sie dieses Buch und alle seine Zitate löschen möchten?",
+    "deleteBook": "Buch löschen",
     "confirmDeleteQuote": "Sind Sie sicher, dass Sie diese Zitat löschen möchten?",
     "formContent": "Inhalt / Absatz",
     "formContentPlaceholder": "Schreiben Sie hier den schönen Satz oder Absatz...",

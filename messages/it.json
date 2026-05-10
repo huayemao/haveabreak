@@ -126,9 +126,9 @@
   "enable": "Abilita",
   "disable": "Disabilita",
   "nav": {
-    "home": "Home",
-    "frame": "Cornice",
-    "card": "Scheda"
+    "home": "Pausa temporizzata",
+    "frame": "Cornice digitale",
+    "card": "Estratti di libri"
   },
   "card": {
     "loading": "Caricamento...",
@@ -150,6 +150,7 @@
     "quotes": "Citazioni",
     "noQuotesInBook": "Nessuna citazione per questo libro. Aggiungi la prima!",
     "confirmDeleteBook": "Sei sicuro di voler eliminare questo libro e tutte le sue citazioni?",
+    "deleteBook": "Elimina libro",
     "confirmDeleteQuote": "Sei sicuro di voler eliminare questa citazione?",
     "formContent": "Contenuto / Paragrafo",
     "formContentPlaceholder": "Scrivi qui la bella frase o il paragrafo...",

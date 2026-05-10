@@ -142,7 +142,6 @@ body {
   border-radius: 16px;
   box-shadow: 9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5);
   border: none;
-  padding: 10px 20px;
   color: #3D4852;
   cursor: pointer;
   transition: all 0.3s ease-out;

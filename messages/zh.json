@@ -125,9 +125,9 @@
   "enable": "启用",
   "disable": "禁用",
   "nav": {
-    "home": "首页",
-    "frame": "画框",
-    "card": "卡片"
+    "home":"计时休息",
+    "frame": "电子画框",
+    "card": "书籍摘抄"
   },
   "card": {
     "loading": "加载中...",
@@ -149,6 +149,7 @@
     "quotes": "优美句子",
     "noQuotesInBook": "这本书还没有句子。添加第一个吧！",
     "confirmDeleteBook": "你确定要删除这本书及其所有句子吗？",
+    "deleteBook": "删除图书",
     "confirmDeleteQuote": "你确定要删除这个句子吗？",
     "formContent": "内容 / 段落",
     "formContentPlaceholder": "在这里输入优美的句子或段落...",

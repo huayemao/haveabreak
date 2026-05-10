@@ -126,9 +126,9 @@
   "enable": "有効化",
   "disable": "無効化",
   "nav": {
-    "home": "ホーム",
-    "frame": "フレーム",
-    "card": "カード"
+    "home": "タイマー休憩",
+    "frame": "デジタルフォトフレーム",
+    "card": "本の引用"
   },
   "card": {
     "loading": "読み込み中...",
@@ -150,6 +150,7 @@
     "quotes": "引用",
     "noQuotesInBook": "この本にはまだ引用がありません。最初の引用を追加してください！",
     "confirmDeleteBook": "この本とそのすべての引用を削除してもよろしいですか？",
+    "deleteBook": "本を削除",
     "confirmDeleteQuote": "この引用を削除してもよろしいですか？",
     "formContent": "内容 / 段落",
     "formContentPlaceholder": "ここに美しい文章や段落を書いてください...",

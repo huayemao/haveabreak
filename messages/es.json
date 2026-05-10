@@ -126,9 +126,9 @@
   "enable": "Activar",
   "disable": "Desactivar",
   "nav": {
-    "home": "Inicio",
-    "frame": "Marco",
-    "card": "Tarjeta"
+    "home": "Descanso cronometrado",
+    "frame": "Marco digital",
+    "card": "Extractos de libros"
   },
   "card": {
     "loading": "Cargando...",
@@ -150,6 +150,7 @@
     "quotes": "Citas",
     "noQuotesInBook": "Aún no hay citas para este libro. ¡Añade la primera!",
     "confirmDeleteBook": "¿Estás seguro de que quieres eliminar este libro y todas sus citas?",
+    "deleteBook": "Eliminar libro",
     "confirmDeleteQuote": "¿Estás seguro de que quieres eliminar esta cita?",
     "formContent": "Contenido / Párrafo",
     "formContentPlaceholder": "Escribe aquí la frase o párrafo hermoso...",
