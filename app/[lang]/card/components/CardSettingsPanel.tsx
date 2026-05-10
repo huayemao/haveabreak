@@ -4,42 +4,57 @@ import { useTranslations } from 'next-intl';
 import { useScrollLock } from '@/apps/frame/utils/useScrollLock';
 import { useState } from 'react';
 import { X, Download, Upload } from 'lucide-react';
+import { Book } from '@/apps/card/types';
 
 interface CardSettingsPanelProps {
   isOpen: boolean;
   onClose: () => void;
-  onExport: () => void;
+  books: Book[];
+  onExport: (filename: string) => void;
   onImport: (data: string) => void;
 }
 
 export default function CardSettingsPanel({
   isOpen,
   onClose,
+  books,
   onExport,
   onImport,
 }: CardSettingsPanelProps) {
   const t = useTranslations();
   useScrollLock(isOpen);
-  const [importData, setImportData] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
-  const handleImport = () => {
-    if (importData.trim()) {
-      try {
-        onImport(importData.trim());
-        setSuccessMessage(t('card.importSuccess', { defaultValue: 'Import successful!' }));
-        setShowSuccess(true);
-        setImportData('');
-        setTimeout(() => setShowSuccess(false), 3000);
-      } catch {
-        alert(t('card.importFailed', { defaultValue: 'Import failed. Please check your data format.' }));
-      }
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const content = event.target?.result as string;
+        if (content) {
+          try {
+            onImport(content);
+            setSuccessMessage(t('card.importSuccess', { defaultValue: 'Import successful!' }));
+            setShowSuccess(true);
+            setTimeout(() => setShowSuccess(false), 3000);
+          } catch {
+            alert(t('card.importFailed', { defaultValue: 'Import failed. Please check your data format.' }));
+          }
+        }
+      };
+      reader.readAsText(file);
     }
+    e.target.value = '';
   };
 
   const handleExport = () => {
-    onExport();
+    const bookName = books.length > 0
+      ? books.map(b => b.title.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '-')).join('-')
+      : 'all';
+    const timestamp = new Date().toISOString().slice(0, 10);
+    const filename = `${bookName}-${timestamp}.json`;
+    onExport(filename);
     setSuccessMessage(t('card.exportSuccess', { defaultValue: 'Export successful!' }));
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 3000);
@@ -89,24 +104,24 @@ export default function CardSettingsPanel({
                 <Download className="w-5 h-5" />
                 {t('card.export', { defaultValue: 'Export' })}
               </button>
-              <button
-                onClick={handleImport}
-                className="flex-1 neumorphic-button py-4 rounded-2xl flex items-center justify-center gap-2 font-bold"
-              >
-                <Upload className="w-5 h-5" />
-                {t('card.import', { defaultValue: 'Import' })}
-              </button>
             </div>
           </div>
 
           <div className="space-y-3">
-            <label className="text-sm font-bold text-fg-muted">{t('card.importDataLabel', { defaultValue: 'Paste imported data here' })}</label>
-            <textarea
-              value={importData}
-              onChange={(e) => setImportData(e.target.value)}
-              placeholder='{"books": [...], "quotes": [...]}'
-              className="w-full h-40 p-4 rounded-2xl bg-bg-base shadow-inset focus:shadow-inset-deep outline-none transition-all resize-none text-fg-primary text-sm font-mono"
-            />
+            <label className="text-sm font-bold text-fg-muted">{t('card.importDataLabel', { defaultValue: 'Import data' })}</label>
+            <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-fg-muted/30 rounded-xl">
+              <Upload className="w-12 h-12 text-fg-muted mb-4" />
+              <p className="text-fg-muted mb-4">{t('card.selectFile', { defaultValue: 'Select a JSON file' })}</p>
+              <label className="cursor-pointer neumorphic-button-primary px-6 py-2">
+                {t('card.chooseFile', { defaultValue: 'Choose File' })}
+                <input
+                  type="file"
+                  accept=".json"
+                  onChange={handleImport}
+                  className="hidden"
+                />
+              </label>
+            </div>
           </div>
         </div>
       </div>
