@@ -3,7 +3,7 @@
 import { useCardStore } from '@/apps/card/store';
 import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
+import { Link, useRouter } from '@/i18n/routing';
 import { ArrowLeft, Plus, Quote, Trash2, Edit3, MoreHorizontal } from 'lucide-react';
 import {
   DropdownMenu,
@@ -13,7 +13,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Quote as QuoteType } from '@/apps/card/types';
-import { useRouter } from 'next/navigation';
 
 interface BookDetailParams {
   bookId: string;

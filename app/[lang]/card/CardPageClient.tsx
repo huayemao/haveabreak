@@ -7,8 +7,8 @@ import QuoteCard from './components/QuoteCard';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { Plus, Library, Sparkles, ChevronUp, ChevronDown, Settings } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { Link } from '@/i18n/routing';
+import { useRouter } from '@/i18n/routing';
 
 export default function CardPageClient() {
   const {
@@ -69,8 +69,7 @@ export default function CardPageClient() {
 
   const handleFullscreen = useCallback((quoteId: string) => {
     if (isDragging) return;
-    const lang = window.location.pathname.split('/')[1];
-    router.push(`/${lang}/card/fullscreen/${quoteId}`);
+    router.push(`/card/quotes/${quoteId}`);
   }, [router, isDragging]);
 
   if (quotesWithBooks.length === 0) {

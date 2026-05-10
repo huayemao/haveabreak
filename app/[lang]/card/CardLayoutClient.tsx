@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useCardStore } from '@/apps/card/store';
 import { useEffect, Suspense } from 'react';
 import { Plus, Library, Sparkles, Settings } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { usePathname } from 'next/navigation';
 
 export default function CardLayoutClient({

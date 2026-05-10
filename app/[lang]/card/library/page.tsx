@@ -2,7 +2,7 @@
 
 import { useCardStore } from '@/apps/card/store';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { Plus, Book as BookIcon, ChevronRight } from 'lucide-react';
 import {
   ContextMenu,
