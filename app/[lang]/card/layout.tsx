@@ -20,7 +20,7 @@ export default async function CardLayout({
   modals,
 }: {
   children: React.ReactNode;
-  modals: React.ReactNode;
+  modals?: React.ReactNode;
 }) {
   return (
     <Suspense fallback={null}>
