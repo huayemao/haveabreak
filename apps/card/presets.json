@@ -7,24 +7,26 @@
       "author": "玛格丽特·米切尔",
       "translator": "朱攸若",
       "publisher": "译林出版社",
-      "isbn": "9787544771191"
+      "isbn": "9787544771191",
+      "createdAt": 1778388828623
     },
     {
       "id": "book-2",
-      "title": "哈姆雷特",
-      "cover": "https://img3.doubanio.com/view/subject/s/public/s1027132.jpg",
-      "author": "威廉·莎士比亚",
-      "translator": "朱生豪",
-      "publisher": "人民文学出版社",
-      "isbn": "9787020038824"
+      "title": "谈美",
+      "cover": "https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1678267696i/82516440.jpg",
+      "author": "朱光潜",
+      "publisher": "生活·读书·新知三联书店",
+      "isbn": "9787108041784",
+      "createdAt": 1778388828623
     },
     {
-      "id": "book-3",
-      "title": "Steve Jobs",
-      "cover": "https://img3.doubanio.com/view/subject/s/public/s6974202.jpg",
-      "author": "Walter Isaacson",
-      "publisher": "Simon & Schuster",
-      "isbn": "9781451648539"
+      "title": "复活",
+      "author": "列夫·托尔斯泰",
+      "cover": "https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1699097287i/70664351.jpg",
+      "publisher": "人民文学出版社",
+      "isbn": "9787020170258",
+      "id": "1778388864096-hu6teh42h",
+      "createdAt": 1778388864096
     }
   ],
   "quotes": [
@@ -33,21 +35,20 @@
       "bookId": "book-1",
       "content": "焦虑的心情，在人们心中滋长着，恐惧感开始悄悄在城里蔓延开来。不明真相是最最叫人难以忍受的。有儿子在前线的人家都热切地祈祷，愿他们的儿子不要在宾夕法尼亚。至于那些明知自己的亲人，是和达西•米德在同一个团里的，就只好咬咬牙说，能够参加这次把北佬彻底粉碎的战役，乃是莫大的光荣。",
       "chapter": "第十三章",
-      "page": "245"
+      "page": "245",
+      "createdAt": 1778388828623
     },
     {
       "id": "preset-2",
       "bookId": "book-2",
-      "content": "生存还是毁灭，这是一个问题。是否应默默忍受坎坷命运之无情打击，还是应挺身反抗无边苦海，并将其克服？这两种行为，哪一种更高贵？死即睡眠，它不过如此。倘若一眠能了结心灵之苦楚与肉体继承之百般磨难，那便是我们诚心求索之归宿。死即睡眠，它不过如此。死即睡眠，也许还会做梦。",
-      "chapter": "第三幕 第一场",
-      "page": "156"
+      "content": "织锦和钢铁房屋用意旨在适用，而湘绣和中世纪建筑与适用之外还要能慰情，还要能为作者力量气魄的结晶，还要能表现理想与希望，假如这几点在人生和文化上自有意义与价值，效率绝不是唯一的固定价值的标准，尤其不是最高品的估定价值的标准，最高品估定价值的标准一定要着重人的部分，遇见一种工作不仅估量他的成功如何，还要问他是否有努力得来的是否为高尚理想与伟大人格的表现，如果他是经过努力而能表现理想与人格的工作，虽然结果失败了，我们也得承认它是有价值的。",
+      "createdAt": 1778388828623
     },
     {
-      "id": "preset-3",
-      "bookId": "book-3",
-      "content": "Stay hungry, stay foolish. It was their farewell message as they signed off. And I have always wished that for myself. And now, as you graduate to begin anew, I wish that for you. Stay Hungry. Stay Foolish.",
-      "chapter": "Epilogue",
-      "page": "571"
+      "content": "他站在那里瞧着她，不自觉的同时听着自己的心跳和从小河那边传来的古怪声响。那里在雾蒙蒙的河上，正在发生持续不断的缓慢的变化。一会儿是什么东西在呼哧呼哧喘气，一会儿是咔嚓一声裂开，一会儿是哗啦一下崩塌，一会儿是薄冰像玻璃一样互相碰撞，发出清脆的响声。",
+      "bookId": "1778388864096-hu6teh42h",
+      "id": "1778388913206-i06caexh0",
+      "createdAt": 1778388913206
     }
   ],
   "settings": {
