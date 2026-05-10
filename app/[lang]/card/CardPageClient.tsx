@@ -91,13 +91,13 @@ export default function CardPageClient() {
   }
 
   return (
-    <div className="relative w-full flex flex-col items-center px-4">
+    <div className="relative w-full flex flex-col items-center px-4 h-full">
       <div className="mb-8 text-center">
         <h2 className="text-3xl font-bold text-fg-primary font-display mb-2">{t('card.pageTitle')}</h2>
         <p className="text-sm text-fg-muted">{t('card.pageSubtitle')}</p>
       </div>
 
-      <div className="relative w-full flex items-center justify-center">
+      <div className="flex-1 relative w-full flex items-center justify-center">
         <AnimatePresence mode="wait">
           <motion.div
             key={quotesWithBooks[currentIndex]?.id}

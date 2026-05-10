@@ -68,7 +68,7 @@ export default function FullscreenQuotePage() {
         exit={{ y: 20, opacity: 0 }}
         transition={{ delay: 0.1 }}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-2xl max-h-[90vh] py-6 overflow-hidden"
+        className="w-full max-w-2xl max-h-[90vh] p-4 overflow-hidden"
       >
         <QuoteCard
           card={quote}

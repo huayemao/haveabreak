@@ -42,7 +42,7 @@ export default function QuoteCard({ card, isActive, onEdit, onDelete, isFullscre
     <ContextMenu>
       <ContextMenuTrigger>
         <div 
-          className={`w-full max-w-lg mx-auto relative flex flex-col p-6 sm:p-10 rounded-[32px] bg-bg-base shadow-extruded overflow-hidden select-none ${isFullscreen ? 'min-h-[76vh]' : 'aspect-[3/4] md:aspect-square'} ${onClick ? 'cursor-pointer hover:scale-[1.02] transition-transform duration-300' : ''}`}
+          className={`w-full max-w-lg mx-auto relative flex flex-col p-6 sm:p-10 rounded-[32px] bg-bg-base shadow-extruded overflow-hidden select-none ${isFullscreen ? 'min-h-[76vh]' : ''} ${onClick ? 'cursor-pointer hover:scale-[1.02] transition-transform duration-300' : ''}`}
           onClick={onClick}
         >
       {/* Decorative Circles */}
@@ -84,9 +84,7 @@ export default function QuoteCard({ card, isActive, onEdit, onDelete, isFullscre
         className={`relative z-10 flex-1 flex flex-col ${isFullscreen ? 'overflow-y-auto pr-2 custom-scrollbar' : 'overflow-hidden'}`}
         onPointerDown={(e) => e.stopPropagation()}
       >
-        <div className="mb-4 inline-block">
-          <div className="w-8 h-1 bg-accent rounded-full opacity-50 mb-4" />
-        </div>
+     
         
         <div className={`text-lg sm:text-xl text-fg-primary leading-relaxed font-body mb-6 ${isFullscreen ? '' : 'line-clamp-6'}`}>
           {content}

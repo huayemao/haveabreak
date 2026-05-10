@@ -122,7 +122,7 @@ export default function FrameLayoutClient({
   const isSettings = pathname === `${baseRoute}/settings`;
 
   return (
-    <div className="min-h-screen bg-bg-base pt-28">
+    <div className="min-h-screen bg-bg-base pt-28 flex flex-col">
       <header className="z-30 bg-bg-base/90 backdrop-blur-lg border-b border-white/10 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
@@ -267,7 +267,7 @@ export default function FrameLayoutClient({
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-6">
+      <main className="max-w-7xl mx-auto px-4 py-6 flex-1">
         <Suspense fallback={null}>
           {children}
         </Suspense>
