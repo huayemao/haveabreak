@@ -2,23 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'i18n/routing';
+import { useSearchParams } from 'next/navigation';
 import { Quote, Book } from '@/apps/card/types';
 import { useCardStore } from '@/apps/card/store';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Quote as QuoteIcon, Hash, Bookmark, Type } from 'lucide-react';
 
-interface AddQuoteParams {
-  bookId?: string;
-  quoteId?: string;
-}
-
-export default function AddQuoteModal({ params }: { params: Promise<AddQuoteParams> }) {
+export default function AddQuoteModal() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const t = useTranslations();
   const { addQuote, updateQuote, books, quotes } = useCardStore();
   
-  const [resolvedParams, setResolvedParams] = useState<AddQuoteParams | null>(null);
   const [content, setContent] = useState('');
   const [bookId, setBookId] = useState('');
   const [chapter, setChapter] = useState('');
@@ -26,22 +22,22 @@ export default function AddQuoteModal({ params }: { params: Promise<AddQuotePara
   const [editingQuote, setEditingQuote] = useState<Quote | null>(null);
 
   useEffect(() => {
-    params.then(p => {
-      setResolvedParams(p);
-      if (p?.quoteId) {
-        const quote = quotes.find(q => q.id === p.quoteId);
-        if (quote) {
-          setEditingQuote(quote);
-          setContent(quote.content);
-          setBookId(quote.bookId);
-          setChapter(quote.chapter || '');
-          setPage(quote.page || '');
-        }
-      } else if (p?.bookId) {
-        setBookId(p.bookId);
+    const quoteId = searchParams.get('quoteId');
+    const bookIdParam = searchParams.get('bookId');
+    
+    if (quoteId) {
+      const quote = quotes.find(q => q.id === quoteId);
+      if (quote) {
+        setEditingQuote(quote);
+        setContent(quote.content);
+        setBookId(quote.bookId);
+        setChapter(quote.chapter || '');
+        setPage(quote.page || '');
       }
-    });
-  }, [params, quotes]);
+    } else if (bookIdParam) {
+      setBookId(bookIdParam);
+    }
+  }, [searchParams, quotes]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,7 +56,7 @@ export default function AddQuoteModal({ params }: { params: Promise<AddQuotePara
     router.back();
   };
 
-  const initialBookId = resolvedParams?.bookId;
+  const initialBookId = searchParams.get('bookId');
 
   return (
     <motion.div

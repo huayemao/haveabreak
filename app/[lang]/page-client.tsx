@@ -35,6 +35,38 @@ export default function TimerApp() {
   const timerTips = t.raw('timerTips') as string[];
   const enabledPresetTips = timerTips.filter(tip => !settings.disabledPresetTips.includes(tip));
   const allTips = [...enabledPresetTips, ...settings.customTips];
+  
+  const handleInterrupt = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    interruptTimer();
+  };
+
+  const triggerConfetti = () => {
+    const duration = 3000;
+    const end = Date.now() + duration;
+
+    const frame = () => {
+      confetti({
+        particleCount: 5,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: ['#6C63FF', '#8B84FF', '#38B2AC']
+      });
+      confetti({
+        particleCount: 5,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: ['#6C63FF', '#8B84FF', '#38B2AC']
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    };
+    frame();
+  };
 
   useEffect(() => {
     setIsHidden(isRunning || isInterrupted);
@@ -83,10 +115,7 @@ export default function TimerApp() {
     }
   }, [isRunning, isFinished, isInterrupted, tickTimer]);
 
-  const handleInterrupt = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    interruptTimer();
-  };
+
 
   useEffect(() => {
     if (isFinished) {
@@ -99,32 +128,7 @@ export default function TimerApp() {
     }
   }, [isFinished]);
 
-  const triggerConfetti = () => {
-    const duration = 3000;
-    const end = Date.now() + duration;
 
-    const frame = () => {
-      confetti({
-        particleCount: 5,
-        angle: 60,
-        spread: 55,
-        origin: { x: 0 },
-        colors: ['#6C63FF', '#8B84FF', '#38B2AC']
-      });
-      confetti({
-        particleCount: 5,
-        angle: 120,
-        spread: 55,
-        origin: { x: 1 },
-        colors: ['#6C63FF', '#8B84FF', '#38B2AC']
-      });
-
-      if (Date.now() < end) {
-        requestAnimationFrame(frame);
-      }
-    };
-    frame();
-  };
 
   const handleStopTimer = () => {
     if (timerRef.current) clearInterval(timerRef.current);
@@ -156,7 +160,7 @@ export default function TimerApp() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex-1 flex flex-col p-8 pt-32 sm:pt-40"
+            className="flex-1 flex flex-col p-8 pt-20 sm:pt-28"
           >
             <div className="flex-1 flex flex-col items-center justify-center z-10 relative">
               <div className="w-full max-w-md mx-auto flex flex-col items-center text-center space-y-12">

@@ -1,6 +1,7 @@
 "use client";
 import { useState, useCallback } from 'react';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useRouter, usePathname } from 'i18n/routing';
+import { useSearchParams } from 'next/navigation';
 import Lightbox from 'yet-another-react-lightbox';
 import Video from 'yet-another-react-lightbox/plugins/video';
 import { MediaItem, MediaType } from '../types';

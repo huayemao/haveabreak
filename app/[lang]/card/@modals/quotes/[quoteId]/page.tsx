@@ -1,6 +1,7 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
+import { useRouter } from 'i18n/routing';
 import { useCardStore, selectQuotesWithBooks } from '@/apps/card/store';
 import { motion, AnimatePresence } from 'motion/react';
 import { X } from 'lucide-react';

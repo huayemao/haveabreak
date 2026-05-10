@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/context-menu';
 import { Edit3, Trash2 } from 'lucide-react';
 import { Book } from '@/apps/card/types';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'i18n/routing';
 
 export default function LibraryPage() {
   const { books, deleteBook } = useCardStore();

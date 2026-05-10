@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Link } from '@/i18n/routing';
 import { useTranslations } from 'next-intl';
 import LanguageSwitcher from './LanguageSwitcher';
-import { usePathname } from 'next/navigation';
+import { usePathname } from 'i18n/routing';
 import { Home, Frame, ScrollText, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavbar } from '@/context/NavbarContext';

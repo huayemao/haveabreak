@@ -1,7 +1,8 @@
 import { useTranslations } from 'next-intl';
 import { useScrollLock } from '../utils/useScrollLock';
 import { AnimatePresence, motion } from 'motion/react';
-import { usePathname, useSearchParams, useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'i18n/routing';
+import { useSearchParams } from 'next/navigation';
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { MediaItem, FrameSettings } from '../types';
 

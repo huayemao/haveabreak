@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useMemo } from 'react';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useRouter, usePathname } from 'i18n/routing';
+import { useSearchParams } from 'next/navigation';
 import { Collection, MediaItem, MediaType } from '../types';
 import { useTranslations } from 'next-intl';
 import MediaThumbnail from './MediaThumbnail';

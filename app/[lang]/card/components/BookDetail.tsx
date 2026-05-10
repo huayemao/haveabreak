@@ -11,6 +11,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu';
 import { Quote as QuoteType } from '@/apps/card/types';
 
 interface BookDetailProps {
@@ -111,9 +118,9 @@ export default function BookDetail({ onAddQuote, onEditQuote, onDeleteQuote, boo
         ) : (
           <div className="grid gap-6">
             {quotes.map((quote) => (
-              <DropdownMenu key={quote.id}>
-                <DropdownMenuTrigger>
-                  <div className="relative bg-bg-base p-6 rounded-[24px] shadow-extruded-sm group">
+              <ContextMenu key={quote.id}>
+                <ContextMenuTrigger>
+                  <div className="relative bg-bg-base p-6 rounded-[24px] shadow-extruded-sm group cursor-pointer">
                     <p className="text-fg-primary leading-relaxed mb-4 text-left text-balance">&quot;{quote.content}&quot;</p>
                     <div className="flex items-center justify-between">
                       <div className="flex gap-4 text-[10px] font-bold text-accent/70 uppercase tracking-widest">
@@ -122,21 +129,21 @@ export default function BookDetail({ onAddQuote, onEditQuote, onDeleteQuote, boo
                       </div>
                     </div>
                   </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-48">
+                </ContextMenuTrigger>
+                <ContextMenuContent className="w-48">
                   {onEditQuote && (
-                    <DropdownMenuItem onClick={() => onEditQuote(quote)} className="gap-2">
+                    <ContextMenuItem onClick={() => onEditQuote(quote)} className="gap-2">
                       <Edit3 className="w-4 h-4" />
                       Edit
-                    </DropdownMenuItem>
+                    </ContextMenuItem>
                   )}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => handleDeleteQuote(quote.id)} className="gap-2 text-red-500 focus:text-red-500">
+                  <ContextMenuSeparator />
+                  <ContextMenuItem onClick={() => handleDeleteQuote(quote.id)} className="gap-2 text-red-500 focus:text-red-500">
                     <Trash2 className="w-4 h-4" />
                     Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  </ContextMenuItem>
+                </ContextMenuContent>
+              </ContextMenu>
             ))}
           </div>
         )}
