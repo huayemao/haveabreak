@@ -17,13 +17,16 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 
 export default async function CardLayout({
   children,
+  modals,
 }: {
   children: React.ReactNode;
+  modals: React.ReactNode;
 }) {
   return (
     <Suspense fallback={null}>
       <CardLayoutClient>
         {children}
+        {modals}
       </CardLayoutClient>
     </Suspense>
   );
