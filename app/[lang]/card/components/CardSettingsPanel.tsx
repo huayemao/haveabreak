@@ -4,10 +4,10 @@ import { useTranslations } from 'next-intl';
 import { useScrollLock } from '@/apps/frame/utils/useScrollLock';
 import { useState } from 'react';
 import { X, Download, Upload } from 'lucide-react';
+import { motion } from 'motion/react';
 import { Book } from '@/apps/card/types';
 
 interface CardSettingsPanelProps {
-  isOpen: boolean;
   onClose: () => void;
   books: Book[];
   onExport: (filename: string) => void;
@@ -15,14 +15,13 @@ interface CardSettingsPanelProps {
 }
 
 export default function CardSettingsPanel({
-  isOpen,
   onClose,
   books,
   onExport,
   onImport,
 }: CardSettingsPanelProps) {
   const t = useTranslations();
-  useScrollLock(isOpen);
+  useScrollLock();
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -60,16 +59,28 @@ export default function CardSettingsPanel({
     setTimeout(() => setShowSuccess(false), 3000);
   };
 
-  if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
-      <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[80] flex items-center justify-center p-4"
+    >
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
         onClick={onClose}
         className="absolute inset-0 bg-bg-base/60 backdrop-blur-md"
       />
 
-      <div className="relative w-full max-w-lg bg-bg-base shadow-extruded rounded-[32px] overflow-hidden">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+        className="relative w-full max-w-lg bg-bg-base shadow-extruded rounded-[32px] overflow-hidden"
+      >
         <div className="flex items-center justify-between px-8 py-6 border-b border-white/10">
           <h2 className="text-xl font-bold text-fg-primary font-display flex items-center gap-2">
             <Download className="w-5 h-5 text-accent" />
@@ -124,7 +135,7 @@ export default function CardSettingsPanel({
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

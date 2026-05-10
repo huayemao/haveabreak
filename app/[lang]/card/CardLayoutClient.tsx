@@ -4,13 +4,15 @@ import { useTranslations } from 'next-intl';
 import { useCardStore } from '@/apps/card/store';
 import { useEffect, Suspense } from 'react';
 import { Plus, Library, Sparkles, Settings } from 'lucide-react';
-import { Link } from '@/i18n/routing';
-import { usePathname } from 'next/navigation';
+import { Link, usePathname } from '@/i18n/routing';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function CardLayoutClient({
   children,
+  modals,
 }: {
   children: React.ReactNode;
+  modals?: React.ReactNode;
 }) {
   const t = useTranslations();
   const { isLoading, loadData } = useCardStore();
@@ -40,6 +42,13 @@ export default function CardLayoutClient({
         <Suspense fallback={null}>
           {children}
         </Suspense>
+        <AnimatePresence mode="wait">
+          {modals && (
+            <motion.div key={pathname} className="z-[60]">
+              {modals}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
       {/* Modern Neumorphic Bottom Navigation */}

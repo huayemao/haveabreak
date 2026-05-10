@@ -24,9 +24,8 @@ export default async function CardLayout({
 }) {
   return (
     <Suspense fallback={null}>
-      <CardLayoutClient>
+      <CardLayoutClient modals={modals}>
         {children}
-        {modals}
       </CardLayoutClient>
     </Suspense>
   );
