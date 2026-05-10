@@ -1,17 +1,19 @@
 import { useTranslations } from 'next-intl';
-import { FrameSettings } from '../types';
+import { FrameSettings, Collection } from '../types';
 import { useScrollLock } from '../utils/useScrollLock';
 import { useState } from 'react';
 
 interface SettingsPanelProps {
   settings: FrameSettings;
+  collections: Collection[];
   onUpdate: (settings: FrameSettings) => void;
-  onExport: () => void;
+  onExport: (filename: string) => void;
   onImport: (data: string) => void;
 }
 
 export default function SettingsPanel({
   settings,
+  collections,
   onUpdate,
   onExport,
   onImport,
@@ -19,27 +21,39 @@ export default function SettingsPanel({
   const t = useTranslations();
   const [showImportModal, setShowImportModal] = useState(false);
   useScrollLock(showImportModal);
-  const [importData, setImportData] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
-  const handleImport = () => {
-    if (importData.trim()) {
-      try {
-        onImport(importData.trim());
-        setSuccessMessage(t('frame.importSuccess'));
-        setShowSuccess(true);
-        setImportData('');
-        setShowImportModal(false);
-        setTimeout(() => setShowSuccess(false), 3000);
-      } catch {
-        alert(t('frame.importFailed'));
-      }
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const content = event.target?.result as string;
+        if (content) {
+          try {
+            onImport(content);
+            setSuccessMessage(t('frame.importSuccess'));
+            setShowSuccess(true);
+            setShowImportModal(false);
+            setTimeout(() => setShowSuccess(false), 3000);
+          } catch {
+            alert(t('frame.importFailed'));
+          }
+        }
+      };
+      reader.readAsText(file);
     }
+    e.target.value = '';
   };
 
   const handleExport = () => {
-    onExport();
+    const collectionName = collections.length > 0
+      ? collections.map(c => c.name).join('-')
+      : 'all';
+    const timestamp = new Date().toISOString().slice(0, 10);
+    const filename = `${collectionName}-${timestamp}.json`;
+    onExport(filename);
     setSuccessMessage(t('frame.exportSuccess'));
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 3000);
@@ -208,13 +222,21 @@ export default function SettingsPanel({
           <div className="neumorphic-dialog p-6 max-w-lg w-full">
             <h3 className="text-lg font-bold mb-4">{t('frame.import')}</h3>
 
-            <textarea
-              value={importData}
-              onChange={(e) => setImportData(e.target.value)}
-              placeholder='{"media": [...], "collections": [...]}'
-              rows={8}
-              className="neumorphic-input w-full resize-none font-mono text-sm"
-            />
+            <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-muted rounded-xl">
+              <svg className="w-12 h-12 text-fg-muted mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              <p className="text-fg-muted mb-4">{t('frame.selectFile') || 'Select a JSON file'}</p>
+              <label className="cursor-pointer neumorphic-button-primary px-6 py-2">
+                {t('frame.chooseFile') || 'Choose File'}
+                <input
+                  type="file"
+                  accept=".json"
+                  onChange={handleImport}
+                  className="hidden"
+                />
+              </label>
+            </div>
 
             <div className="flex gap-3 mt-6">
               <button
@@ -222,12 +244,6 @@ export default function SettingsPanel({
                 className="flex-1 neumorphic-button"
               >
                 {t('frame.cancel')}
-              </button>
-              <button
-                onClick={handleImport}
-                className="flex-1 neumorphic-button-primary"
-              >
-                {t('frame.import')}
               </button>
             </div>
           </div>
