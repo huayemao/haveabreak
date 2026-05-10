@@ -18,9 +18,11 @@ interface QuoteCardProps {
   isActive?: boolean;
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
+  isFullscreen?: boolean;
+  onClick?: () => void;
 }
 
-export default function QuoteCard({ card, isActive, onEdit, onDelete }: QuoteCardProps) {
+export default function QuoteCard({ card, isActive, onEdit, onDelete, isFullscreen = false, onClick }: QuoteCardProps) {
   const { content, book, chapter, page } = card;
   const { setView } = useCardStore();
 
@@ -41,7 +43,10 @@ export default function QuoteCard({ card, isActive, onEdit, onDelete }: QuoteCar
   return (
     <ContextMenu>
       <ContextMenuTrigger>
-        <div className="w-full max-w-lg mx-auto min-h-[500px] max-h-[80vh] relative flex flex-col p-6 sm:p-10 rounded-[32px] bg-bg-base shadow-extruded overflow-hidden select-none">
+        <div 
+          className={`w-full max-w-lg mx-auto relative flex flex-col p-6 sm:p-10 rounded-[32px] bg-bg-base shadow-extruded overflow-hidden select-none ${isFullscreen ? 'min-h-[76vh]' : 'aspect-[3/4] md:aspect-square'} ${onClick ? 'cursor-pointer hover:scale-[1.02] transition-transform duration-300' : ''}`}
+          onClick={onClick}
+        >
       {/* Decorative Circles */}
       <div className="absolute top-[-5%] right-[-5%] w-48 h-48 rounded-full bg-bg-base shadow-inset opacity-30 pointer-events-none" />
       <div className="absolute bottom-[-10%] left-[-10%] w-64 h-64 rounded-full bg-bg-base shadow-extruded-sm opacity-20 pointer-events-none" />
@@ -76,16 +81,16 @@ export default function QuoteCard({ card, isActive, onEdit, onDelete }: QuoteCar
         </div>
       </div>
 
-      {/* Quote Content - Scrollable Area */}
+      {/* Quote Content */}
       <div 
-        className="relative z-10 flex-1 overflow-y-auto pr-2 custom-scrollbar flex flex-col"
-        onPointerDown={(e) => e.stopPropagation()} // Prevent drag when scrolling text
+        className={`relative z-10 flex-1 flex flex-col ${isFullscreen ? 'overflow-y-auto pr-2 custom-scrollbar' : 'overflow-hidden'}`}
+        onPointerDown={(e) => e.stopPropagation()}
       >
         <div className="mb-4 inline-block">
           <div className="w-8 h-1 bg-accent rounded-full opacity-50 mb-4" />
         </div>
         
-        <div className="text-lg sm:text-xl text-fg-primary leading-relaxed font-body italic mb-6">
+        <div className={`text-lg sm:text-xl text-fg-primary leading-relaxed font-body mb-6 ${isFullscreen ? '' : 'line-clamp-6'}`}>
           {content}
         </div>
 

@@ -69,7 +69,7 @@ export default function CardLayoutClient({
         <div className="w-px h-6 bg-fg-muted/20 mx-2" />
 
         <Link
-          href="/card/(modals)/settings"
+          href="/card/settings"
           className="flex items-center justify-center w-12 h-12 rounded-full bg-bg-base text-fg-muted shadow-extruded-sm hover:scale-110 active:shadow-inset transition-all"
           title={t('card.settings', { defaultValue: 'Settings' })}
         >
@@ -79,7 +79,7 @@ export default function CardLayoutClient({
         <div className="w-px h-6 bg-fg-muted/20 mx-2" />
 
         <Link
-          href="/card/(modals)/add-book"
+          href="/card/add-book"
           className="flex items-center justify-center w-12 h-12 rounded-full bg-bg-base text-accent shadow-extruded-sm hover:scale-110 active:shadow-inset transition-all"
           title={t('card.addBook')}
         >

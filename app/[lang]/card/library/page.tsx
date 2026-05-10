@@ -27,7 +27,7 @@ export default function LibraryPage() {
   };
 
   const handleEditBook = (book: Book) => {
-    router.push(`/card/(modals)/add-book?bookId=${book.id}`);
+    router.push(`/card/add-book?bookId=${book.id}`);
   };
 
   return (
@@ -35,7 +35,7 @@ export default function LibraryPage() {
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-3xl font-bold text-fg-primary font-display">{t('card.library', { defaultValue: 'My Library' })}</h2>
         <Link
-          href="/card/(modals)/add-book"
+          href="/card/add-book"
           className="neumorphic-button flex items-center gap-2 px-4 py-2 rounded-2xl text-accent font-bold hover:scale-105 active:scale-95 transition-all"
         >
           <Plus className="w-5 h-5" />

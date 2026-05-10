@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { Plus, Library, Sparkles, ChevronUp, ChevronDown, Settings } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function CardPageClient() {
   const {
@@ -15,8 +16,10 @@ export default function CardPageClient() {
     quotes,
     deleteQuote,
   } = useCardStore();
+  const router = useRouter();
 
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
   const t = useTranslations();
 
   const quotesWithBooks = useMemo(() => selectQuotesWithBooks({ books, quotes } as any), [books, quotes]);
@@ -37,7 +40,12 @@ export default function CardPageClient() {
     }
   }, [currentIndex, quotesWithBooks.length]);
 
+  const onDragStart = () => {
+    setIsDragging(true);
+  };
+
   const onDragEnd = (event: any, info: any) => {
+    setIsDragging(false);
     const threshold = 80;
     if (info.offset.y < -threshold) {
       handleNext();
@@ -49,7 +57,7 @@ export default function CardPageClient() {
   const handleEditQuote = useCallback((quoteId: string) => {
     const quote = quotes.find(q => q.id === quoteId);
     if (quote) {
-      window.location.href = `/card/(modals)/add-quote?quoteId=${quote.id}`;
+      router.push(`/card/add-quote?quoteId=${quote.id}`)
     }
   }, [quotes]);
 
@@ -59,6 +67,12 @@ export default function CardPageClient() {
     }
   }, [deleteQuote, t]);
 
+  const handleFullscreen = useCallback((quoteId: string) => {
+    if (isDragging) return;
+    const lang = window.location.pathname.split('/')[1];
+    router.push(`/${lang}/card/fullscreen/${quoteId}`);
+  }, [router, isDragging]);
+
   if (quotesWithBooks.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
@@ -66,7 +80,7 @@ export default function CardPageClient() {
           <Sparkles className="w-12 h-12 text-accent mx-auto mb-4 opacity-50" />
           <p className="text-fg-muted mb-8">{t('card.noQuotesInFeed', { defaultValue: 'No sentences in your feed. Add some books and quotes first!' })}</p>
           <Link
-            href="/card/(modals)/add-book"
+            href="/card/add-book"
             className="neumorphic-button-primary px-8 py-3 rounded-2xl flex items-center gap-2 mx-auto font-bold"
           >
             <Plus className="w-5 h-5" />
@@ -95,6 +109,7 @@ export default function CardPageClient() {
             drag="y"
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={0.1}
+            onDragStart={onDragStart}
             onDragEnd={onDragEnd}
             className="w-full z-10"
           >
@@ -103,6 +118,7 @@ export default function CardPageClient() {
               isActive={true}
               onEdit={handleEditQuote}
               onDelete={handleDeleteQuote}
+              onClick={() => handleFullscreen(quotesWithBooks[currentIndex].id)}
             />
           </motion.div>
         </AnimatePresence>

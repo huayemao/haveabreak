@@ -60,7 +60,7 @@ export default function BookDetailPage({ params }: { params: Promise<BookDetailP
   };
 
   const handleEditQuote = (quote: QuoteType) => {
-    router.push(`/card/(modals)/add-quote?quoteId=${quote.id}`);
+    router.push(`/card/add-quote?quoteId=${quote.id}`);
   };
 
   return (
@@ -87,7 +87,7 @@ export default function BookDetailPage({ params }: { params: Promise<BookDetailP
 
           <div className="mt-8 flex justify-center md:justify-start gap-3">
             <Link
-              href={`/card/(modals)/add-quote?bookId=${book.id}`}
+              href={`/card/add-quote?bookId=${book.id}`}
               className="neumorphic-button-primary px-6 py-2.5 rounded-2xl flex items-center gap-2 text-sm font-semibold"
             >
               <Plus className="w-5 h-5" />
@@ -100,7 +100,7 @@ export default function BookDetailPage({ params }: { params: Promise<BookDetailP
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-40">
-                <Link href={`/card/(modals)/add-book?bookId=${book.id}`}>
+                <Link href={`/card/add-book?bookId=${book.id}`}>
                   <DropdownMenuItem className="gap-2 cursor-pointer">
                     <Edit3 className="w-4 h-4" />
                     {t('card.editBook', { defaultValue: 'Edit Book' })}
