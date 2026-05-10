@@ -35,6 +35,17 @@ export default function AddBookModal({ isOpen, onClose, onAdd, editingBook }: Ad
     }
   }, [isOpen, editingBook]);
 
+  useEffect(() => {
+    if (editingBook) {
+      setTitle(editingBook.title);
+      setAuthor(editingBook.author);
+      setTranslator(editingBook.translator || '');
+      setCover(editingBook.cover || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=200');
+      setPublisher(editingBook.publisher || '');
+      setIsbn(editingBook.isbn || '');
+    }
+  }, [editingBook]);
+
   const fetchCoverByIsbn = async () => {
     if (!isbn.trim()) return;
     setIsLoadingCover(true);
