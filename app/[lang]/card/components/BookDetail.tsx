@@ -17,16 +17,19 @@ interface BookDetailProps {
   onAddQuote: () => void;
   onEditQuote?: (quote: QuoteType) => void;
   onDeleteQuote?: (quoteId: string) => void;
+  bookId?: string;
+  onBack?: () => void;
 }
 
-export default function BookDetail({ onAddQuote, onEditQuote, onDeleteQuote }: BookDetailProps) {
+export default function BookDetail({ onAddQuote, onEditQuote, onDeleteQuote, bookId, onBack }: BookDetailProps) {
   const { books, quotes: allQuotes, selectedBookId, setView, deleteQuote, deleteBook } = useCardStore();
   const t = useTranslations();
 
-  const book = books.find((b) => b.id === selectedBookId);
+  const currentBookId = bookId || selectedBookId;
+  const book = books.find((b) => b.id === currentBookId);
   const quotes = useMemo(() =>
-    selectedBookId ? allQuotes.filter(q => q.bookId === selectedBookId) : [],
-    [allQuotes, selectedBookId]
+    currentBookId ? allQuotes.filter(q => q.bookId === currentBookId) : [],
+    [allQuotes, currentBookId]
   );
 
   if (!book) return null;
@@ -51,7 +54,7 @@ export default function BookDetail({ onAddQuote, onEditQuote, onDeleteQuote }: B
   return (
     <div className="w-full max-w-4xl mx-auto p-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <button
-        onClick={() => setView('library')}
+        onClick={onBack || (() => setView('library'))}
         className="flex items-center gap-2 text-fg-muted hover:text-accent transition-colors mb-8 font-bold text-sm"
       >
         <ArrowLeft className="w-4 h-4" />
@@ -111,7 +114,7 @@ export default function BookDetail({ onAddQuote, onEditQuote, onDeleteQuote }: B
               <DropdownMenu key={quote.id}>
                 <DropdownMenuTrigger>
                   <div className="relative bg-bg-base p-6 rounded-[24px] shadow-extruded-sm group">
-                    <p className="text-fg-primary leading-relaxed mb-4 italic">&quot;{quote.content}&quot;</p>
+                    <p className="text-fg-primary leading-relaxed mb-4 text-left text-balance">&quot;{quote.content}&quot;</p>
                     <div className="flex items-center justify-between">
                       <div className="flex gap-4 text-[10px] font-bold text-accent/70 uppercase tracking-widest">
                         {quote.chapter && <span>{quote.chapter}</span>}

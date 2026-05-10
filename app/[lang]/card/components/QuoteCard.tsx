@@ -1,9 +1,7 @@
 'use client';
 
 import { QuoteWithBook } from '@/apps/card/types';
-import { motion } from 'motion/react';
-import Image from 'next/image';
-import { useCardStore } from '@/apps/card/store';
+import { useRouter } from '@/i18n/routing';
 import {
   ContextMenu,
   ContextMenuContent,
@@ -24,7 +22,7 @@ interface QuoteCardProps {
 
 export default function QuoteCard({ card, isActive, onEdit, onDelete, isFullscreen = false, onClick }: QuoteCardProps) {
   const { content, book, chapter, page } = card;
-  const { setView } = useCardStore();
+  const router = useRouter();
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -55,7 +53,7 @@ export default function QuoteCard({ card, isActive, onEdit, onDelete, isFullscre
       <div 
         onClick={(e) => {
           e.stopPropagation();
-          setView('detail', book.id);
+          router.push(`/card/library/${book.id}`);
         }}
         className="relative z-10 flex gap-4 mb-8 cursor-pointer group hover:scale-[1.02] transition-transform duration-300"
       >
