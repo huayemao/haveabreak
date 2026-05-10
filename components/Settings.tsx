@@ -153,7 +153,7 @@ export default function Settings({
                           onClick={() => handleDeleteCustomTip(tip)}
                           className="neumorphic-button-destructive neumorphic-button text-xs px-3 py-1"
                         >
-                          {t('frame.delete')}
+                          {t('common.delete')}
                         </button>
                       </div>
                     ))}

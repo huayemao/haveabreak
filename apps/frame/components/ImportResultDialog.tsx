@@ -46,7 +46,7 @@ export default function ImportResultDialog({
               {t('frame.total')}: {results.length}
             </span>
             <span className="text-green-600">
-              {t('frame.success')}: {successCount}
+              {t('common.success')}: {successCount}
             </span>
             <span className="text-red-600">
               {t('frame.failed')}: {failedCount}
@@ -108,21 +108,21 @@ export default function ImportResultDialog({
               disabled={isDetecting}
               className="flex-1 neumorphic-button disabled:opacity-50"
             >
-              {t('frame.retry')}
+              {t('common.retry')}
             </button>
           )}
           <button
             onClick={onClose}
             className={`${failedCount > 0 ? '' : 'flex-1'} neumorphic-button`}
           >
-            {t('frame.cancel')}
+            {t('common.cancel')}
           </button>
           <button
             onClick={onConfirm}
             disabled={successCount === 0 || isDetecting}
             className="flex-1 neumorphic-button-primary disabled:opacity-50"
           >
-            {t('frame.confirm')} ({successCount})
+            {t('common.confirm')} ({successCount})
           </button>
         </div>
       </div>

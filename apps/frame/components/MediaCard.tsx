@@ -96,7 +96,7 @@ export default function MediaCard({
           className="gap-2 text-red-500 focus:text-red-500"
         >
           <Trash2 className="w-4 h-4" />
-          {t('frame.delete')}
+          {t('common.delete')}
         </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>

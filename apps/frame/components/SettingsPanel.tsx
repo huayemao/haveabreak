@@ -199,20 +199,20 @@ export default function SettingsPanel({
       </div>
 
       <div className="space-y-3">
-        <h3 className="font-bold text-fg-primary">{t('frame.import')} / {t('frame.export')}</h3>
+        <h3 className="font-bold text-fg-primary">{t('common.import')} / {t('common.export')}</h3>
 
         <div className="flex gap-3">
           <button
             onClick={handleExport}
             className="flex-1 neumorphic-button"
           >
-            {t('frame.export')}
+            {t('common.export')}
           </button>
           <button
             onClick={() => setShowImportModal(true)}
             className="flex-1 neumorphic-button"
           >
-            {t('frame.import')}
+            {t('common.import')}
           </button>
         </div>
       </div>
@@ -220,7 +220,7 @@ export default function SettingsPanel({
       {showImportModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="neumorphic-dialog p-6 max-w-lg w-full">
-            <h3 className="text-lg font-bold mb-4">{t('frame.import')}</h3>
+            <h3 className="text-lg font-bold mb-4">{t('common.import')}</h3>
 
             <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-muted rounded-xl">
               <svg className="w-12 h-12 text-fg-muted mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -243,7 +243,7 @@ export default function SettingsPanel({
                 onClick={() => setShowImportModal(false)}
                 className="flex-1 neumorphic-button"
               >
-                {t('frame.cancel')}
+                {t('common.cancel')}
               </button>
             </div>
           </div>
