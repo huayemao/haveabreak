@@ -133,8 +133,8 @@
     "card": "本の引用"
   },
   "card": {
-    "pageTitle": "今日のインスピレーション",
-    "pageSubtitle": "上下にスワイプして美しい文章を探す",
+    "pageTitle": "書摘リーダー",
+    "pageSubtitle": "上下にスワイプして美しい段落を探る",
     "addTitle": "新しい引用を追加",
     "addBook": "本を追加",
     "addBookBtn": "本を追加",
