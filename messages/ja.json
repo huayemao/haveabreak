@@ -160,6 +160,7 @@
     "formChapter": "章",
     "formPage": "ページ",
     "formCover": "表紙URL",
+    "parseIsbn": "解析",
     "selectBook": "本を選択",
     "chooseABook": "本を選んでください...",
     "editBook": "本を編集",

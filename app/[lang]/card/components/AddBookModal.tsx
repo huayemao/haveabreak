@@ -22,6 +22,7 @@ export default function AddBookModal({ isOpen, onClose, onAdd, editingBook }: Ad
   const [cover, setCover] = useState(editingBook?.cover || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=200');
   const [publisher, setPublisher] = useState(editingBook?.publisher || '');
   const [isbn, setIsbn] = useState(editingBook?.isbn || '');
+  const [isLoadingCover, setIsLoadingCover] = useState(false);
 
   useEffect(() => {
     if (!isOpen && !editingBook) {
@@ -33,6 +34,22 @@ export default function AddBookModal({ isOpen, onClose, onAdd, editingBook }: Ad
       setIsbn('');
     }
   }, [isOpen, editingBook]);
+
+  const fetchCoverByIsbn = async () => {
+    if (!isbn.trim()) return;
+    setIsLoadingCover(true);
+    try {
+      const response = await fetch(`https://bookcover.longitood.com/bookcover?isbn=${isbn.trim()}`);
+      const data = await response.json();
+      if (data.url) {
+        setCover(data.url);
+      }
+    } catch (error) {
+      console.error('Failed to fetch cover:', error);
+    } finally {
+      setIsLoadingCover(false);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,18 +111,25 @@ export default function AddBookModal({ isOpen, onClose, onAdd, editingBook }: Ad
                 <label className="text-sm font-bold text-fg-muted">{t('card.formAuthor', { defaultValue: 'Author' })}</label>
                 <input required value={author} onChange={(e) => setAuthor(e.target.value)} className="w-full p-3 rounded-xl bg-bg-base shadow-inset outline-none text-fg-primary" />
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-fg-muted">{t('card.formTranslator', { defaultValue: 'Translator' })}</label>
-                <input value={translator} onChange={(e) => setTranslator(e.target.value)} className="w-full p-3 rounded-xl bg-bg-base shadow-inset outline-none text-fg-primary" />
-              </div>
               <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-fg-muted">{t('card.formTranslator', { defaultValue: 'Translator' })}</label>
+                  <input value={translator} onChange={(e) => setTranslator(e.target.value)} className="w-full p-3 rounded-xl bg-bg-base shadow-inset outline-none text-fg-primary" />
+                </div>
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-fg-muted">{t('card.formPublisher', { defaultValue: 'Publisher' })}</label>
                   <input value={publisher} onChange={(e) => setPublisher(e.target.value)} className="w-full p-3 rounded-xl bg-bg-base shadow-inset outline-none text-fg-primary" />
                 </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-fg-muted">ISBN</label>
-                  <input value={isbn} onChange={(e) => setIsbn(e.target.value)} className="w-full p-3 rounded-xl bg-bg-base shadow-inset outline-none text-fg-primary" />
+                  <div className="flex gap-2">
+                    <input value={isbn} onChange={(e) => setIsbn(e.target.value)} className="flex-1 w-full p-3 rounded-xl bg-bg-base shadow-inset outline-none text-fg-primary" />
+                    <button type="button" onClick={fetchCoverByIsbn} disabled={isLoadingCover || !isbn.trim()} className="px-4 py-3 rounded-xl bg-accent text-white font-bold shadow-extruded-sm hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                      {isLoadingCover ? '...' : t('card.parseIsbn', { defaultValue: 'Parse' })}
+                    </button>
+                  </div>
                 </div>
               </div>
               <div className="space-y-2">

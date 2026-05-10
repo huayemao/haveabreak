@@ -160,6 +160,7 @@
     "formChapter": "Chapter",
     "formPage": "Page",
     "formCover": "Cover URL",
+    "parseIsbn": "Parse",
     "selectBook": "Select Book",
     "chooseABook": "Choose a book...",
     "editBook": "Edit Book",

@@ -159,6 +159,7 @@
     "formChapter": "章节",
     "formPage": "页码",
     "formCover": "封面链接",
+    "parseIsbn": "解析",
     "selectBook": "选择图书",
     "chooseABook": "选择一本书...",
     "editBook": "编辑图书",
