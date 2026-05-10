@@ -125,7 +125,12 @@
     "success": "Successo",
     "failed": "Fallito",
     "retry": "Riprova",
-    "importing": "Importazione..."
+    "importing": "Importazione...",
+    "urlSubscription": "Sottoscrizione URL",
+    "enterUrlPlaceholder": "Inserire URL JSON...",
+    "enterUrl": "Inserisci un URL",
+    "urlImportFailed": "Importazione da URL fallita",
+    "importSuccess": "Importazione riuscita!"
   },
   "nav": {
     "home": "Pausa temporizzata",

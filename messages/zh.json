@@ -125,7 +125,12 @@
     "success": "成功",
     "failed": "失败",
     "retry": "重试",
-    "importing": "导入中..."
+    "importing": "导入中...",
+    "urlSubscription": "URL订阅",
+    "enterUrlPlaceholder": "输入JSON链接...",
+    "enterUrl": "请输入URL",
+    "urlImportFailed": "从URL导入失败",
+    "importSuccess": "导入成功！"
   },
   "nav": {
     "home":"计时休息",

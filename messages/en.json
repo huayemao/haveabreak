@@ -125,7 +125,12 @@
     "success": "Success",
     "failed": "Failed",
     "retry": "Retry",
-    "importing": "Importing..."
+    "importing": "Importing...",
+    "urlSubscription": "URL Subscription",
+    "enterUrlPlaceholder": "Enter JSON URL...",
+    "enterUrl": "Please enter a URL",
+    "urlImportFailed": "Failed to import from URL",
+    "importSuccess": "Import successful!"
   },
   "nav": {
     "home": "Timed Break",

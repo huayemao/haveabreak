@@ -125,7 +125,12 @@
     "success": "Успешно",
     "failed": "Не удалось",
     "retry": "Повторить",
-    "importing": "Импорт..."
+    "importing": "Импорт...",
+    "urlSubscription": "Подписка по URL",
+    "enterUrlPlaceholder": "Введите URL JSON...",
+    "enterUrl": "Введите URL",
+    "urlImportFailed": "Импорт из URL не удался",
+    "importSuccess": "Импорт успешно выполнен!"
   },
   "nav": {
     "home": "Таймерный перерыв",

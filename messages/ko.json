@@ -125,7 +125,12 @@
     "success": "성공",
     "failed": "실패",
     "retry": "재시도",
-    "importing": "가져오는 중..."
+    "importing": "가져오는 중...",
+    "urlSubscription": "URL 구독",
+    "enterUrlPlaceholder": "JSON URL 입력...",
+    "enterUrl": "URL을 입력하세요",
+    "urlImportFailed": "URL에서 가져오기 실패",
+    "importSuccess": "가져오기 성공！"
   },
   "nav": {
     "home": "타이머 휴식",

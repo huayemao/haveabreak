@@ -125,7 +125,12 @@
     "success": "成功",
     "failed": "失敗",
     "retry": "再試行",
-    "importing": "インポート中..."
+    "importing": "インポート中...",
+    "urlSubscription": "URL購読",
+    "enterUrlPlaceholder": "JSON URLを入力...",
+    "enterUrl": "URLを入力してください",
+    "urlImportFailed": "URLからのインポートに失敗しました",
+    "importSuccess": "インポート成功！"
   },
   "nav": {
     "home": "タイマー休憩",

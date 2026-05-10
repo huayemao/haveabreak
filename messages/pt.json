@@ -125,7 +125,12 @@
     "success": "Sucesso",
     "failed": "Falha",
     "retry": "Tentar Novamente",
-    "importing": "Importando..."
+    "importing": "Importando...",
+    "urlSubscription": "Assinatura de URL",
+    "enterUrlPlaceholder": "Digite URL JSON...",
+    "enterUrl": "Digite uma URL",
+    "urlImportFailed": "Falha ao importar da URL",
+    "importSuccess": "Importação bem-sucedida!"
   },
   "nav": {
     "home": "Pausa cronometrada",

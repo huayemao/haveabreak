@@ -3,6 +3,14 @@ import { FrameSettings, Collection } from '../types';
 import { useScrollLock } from '../utils/useScrollLock';
 import { useState } from 'react';
 
+const fetchUrlContent = async (url: string): Promise<string> => {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  return response.text();
+};
+
 interface SettingsPanelProps {
   settings: FrameSettings;
   collections: Collection[];
@@ -23,6 +31,8 @@ export default function SettingsPanel({
   useScrollLock(showImportModal);
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [urlInput, setUrlInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -57,6 +67,28 @@ export default function SettingsPanel({
     setSuccessMessage(t('frame.exportSuccess'));
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 3000);
+  };
+
+  const handleUrlImport = async () => {
+    if (!urlInput.trim()) {
+      alert(t('common.enterUrl') || 'Please enter a URL');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const content = await fetchUrlContent(urlInput);
+      onImport(content);
+      setSuccessMessage(t('common.importSuccess'));
+      setShowSuccess(true);
+      setShowImportModal(false);
+      setUrlInput('');
+      setTimeout(() => setShowSuccess(false), 3000);
+    } catch (error) {
+      alert(t('common.urlImportFailed') || 'Failed to import from URL');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const toggleSetting = (key: keyof FrameSettings) => {
@@ -236,6 +268,29 @@ export default function SettingsPanel({
                   className="hidden"
                 />
               </label>
+            </div>
+
+            <div className="mt-6">
+              <label className="block font-medium text-fg-primary mb-2">
+                {t('common.urlSubscription') || 'URL Subscription'}
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="url"
+                  value={urlInput}
+                  onChange={(e) => setUrlInput(e.target.value)}
+                  placeholder={t('common.enterUrlPlaceholder') || 'Enter JSON URL...'}
+                  className="flex-1 px-4 py-2 bg-white rounded-xl border border-muted focus:outline-none focus:border-accent"
+                  disabled={isLoading}
+                />
+                <button
+                  onClick={handleUrlImport}
+                  disabled={isLoading}
+                  className="neumorphic-button-primary px-4 py-2"
+                >
+                  {isLoading ? (t('common.loading') || 'Loading...') : (t('common.import') || 'Import')}
+                </button>
+              </div>
             </div>
 
             <div className="flex gap-3 mt-6">

@@ -125,7 +125,12 @@
     "success": "Éxito",
     "failed": "Fallido",
     "retry": "Reintentar",
-    "importing": "Importando..."
+    "importing": "Importando...",
+    "urlSubscription": "Suscripción URL",
+    "enterUrlPlaceholder": "Ingresar URL JSON...",
+    "enterUrl": "Por favor ingrese una URL",
+    "urlImportFailed": "Importación desde URL fallida",
+    "importSuccess": "¡Importación exitosa!"
   },
   "nav": {
     "home": "Descanso cronometrado",
