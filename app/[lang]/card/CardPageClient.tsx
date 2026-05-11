@@ -204,7 +204,7 @@ export default function CardPageClient() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
-              className="absolute right-[-10px] sm:right-[-60px] top-1/2 -translate-y-1/2 flex flex-col gap-3 z-20"
+              className="absolute right-[-10px] sm:right-6 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-20"
             >
               <button
                 onClick={() => {
