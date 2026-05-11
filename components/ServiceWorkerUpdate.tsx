@@ -48,14 +48,16 @@ export function ServiceWorkerUpdate() {
     const applyUpdate = () => {
       if (waitingWorker) {
         waitingWorker.postMessage({ type: 'SKIP_WAITING' });
-        waitingWorker.addEventListener('statechange', (e) => {
-          if ((e.target as ServiceWorker).state === 'activated') {
-            window.location.reload();
-          }
-        });
       } else {
         window.location.reload();
       }
+    };
+
+    let isRefreshing = false;
+    const onControllerChange = () => {
+      if (isRefreshing) return;
+      isRefreshing = true;
+      window.location.reload();
     };
 
     const trackWorker = (sw: ServiceWorker) => {
@@ -109,11 +111,8 @@ export function ServiceWorkerUpdate() {
       };
     });
 
-    // Also listen to the controllerchange event — when a new SW takes control
-    // without skipWaiting it won't fire, but keep it as an extra safety net.
-    const onControllerChange = () => {
-      window.location.reload();
-    };
+    // Listen to the controllerchange event — when the new SW takes control
+    // after skipWaiting, this event fires and we can safely reload.
     navigator.serviceWorker.addEventListener('controllerchange', onControllerChange);
 
     return () => {
