@@ -2,7 +2,7 @@
   "media": [
     {
       "id": "preset-img-0",
-      "url": "https://sns-img-hw.xhscdn.com/1040g2sg31vb2od2eigig49hqb6r9oqipn7p382o?imageView2/2/w/0/format/jpg",
+      "url": "https://sns-img-hw.xhscdn.com/notes_pre_post/1040g3k031q2cgaru002048jjnrr56mgkkgr7p6o?imageView2/2/w/0/format/jpg",
       "type": "image",
       "orientation": "portrait",
       "title": "Serene portrait",
@@ -10,7 +10,7 @@
     },
     {
       "id": "preset-img-1",
-      "url": "https://sns-img-hw.xhscdn.com/1040g00831v8tecps400048vkvchr2h06ovuhin8",
+      "url": "https://sns-img-hw.xhscdn.com/notes_pre_post/1040g3k031q2cgaru002g48jjnrr56mgkea9mkl8?imageView2/2/w/0/format/jpg",
       "type": "image",
       "orientation": "portrait",
       "title": "Nature Beauty",
@@ -18,7 +18,7 @@
     },
     {
       "id": "preset-img-2",
-      "url": "https://sns-img-hw.xhscdn.com/1040g2sg315gq059hgu705o02t9cg9fbm4q1tdu0?imageView2/2/w/0/format/jpg",
+      "url": "https://sns-img-hw.xhscdn.com/notes_pre_post/1040g3k031q2cgaru005g48jjnrr56mgk6mlui3o?imageView2/2/w/0/format/jpg",
       "type": "image",
       "orientation": "portrait",
       "title": "Peaceful Scene",
@@ -26,18 +26,10 @@
     },
     {
       "id": "preset-vid-0",
-      "url": "https://sns-bak-v1.xhscdn.com/stream/79/110/258/01e9b6684748e3564f0370019cf0878414_258.mp4",
+      "url": "https://sns-bak-v1.xhscdn.com/stream/1/110/258/01e8f23dfae7d9e80103700199f2462433_258.mp4",
       "type": "video",
       "orientation": "portrait",
       "title": "Calming Waves",
-      "createdAt": 0
-    },
-    {
-      "id": "preset-vid-1",
-      "url": "https://sns-bak-v1.xhscdn.com/stream/1/110/258/01e7b0029e5634ab0103700195078da37f_258.mp4",
-      "type": "video",
-      "orientation": "landscape",
-      "title": "Gentle Flow",
       "createdAt": 0
     }
   ],
@@ -46,7 +38,12 @@
       "id": "default-collection",
       "name": "Default Collection",
       "description": "A beautiful collection of calming media",
-      "mediaIds": ["preset-img-0", "preset-img-1", "preset-img-2", "preset-vid-0", "preset-vid-1"],
+      "mediaIds": [
+        "preset-img-0",
+        "preset-img-1",
+        "preset-img-2",
+        "preset-vid-0"
+      ],
       "slideInterval": 5000,
       "createdAt": 0,
       "updatedAt": 0
