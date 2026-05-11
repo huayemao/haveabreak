@@ -4,9 +4,10 @@ import { useParams } from 'next/navigation';
 import { useRouter } from 'i18n/routing';
 import { useCardStore, selectQuotesWithBooks } from '@/apps/card/store';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, ChevronLeft, ChevronRight, Maximize2, Minimize2 } from 'lucide-react';
-import { useEffect, useState, useRef } from 'react';
+import { X, ChevronUp, ChevronDown, Maximize2, Minimize2 } from 'lucide-react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import QuoteCard from '../../components/QuoteCard';
+import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 
 export default function FullscreenQuotePage() {
   const params = useParams<{ quoteId: string; lang: string }>();
@@ -24,10 +25,31 @@ export default function FullscreenQuotePage() {
 
   const initialIndex = bookQuotes.findIndex(q => q.id === params.quoteId);
   const [currentIndex, setCurrentIndex] = useState(initialIndex !== -1 ? initialIndex : 0);
-  const [isDragging, setIsDragging] = useState(false);
   const [showUI, setShowUI] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const uiTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleNext = useCallback(() => {
+    if (currentIndex < bookQuotes.length - 1) {
+      setCurrentIndex(prev => prev + 1);
+    } else {
+      setCurrentIndex(0);
+    }
+  }, [currentIndex, bookQuotes.length]);
+
+  const handlePrev = useCallback(() => {
+    if (currentIndex > 0) {
+      setCurrentIndex(prev => prev - 1);
+    } else {
+      setCurrentIndex(bookQuotes.length - 1);
+    }
+  }, [currentIndex, bookQuotes.length]);
+
+  const { isDragging, onDragStart, dragProps } = useSwipeNavigation({
+    onNext: handleNext,
+    onPrev: handlePrev,
+    threshold: 80,
+  });
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -75,32 +97,6 @@ export default function FullscreenQuotePage() {
       document.exitFullscreen();
     }
     router.back();
-  };
-
-  const handleNext = () => {
-    if (currentIndex < bookQuotes.length - 1) {
-      setCurrentIndex(prev => prev + 1);
-    } else {
-      setCurrentIndex(0);
-    }
-  };
-
-  const handlePrev = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(prev => prev - 1);
-    } else {
-      setCurrentIndex(bookQuotes.length - 1);
-    }
-  };
-
-  const onDragEnd = (event: any, info: any) => {
-    setIsDragging(false);
-    const threshold = 80;
-    if (info.offset.y < -threshold || info.offset.x < -threshold) {
-      handleNext();
-    } else if (info.offset.y > threshold || info.offset.x > threshold) {
-      handlePrev();
-    }
   };
 
   const handleEditQuote = (quoteId: string) => {
@@ -189,18 +185,15 @@ export default function FullscreenQuotePage() {
         <AnimatePresence mode="wait">
           <motion.div
             key={currentQuote.id}
-            initial={{ opacity: 0, x: 20, scale: 0.95 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: -20, scale: 0.95 }}
+            initial={{ opacity: 0, y: 40, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -40, scale: 0.95 }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.2}
+            {...dragProps}
             onDragStart={() => {
-              setIsDragging(true);
+              onDragStart();
               setShowUI(true);
             }}
-            onDragEnd={onDragEnd}
             className="w-full max-w-2xl h-full flex items-center justify-center"
           >
             <div className="w-full h-full">
@@ -219,22 +212,22 @@ export default function FullscreenQuotePage() {
         <AnimatePresence>
           {showUI && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute left-4 right-4 top-1/2 -translate-y-1/2 hidden sm:flex justify-between pointer-events-none z-50"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="absolute right-[-10px] sm:right-6 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-50"
             >
               <button
                 onClick={handlePrev}
-                className="w-12 h-12 rounded-full neumorphic-button flex items-center justify-center hover:scale-110 active:scale-95 transition-all pointer-events-auto shadow-lg"
+                className="w-10 h-10 rounded-full neumorphic-button flex items-center justify-center hover:scale-110 active:scale-95 transition-all"
               >
-                <ChevronLeft className="w-6 h-6" />
+                <ChevronUp className="w-5 h-5" />
               </button>
               <button
                 onClick={handleNext}
-                className="w-12 h-12 rounded-full neumorphic-button flex items-center justify-center hover:scale-110 active:scale-95 transition-all pointer-events-auto shadow-lg"
+                className="w-10 h-10 rounded-full neumorphic-button flex items-center justify-center hover:scale-110 active:scale-95 transition-all"
               >
-                <ChevronRight className="w-6 h-6" />
+                <ChevronDown className="w-5 h-5" />
               </button>
             </motion.div>
           )}

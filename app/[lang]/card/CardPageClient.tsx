@@ -10,6 +10,7 @@ import { Plus, Library, Sparkles, ChevronUp, ChevronDown, Settings, Play, Pause,
 import { Link } from '@/i18n/routing';
 import { useRouter } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
+import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 
 export default function CardPageClient() {
   const {
@@ -21,7 +22,6 @@ export default function CardPageClient() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
   const [isRandom, setIsRandom] = useState(false);
   const [showUI, setShowUI] = useState(true);
@@ -65,6 +65,12 @@ export default function CardPageClient() {
     }
   }, [currentIndex, quotesWithBooks.length, isRandom]);
 
+  const { isDragging, onDragStart, dragProps } = useSwipeNavigation({
+    onNext: handleNext,
+    onPrev: handlePrev,
+    threshold: 80,
+  });
+
   useEffect(() => {
     let interval: any;
     if (isAutoPlaying) {
@@ -107,21 +113,6 @@ export default function CardPageClient() {
       containerRef.current?.requestFullscreen();
     } else {
       document.exitFullscreen();
-    }
-  };
-
-  const onDragStart = () => {
-    setIsDragging(true);
-    setShowUI(true);
-  };
-
-  const onDragEnd = (event: any, info: any) => {
-    setIsDragging(false);
-    const threshold = 80;
-    if (info.offset.y < -threshold) {
-      handleNext();
-    } else if (info.offset.y > threshold) {
-      handlePrev();
     }
   };
 
@@ -179,11 +170,11 @@ export default function CardPageClient() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -40, scale: 0.95 }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            drag="y"
-            dragConstraints={{ top: 0, bottom: 0 }}
-            dragElastic={0.1}
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
+            {...dragProps}
+            onDragStart={() => {
+              onDragStart();
+              setShowUI(true);
+            }}
             className="w-full z-10 flex items-center justify-center"
           >
             <div className="w-full max-w-lg max-h-[70vh] sm:max-h-full">
