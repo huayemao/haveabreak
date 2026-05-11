@@ -9,6 +9,7 @@ import { useTranslations } from 'next-intl';
 import { Plus, Library, Sparkles, ChevronUp, ChevronDown, Settings, Play, Pause, Shuffle, Maximize2, Minimize2 } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { useRouter } from '@/i18n/routing';
+import { cn } from '@/lib/utils';
 
 export default function CardPageClient() {
   const {
@@ -146,7 +147,7 @@ export default function CardPageClient() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
         <div className="p-12 rounded-[32px] bg-bg-base shadow-extruded text-center max-w-md">
-          <Sparkles className="w-12 h-12 text-accent mx-auto mb-4 opacity-50" />
+          <Sparkles className="w-12 h-12 text-primary mx-auto mb-4 opacity-50" />
           <p className="text-fg-muted mb-8">{t('card.noQuotesInFeed', { defaultValue: 'No sentences in your feed. Add some books and quotes first!' })}</p>
           <Link
             href="/card/add-book"
@@ -213,21 +214,21 @@ export default function CardPageClient() {
                   }
                   setIsAutoPlaying(!isAutoPlaying);
                 }}
-                className={`w-10 h-10 rounded-full neumorphic-button flex items-center justify-center transition-all ${isAutoPlaying ? 'text-accent shadow-inset' : 'text-fg-muted'}`}
+                className={cn('w-10 h-10 rounded-full neumorphic-button flex items-center justify-center transition-all', { '!text-primary shadow-inset': isAutoPlaying, 'text-fg-muted': !isAutoPlaying })}
                 title={isAutoPlaying ? "Pause" : "Auto Play"}
               >
                 {isAutoPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
               </button>
               <button
                 onClick={() => setIsRandom(!isRandom)}
-                className={`w-10 h-10 rounded-full neumorphic-button flex items-center justify-center transition-all ${isRandom ? 'text-accent shadow-inset' : 'text-fg-muted'}`}
+                className={`w-10 h-10 rounded-full neumorphic-button flex items-center justify-center transition-all ${isRandom ? '!text-primary shadow-inset' : 'text-fg-muted'}`}
                 title="Shuffle"
               >
                 <Shuffle className="w-5 h-5" />
               </button>
               <button
                 onClick={toggleFullscreen}
-                className={`w-10 h-10 rounded-full neumorphic-button flex items-center justify-center transition-all ${isFullscreen ? 'text-accent shadow-inset' : 'text-fg-muted'}`}
+                className={`w-10 h-10 rounded-full neumorphic-button flex items-center justify-center transition-all ${isFullscreen ? '!text-primary shadow-inset' : 'text-fg-muted'}`}
                 title="Toggle Fullscreen"
               >
                 {isFullscreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
