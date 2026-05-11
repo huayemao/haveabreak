@@ -43,11 +43,7 @@ export default function CardLayoutClient({
           {children}
         </Suspense>
         <AnimatePresence mode="wait">
-          {modals && (
-            <motion.div key={pathname} className="z-[60]">
-              {modals}
-            </motion.div>
-          )}
+          {modals}
         </AnimatePresence>
       </main>
 
@@ -55,9 +51,8 @@ export default function CardLayoutClient({
       <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[50] flex items-center p-2 rounded-full bg-bg-base/80 backdrop-blur-lg shadow-extruded border border-white/5">
         <Link
           href="/card"
-          className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all ${
-            isFeed ? 'bg-accent text-white shadow-extruded-sm scale-105' : 'text-fg-muted hover:text-fg-primary'
-          }`}
+          className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all ${isFeed ? 'bg-accent text-white shadow-extruded-sm scale-105' : 'text-fg-muted hover:text-fg-primary'
+            }`}
         >
           <Sparkles className="w-5 h-5" />
           <span className="font-bold text-sm hidden sm:inline">{t('card.feed', { defaultValue: 'Feed' })}</span>
@@ -67,9 +62,8 @@ export default function CardLayoutClient({
 
         <Link
           href="/card/library"
-          className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all ${
-            isLibrary ? 'bg-accent text-white shadow-extruded-sm scale-105' : 'text-fg-muted hover:text-fg-primary'
-          }`}
+          className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all ${isLibrary ? 'bg-accent text-white shadow-extruded-sm scale-105' : 'text-fg-muted hover:text-fg-primary'
+            }`}
         >
           <Library className="w-5 h-5" />
           <span className="font-bold text-sm hidden sm:inline">{t('card.library', { defaultValue: 'Library' })}</span>
