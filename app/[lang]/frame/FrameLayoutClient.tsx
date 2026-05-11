@@ -1,5 +1,5 @@
-"use client"
-import { useTranslations, useLocale } from 'next-intl';
+'use client';
+import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { useFrameStore } from '@/apps/frame/store';
 import { MediaItem } from '@/apps/frame/types';
@@ -7,6 +7,8 @@ import FullscreenPlayer from '@/apps/frame/components/FullscreenPlayer';
 import AddMediaModal from '@/apps/frame/components/AddMediaModal';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useCallback, useMemo, Suspense } from 'react';
+import { Plus, Settings } from 'lucide-react';
+import NeumorphicBottomNav from '@/components/NeumorphicBottomNav';
 
 export default function FrameLayoutClient({
   children,
@@ -14,7 +16,6 @@ export default function FrameLayoutClient({
   children: React.ReactNode;
 }) {
   const t = useTranslations();
-  const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -121,157 +122,78 @@ export default function FrameLayoutClient({
   const isDownload = pathname === `${baseRoute}/download`;
   const isSettings = pathname === `${baseRoute}/settings`;
 
+  const navItems = [
+    {
+      href: `${baseRoute}/collections`,
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+        </svg>
+      ),
+      label: t('frame.collections'),
+      activePath: `${baseRoute}/collections`,
+    },
+    {
+      href: `${baseRoute}/gallery`,
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+        </svg>
+      ),
+      label: t('frame.mediaLibrary'),
+      activePath: `${baseRoute}/gallery`,
+    },
+    {
+      href: `${baseRoute}/download`,
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+      ),
+      label: t('frame.download'),
+      activePath: `${baseRoute}/download`,
+    },
+    {
+      href: `${baseRoute}/settings`,
+      icon: <Settings className="w-5 h-5" />,
+      label: t('frame.settings'),
+      variant: 'action' as const,
+    },
+    {
+      href: `${baseRoute}/add-media`,
+      icon: <Plus className="w-6 h-6" />,
+      label: t('frame.addMedia'),
+      variant: 'action' as const,
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-bg-base pt-28 flex flex-col">
-      <header className="z-30 bg-bg-base/90 backdrop-blur-lg border-b border-white/10 transition-all duration-300">
+    <div className="min-h-screen bg-bg-base pt-12 md:pt-28 pb-24">
+      <header className=" bg-bg-base/90 backdrop-blur-lg border-b border-white/10 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link href={baseRoute}>
-                <div>
-                  <h1 className="text-lg font-bold text-fg-primary font-display">
-                    {t('frame.appTitle')}
-                  </h1>
-                  <p className="text-xs text-fg-muted hidden sm:block">{t('frame.appSubtitle')}</p>
-                </div>
-              </Link>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className="hidden sm:flex items-center gap-2">
-                <Link
-                  href={`${baseRoute}/collections`}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all ${isCollections
-                    ? 'bg-accent text-white'
-                    : 'neumorphic-button'
-                    }`}
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                  </svg>
-                  <span className="hidden md:inline text-sm">{t('frame.collections')}</span>
-                </Link>
-
-                <Link
-                  href={`${baseRoute}/gallery`}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all ${isGallery
-                    ? 'bg-accent text-white'
-                    : 'neumorphic-button'
-                    }`}
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                  </svg>
-                  <span className="hidden md:inline text-sm">{t('frame.mediaLibrary')}</span>
-                </Link>
-
-
-
-                <Link
-                  href={`${baseRoute}/download`}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all ${isDownload
-                    ? 'bg-accent text-white'
-                    : 'neumorphic-button'
-                    }`}
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
-                  <span className="hidden md:inline text-sm">{t('frame.download')}</span>
-                </Link>
-
-                <Link
-                  href={`${baseRoute}/settings`}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all ${isSettings
-                    ? 'bg-accent text-white'
-                    : 'neumorphic-button'
-                    }`}
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  </svg>
-                  <span className="hidden md:inline text-sm">{t('frame.settings')}</span>
-                </Link>
-              </div>
-
-              {media.length > 0 && (
-                <button
-                  onClick={() => handleStartSlideshow(false)}
-                  className="neumorphic-button-primary p-2 flex items-center gap-2 rounded-2xl"
-                >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                  <span className="hidden sm:inline text-sm">{t('frame.slideshow')}</span>
-                </button>
-              )}
-            </div>
-          </div>
-
-          <div className="sm:hidden mt-3 pt-3 border-t border-border">
-            <div className="grid grid-cols-2 gap-4">
-              <Link
-                href={`${baseRoute}/collections`}
-                className={`flex items-center justify-center gap-2 px-4 py-2 rounded-xl transition-all ${isCollections
-                  ? 'bg-accent text-white'
-                  : 'neumorphic-button'
-                  }`}
+            {media.length > 0 && (
+              <button
+                onClick={() => handleStartSlideshow(false)}
+                className="neumorphic-button-primary p-2 flex items-center gap-2 rounded-2xl"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z" />
                 </svg>
-                <span className="text-sm">{t('frame.collections')}</span>
-              </Link>
-              <Link
-                href={`${baseRoute}/gallery`}
-                className={`flex items-center justify-center gap-2 px-4 py-2 rounded-xl transition-all ${isGallery
-                  ? 'bg-accent text-white'
-                  : 'neumorphic-button'
-                  }`}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                </svg>
-                <span className="text-sm">{t('frame.mediaLibrary')}</span>
-              </Link>
-
-
-
-              <Link
-                href={`${baseRoute}/download`}
-                className={`flex items-center justify-center gap-2 px-4 py-2 rounded-xl transition-all ${isDownload
-                  ? 'bg-accent text-white'
-                  : 'neumorphic-button'
-                  }`}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-                <span className="text-sm">{t('frame.download')}</span>
-              </Link>
-
-              <Link
-                href={`${baseRoute}/settings`}
-                className={`flex items-center justify-center gap-2 px-4 py-2 rounded-xl transition-all ${isSettings
-                  ? 'bg-accent text-white'
-                  : 'neumorphic-button'
-                  }`}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                </svg>
-                <span className="text-sm">{t('frame.settings')}</span>
-              </Link>
-            </div>
+                <span className="hidden sm:inline text-sm">{t('frame.slideshow')}</span>
+              </button>
+            )}
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-6 flex-1">
+      <main className="max-w-7xl mx-auto px-4 py-6">
         <Suspense fallback={null}>
           {children}
         </Suspense>
       </main>
+
+      <NeumorphicBottomNav items={navItems} />
 
       {showFullscreen && (
         <FullscreenPlayer
