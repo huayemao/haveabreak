@@ -1,5 +1,8 @@
 {
   "title": "haveabreak",
+  "pwaUpdateTitle": "New version available ✨",
+  "pwaUpdateDesc": "A new version is ready. Tap refresh to update.",
+  "pwaUpdateBtn": "Refresh now",
   "subtitle": "Disconnect to Reconnect",
   "seoDesc": "A mindful timer PWA that helps you take a real screen break. Leave your device untouched until the timer finishes.",
   "startBtn": "Start Break",

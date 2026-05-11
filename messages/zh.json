@@ -1,5 +1,8 @@
 {
   "title": "haveabreak",
+  "pwaUpdateTitle": "发现新版本 ✨",
+  "pwaUpdateDesc": "新版本已准备就绪，点击刷新以更新。",
+  "pwaUpdateBtn": "立即刷新",
   "subtitle": "断开连接，重新启程",
   "seoDesc": "一个正念定时器PWA，帮你真正放下屏幕。在计时结束前，请勿触碰设备。",
   "startBtn": "开始休息",

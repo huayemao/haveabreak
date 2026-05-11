@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans, DM_Sans } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { SerwistProvider } from '@serwist/turbopack/react';
+import { ServiceWorkerUpdate } from '@/components/ServiceWorkerUpdate';
 import '../globals.css';
 import { routing } from '@/i18n/routing';
 import { Locale } from '@/i18n';
@@ -105,6 +106,7 @@ export default async function RootLayout({
       <body suppressHydrationWarning className="bg-[#E0E5EC] text-slate-900 antialiased">
         <SerwistProvider swUrl="/serwist/sw.js">
           <NextIntlClientProvider messages={messages}>
+            <ServiceWorkerUpdate />
             <NavbarProvider>
               <LanguageBanner />
               <Navbar />

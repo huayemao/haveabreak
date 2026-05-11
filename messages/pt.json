@@ -1,4 +1,7 @@
 {
+  "pwaUpdateTitle": "Nova versão disponível ?",
+  "pwaUpdateDesc": "Uma nova versão está pronta. Toque em Atualizar para atualizar.",
+  "pwaUpdateBtn": "Atualizar agora",
   "title": "haveabreak",
   "subtitle": "Desconectar para Reconectar",
   "seoDesc": "Um cronômetro consciente que te afasta das telas.",

@@ -1,4 +1,7 @@
 {
+  "pwaUpdateTitle": "New version available ?",
+  "pwaUpdateDesc": "A new version is ready. Tap refresh to update.",
+  "pwaUpdateBtn": "Refresh now",
   "title": "haveabreak",
   "subtitle": "Desconecta para Reconectar",
   "seoDesc": "Una PWA de temporizador consciente. Deja tu dispositivo intacto hasta que termine el tiempo.",
