@@ -19,6 +19,18 @@ const serwist = new Serwist({
   navigationPreload: true,
   runtimeCaching: [
     {
+      matcher: ({ url }) => url.searchParams.has("_rsc"),
+      handler: new StaleWhileRevalidate({
+        cacheName: "next-rsc-data",
+        plugins: [
+          new ExpirationPlugin({
+            maxEntries: 200,
+            maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
+          }),
+        ],
+      }),
+    },
+    {
       matcher: ({ request }) => request.destination === "document",
       handler: new StaleWhileRevalidate({
         cacheName: "pages",
