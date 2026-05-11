@@ -1,7 +1,10 @@
 {
   "title": "haveabreak",
+  "pwaUpdateTitle": "새로운 버전이 있습니다!",
+  "pwaUpdateDesc": "새로운 버전이 준비되었습니다. 업데이트하세요!",
+  "pwaUpdateBtn": "업데이트",
   "subtitle": "연결을 끊고 다시 연결하기",
-  "seoDesc": "화면에서 벗어날 수 있게 도와주는 마음챙김 타이머 PWA.",
+  "seoDesc": "화면에서 벗어날 수 있게 도와주는 마음차김 타이머 PWA.",
   "startBtn": "휴식 시작",
   "stopBtn": "휴식 중지",
   "moveWarning": "앗! 움직이셨네요.",

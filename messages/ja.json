@@ -1,5 +1,8 @@
 {
   "title": "haveabreak",
+  "pwaUpdateTitle": "新しいバージョンが利用できます！",
+  "pwaUpdateDesc": "新しいバージョンが準備されています。アップデートしてください！",
+  "pwaUpdateBtn": "アップデートを開始する",
   "subtitle": "切断して、再接続する",
   "seoDesc": "画面から本当に離れるためのマインドフルネスタイマーPWA。",
   "startBtn": "休憩を開始",

@@ -1,7 +1,7 @@
 {
-  "pwaUpdateTitle": "New version available ?",
-  "pwaUpdateDesc": "A new version is ready. Tap refresh to update.",
-  "pwaUpdateBtn": "Refresh now",
+  "pwaUpdateTitle": "Neue Version verfügbar ✨",
+  "pwaUpdateDesc": "Eine neue Version ist bereit. Tippe auf Aktualisieren.",
+  "pwaUpdateBtn": "Jetzt aktualisieren",
   "title": "haveabreak",
   "subtitle": "Abschalten um Aufzuladen",
   "seoDesc": "Ein Achtsamkeits-Timer für echte Bildschirmpausen.",

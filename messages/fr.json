@@ -1,7 +1,7 @@
 {
-  "pwaUpdateTitle": "New version available ?",
-  "pwaUpdateDesc": "A new version is ready. Tap refresh to update.",
-  "pwaUpdateBtn": "Refresh now",
+  "pwaUpdateTitle": "Nouvelle version disponible ?",
+  "pwaUpdateDesc": "Une nouvelle version est prête. Appuyez sur actualiser pour mettre à jour.",
+  "pwaUpdateBtn": "Actualiser maintenant",
   "title": "haveabreak",
   "subtitle": "Déconnecter pour Reconnecter",
   "seoDesc": "Une application PWA pour prendre une vraie pause d'écran.",
