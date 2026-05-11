@@ -87,8 +87,6 @@
     "confirmDelete": "Confirmer Suppression",
     "confirmDeleteMedia": "Supprimer ce média ?",
     "confirmDeleteCollection": "Supprimer cette collection ?",
-    "exportSuccess": "Exportation réussie !",
-    "importSuccess": "Importation réussie !",
     "noMedia": "Aucun média",
     "noCollections": "Aucune collection",
     "totalMedia": "Médias Totaux",
@@ -97,7 +95,6 @@
     "enterFullscreen": "Plein Écran",
     "error": "Erreur",
     "unsupportedType": "Type média non supporté",
-    "importFailed": "Importation échouée",
     "downloadComplete": "Téléchargement terminé",
     "shareCollection": "Partager Collection",
     "shareLink": "Lien de Partage",
@@ -130,7 +127,13 @@
     "enterUrlPlaceholder": "Entrer URL JSON...",
     "enterUrl": "Veuillez entrer une URL",
     "urlImportFailed": "Importation depuis URL échouée",
-    "importSuccess": "Importation réussie !"
+    "importSuccess": "Importation réussie !",
+    "exportSuccess": "Exportation réussie !",
+    "importFailed": "Échec de l'importation. Veuillez vérifier le format des données.",
+    "selectFile": "Sélectionner un fichier JSON",
+    "chooseFile": "Choisir un fichier",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer ceci ?",
+    "importDataLabel": "Coller les données importées ici"
   },
   "nav": {
     "home": "Pause chronométrée",
@@ -175,11 +178,7 @@
     "saveBook": "Enregistrer les modifications",
     "saveQuote": "Enregistrer les modifications",
     "settings": "Paramètres",
-    "exportSuccess": "Exportation réussie !",
-    "importSuccess": "Importation réussie !",
-    "importFailed": "Échec de l'importation. Veuillez vérifier le format des données.",
     "dataManagement": "Gestion des données",
-    "dataManagementDesc": "Exporter vos livres et citations pour les sauvegarder, ou importer des données depuis une sauvegarde précédente.",
-    "importDataLabel": "Coller les données importées ici"
+    "dataManagementDesc": "Exporter vos livres et citations pour les sauvegarder, ou importer des données depuis une sauvegarde précédente."
   }
 }

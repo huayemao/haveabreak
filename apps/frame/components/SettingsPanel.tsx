@@ -43,12 +43,12 @@ export default function SettingsPanel({
         if (content) {
           try {
             onImport(content);
-            setSuccessMessage(t('frame.importSuccess'));
+            setSuccessMessage(t('common.importSuccess'));
             setShowSuccess(true);
             setShowImportModal(false);
             setTimeout(() => setShowSuccess(false), 3000);
           } catch {
-            alert(t('frame.importFailed'));
+            alert(t('common.importFailed'));
           }
         }
       };
@@ -64,7 +64,7 @@ export default function SettingsPanel({
     const timestamp = new Date().toISOString().slice(0, 10);
     const filename = `${collectionName}-${timestamp}.json`;
     onExport(filename);
-    setSuccessMessage(t('frame.exportSuccess'));
+    setSuccessMessage(t('common.exportSuccess'));
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 3000);
   };
@@ -258,9 +258,9 @@ export default function SettingsPanel({
               <svg className="w-12 h-12 text-fg-muted mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
               </svg>
-              <p className="text-fg-muted mb-4">{t('frame.selectFile') || 'Select a JSON file'}</p>
+              <p className="text-fg-muted mb-4">{t('common.selectFile') || 'Select a JSON file'}</p>
               <label className="cursor-pointer neumorphic-button-primary px-6 py-2">
-                {t('frame.chooseFile') || 'Choose File'}
+                {t('common.chooseFile') || 'Choose File'}
                 <input
                   type="file"
                   accept=".json"

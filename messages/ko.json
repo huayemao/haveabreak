@@ -87,8 +87,6 @@
     "confirmDelete": "삭제 확인",
     "confirmDeleteMedia": "이 미디어를 삭제하시겠습니까?",
     "confirmDeleteCollection": "이 컬렉션을 삭제하시겠습니까?",
-    "exportSuccess": "내보내기 성공!",
-    "importSuccess": "가져오기 성공!",
     "noMedia": "미디어 없음",
     "noCollections": "컬렉션 없음",
     "totalMedia": "미디어 총 수",
@@ -97,7 +95,6 @@
     "enterFullscreen": "전체 화면",
     "error": "오류",
     "unsupportedType": "지원되지 않는 미디어 유형",
-    "importFailed": "가져오기 실패",
     "downloadComplete": "다운로드 완료",
     "shareCollection": "컬렉션 공유",
     "shareLink": "공유 링크",
@@ -130,7 +127,13 @@
     "enterUrlPlaceholder": "JSON URL 입력...",
     "enterUrl": "URL을 입력하세요",
     "urlImportFailed": "URL에서 가져오기 실패",
-    "importSuccess": "가져오기 성공！"
+    "importSuccess": "가져오기 성공!",
+    "exportSuccess": "내보내기 성공!",
+    "importFailed": "가져오기 실패. 데이터 형식을 확인하세요.",
+    "selectFile": "JSON 파일 선택",
+    "chooseFile": "파일 선택",
+    "confirmDelete": "이것을 삭제하시겠습니까?",
+    "importDataLabel": "가져올 데이터를 여기에 붙여넣으세요"
   },
   "nav": {
     "home": "타이머 휴식",
@@ -175,11 +178,7 @@
     "saveBook": "변경 사항 저장",
     "saveQuote": "변경 사항 저장",
     "settings": "설정",
-    "exportSuccess": "내보내기 성공!",
-    "importSuccess": "가져오기 성공!",
-    "importFailed": "가져오기 실패. 데이터 형식을 확인하세요.",
     "dataManagement": "데이터 관리",
-    "dataManagementDesc": "백업을 위해 책과 인용구를 내보내거나, 이전 백업에서 데이터를 가져올 수 있습니다.",
-    "importDataLabel": "가져올 데이터를 여기에 붙여넣으세요"
+    "dataManagementDesc": "백업을 위해 책과 인용구를 내보내거나, 이전 백업에서 데이터를 가져올 수 있습니다."
   }
 }

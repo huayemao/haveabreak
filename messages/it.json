@@ -87,8 +87,6 @@
     "confirmDelete": "Conferma Eliminazione",
     "confirmDeleteMedia": "Eliminare questo media?",
     "confirmDeleteCollection": "Eliminare questa raccolta?",
-    "exportSuccess": "Esportazione riuscita!",
-    "importSuccess": "Importazione riuscita!",
     "noMedia": "Nessun media",
     "noCollections": "Nessuna raccolta",
     "totalMedia": "Media Totali",
@@ -97,7 +95,6 @@
     "enterFullscreen": "Schermo Intero",
     "error": "Errore",
     "unsupportedType": "Tipo media non supportato",
-    "importFailed": "Importazione fallita",
     "downloadComplete": "Download completato",
     "shareCollection": "Condividi Raccolta",
     "shareLink": "Link di Condivisione",
@@ -130,7 +127,13 @@
     "enterUrlPlaceholder": "Inserire URL JSON...",
     "enterUrl": "Inserisci un URL",
     "urlImportFailed": "Importazione da URL fallita",
-    "importSuccess": "Importazione riuscita!"
+    "importSuccess": "Importazione riuscita!",
+    "exportSuccess": "Esportazione riuscita!",
+    "importFailed": "Importazione fallita. Controlla il formato dei dati.",
+    "selectFile": "Seleziona un file JSON",
+    "chooseFile": "Scegli file",
+    "confirmDelete": "Sei sicuro di voler eliminare questo?",
+    "importDataLabel": "Incolla i dati importati qui"
   },
   "nav": {
     "home": "Pausa temporizzata",
@@ -175,11 +178,7 @@
     "saveBook": "Salva modifiche",
     "saveQuote": "Salva modifiche",
     "settings": "Impostazioni",
-    "exportSuccess": "Esportazione riuscita!",
-    "importSuccess": "Importazione riuscita!",
-    "importFailed": "Importazione fallita. Controlla il formato dei dati.",
     "dataManagement": "Gestione dati",
-    "dataManagementDesc": "Esporta i tuoi libri e citazioni per eseguire il backup, o importa dati da un backup precedente.",
-    "importDataLabel": "Incolla i dati importati qui"
+    "dataManagementDesc": "Esporta i tuoi libri e citazioni per eseguire il backup, o importa dati da un backup precedente."
   }
 }

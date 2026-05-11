@@ -87,8 +87,6 @@
     "confirmDelete": "确认删除",
     "confirmDeleteMedia": "确定要删除这个媒体吗？",
     "confirmDeleteCollection": "确定要删除这个合集吗？",
-    "exportSuccess": "数据导出成功！",
-    "importSuccess": "数据导入成功！",
     "noMedia": "暂无媒体",
     "noCollections": "暂无合集",
     "totalMedia": "媒体总数",
@@ -97,7 +95,6 @@
     "enterFullscreen": "进入全屏",
     "error": "错误",
     "unsupportedType": "不支持的媒体类型",
-    "importFailed": "导入失败",
     "downloadComplete": "下载完成",
     "shareCollection": "分享合集",
     "shareLink": "分享链接",
@@ -130,10 +127,16 @@
     "enterUrlPlaceholder": "输入JSON链接...",
     "enterUrl": "请输入URL",
     "urlImportFailed": "从URL导入失败",
-    "importSuccess": "导入成功！"
+    "importSuccess": "导入成功！",
+    "exportSuccess": "导出成功！",
+    "importFailed": "导入失败，请检查数据格式。",
+    "confirmDelete": "你确定要删除吗？",
+    "selectFile": "选择一个 JSON 文件",
+    "chooseFile": "选择文件",
+    "importDataLabel": "在此粘贴导入的数据"
   },
   "nav": {
-    "home":"计时休息",
+    "home": "计时休息",
     "frame": "电子画框",
     "card": "书摘阅读器"
   },
@@ -175,11 +178,7 @@
     "saveBook": "保存更改",
     "saveQuote": "保存更改",
     "settings": "设置",
-    "exportSuccess": "导出成功！",
-    "importSuccess": "导入成功！",
-    "importFailed": "导入失败，请检查数据格式。",
     "dataManagement": "数据管理",
-    "dataManagementDesc": "导出你的图书和句子以备份，或从之前的备份中导入数据。",
-    "importDataLabel": "在此粘贴导入的数据"
+    "dataManagementDesc": "导出你的图书和句子以备份，或从之前的备份中导入数据。"
   }
 }

@@ -87,8 +87,6 @@
     "confirmDelete": "Confirmar Eliminación",
     "confirmDeleteMedia": "¿Está seguro de eliminar este medio?",
     "confirmDeleteCollection": "¿Está seguro de eliminar esta colección?",
-    "exportSuccess": "¡Exportación exitosa!",
-    "importSuccess": "¡Importación exitosa!",
     "noMedia": "No hay medios",
     "noCollections": "No hay colecciones",
     "totalMedia": "Medios Totales",
@@ -97,7 +95,6 @@
     "enterFullscreen": "Pantalla Completa",
     "error": "Error",
     "unsupportedType": "Tipo de medio no compatible",
-    "importFailed": "Importación fallida",
     "downloadComplete": "Descarga completa",
     "shareCollection": "Compartir Colección",
     "shareLink": "Enlace de Compartir",
@@ -130,7 +127,13 @@
     "enterUrlPlaceholder": "Ingresar URL JSON...",
     "enterUrl": "Por favor ingrese una URL",
     "urlImportFailed": "Importación desde URL fallida",
-    "importSuccess": "¡Importación exitosa!"
+    "importSuccess": "Importación exitosa!",
+    "exportSuccess": "Exportación exitosa!",
+    "importFailed": "Importación fallida. Por favor, verifica el formato de los datos.",
+    "selectFile": "Seleccionar archivo JSON",
+    "chooseFile": "Elegir archivo",
+    "confirmDelete": "¿Estás seguro de que quieres eliminar esto?",
+    "importDataLabel": "Pega los datos importados aquí"
   },
   "nav": {
     "home": "Descanso cronometrado",
@@ -175,11 +178,7 @@
     "saveBook": "Guardar cambios",
     "saveQuote": "Guardar cambios",
     "settings": "Configuración",
-    "exportSuccess": "Exportación exitosa!",
-    "importSuccess": "Importación exitosa!",
-    "importFailed": "Importación fallida. Por favor, verifica el formato de los datos.",
     "dataManagement": "Gestión de datos",
-    "dataManagementDesc": "Exporta tus libros y citas para hacer una copia de seguridad, o importa datos de una copia de seguridad anterior.",
-    "importDataLabel": "Pega los datos importados aquí"
+    "dataManagementDesc": "Exporta tus libros y citas para hacer una copia de seguridad, o importa datos de una copia de seguridad anterior."
   }
 }

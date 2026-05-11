@@ -34,11 +34,11 @@ export default function CardSettingsPanel({
         if (content) {
           try {
             onImport(content);
-            setSuccessMessage(t('card.importSuccess', { defaultValue: 'Import successful!' }));
+            setSuccessMessage(t('common.importSuccess'));
             setShowSuccess(true);
             setTimeout(() => setShowSuccess(false), 3000);
           } catch {
-            alert(t('card.importFailed', { defaultValue: 'Import failed. Please check your data format.' }));
+            alert(t('common.importFailed'));
           }
         }
       };
@@ -54,7 +54,7 @@ export default function CardSettingsPanel({
     const timestamp = new Date().toISOString().slice(0, 10);
     const filename = `${bookName}-${timestamp}.json`;
     onExport(filename);
-    setSuccessMessage(t('card.exportSuccess', { defaultValue: 'Export successful!' }));
+    setSuccessMessage(t('common.exportSuccess'));
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 3000);
   };
@@ -113,18 +113,18 @@ export default function CardSettingsPanel({
                 className="flex-1 neumorphic-button py-4 rounded-2xl flex items-center justify-center gap-2 font-bold"
               >
                 <Download className="w-5 h-5" />
-                {t('card.export', { defaultValue: 'Export' })}
+                {t('common.export')}
               </button>
             </div>
           </div>
 
           <div className="space-y-3">
-            <label className="text-sm font-bold text-fg-muted">{t('card.importDataLabel', { defaultValue: 'Import data' })}</label>
+            <label className="text-sm font-bold text-fg-muted">{t('common.importDataLabel')}</label>
             <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-fg-muted/30 rounded-xl">
               <Upload className="w-12 h-12 text-fg-muted mb-4" />
-              <p className="text-fg-muted mb-4">{t('card.selectFile', { defaultValue: 'Select a JSON file' })}</p>
+              <p className="text-fg-muted mb-4">{t('common.selectFile')}</p>
               <label className="cursor-pointer neumorphic-button-primary px-6 py-2">
-                {t('card.chooseFile', { defaultValue: 'Choose File' })}
+                {t('common.chooseFile')}
                 <input
                   type="file"
                   accept=".json"

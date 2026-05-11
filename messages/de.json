@@ -87,8 +87,6 @@
     "confirmDelete": "Löschung Bestätigen",
     "confirmDeleteMedia": "Dieses Medium löschen?",
     "confirmDeleteCollection": "Diese Sammlung löschen?",
-    "exportSuccess": "Export erfolgreich!",
-    "importSuccess": "Import erfolgreich!",
     "noMedia": "Keine Medien",
     "noCollections": "Keine Sammlungen",
     "totalMedia": "Gesamte Medien",
@@ -97,7 +95,6 @@
     "enterFullscreen": "Vollbild",
     "error": "Fehler",
     "unsupportedType": "Nicht unterstützter Medientyp",
-    "importFailed": "Import fehlgeschlagen",
     "downloadComplete": "Download abgeschlossen",
     "shareCollection": "Sammlung Teilen",
     "shareLink": "Teilen Link",
@@ -130,7 +127,13 @@
     "enterUrlPlaceholder": "JSON-URL eingeben...",
     "enterUrl": "Bitte geben Sie eine URL ein",
     "urlImportFailed": "Import von URL fehlgeschlagen",
-    "importSuccess": "Import erfolgreich!"
+    "importSuccess": "Import erfolgreich!",
+    "exportSuccess": "Export erfolgreich!",
+    "importFailed": "Import fehlgeschlagen. Bitte überprüfen Sie das Datenformat.",
+    "selectFile": "JSON-Datei auswählen",
+    "chooseFile": "Datei auswählen",
+    "confirmDelete": "Sind Sie sicher, dass Sie dies löschen möchten?",
+    "importDataLabel": "Importierte Daten hier einfügen"
   },
   "nav": {
     "home": "Zeitgesteuerte Pause",
@@ -175,11 +178,7 @@
     "saveBook": "Änderungen speichern",
     "saveQuote": "Änderungen speichern",
     "settings": "Einstellungen",
-    "exportSuccess": "Export erfolgreich!",
-    "importSuccess": "Import erfolgreich!",
-    "importFailed": "Import fehlgeschlagen. Bitte überprüfen Sie das Datenformat.",
     "dataManagement": "Datenverwaltung",
-    "dataManagementDesc": "Exportieren Sie Ihre Bücher und Zitate zum Sichern, oder importieren Sie Daten aus einem vorherigen Backup.",
-    "importDataLabel": "Importierte Daten hier einfügen"
+    "dataManagementDesc": "Exportieren Sie Ihre Bücher und Zitate zum Sichern, oder importieren Sie Daten aus einem vorherigen Backup."
   }
 }

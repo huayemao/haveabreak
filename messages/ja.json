@@ -87,8 +87,6 @@
     "confirmDelete": "削除を確認",
     "confirmDeleteMedia": "このメディアを削除しますか？",
     "confirmDeleteCollection": "このコレクションを削除しますか？",
-    "exportSuccess": "エクスポート成功！",
-    "importSuccess": "インポート成功！",
     "noMedia": "メディアがありません",
     "noCollections": "コレクションがありません",
     "totalMedia": "メディア総数",
@@ -97,7 +95,6 @@
     "enterFullscreen": "全画面",
     "error": "エラー",
     "unsupportedType": "サポートされていないメディアタイプ",
-    "importFailed": "インポート失敗",
     "downloadComplete": "ダウンロード完了",
     "shareCollection": "コレクションを共有",
     "shareLink": "共有リンク",
@@ -130,7 +127,13 @@
     "enterUrlPlaceholder": "JSON URLを入力...",
     "enterUrl": "URLを入力してください",
     "urlImportFailed": "URLからのインポートに失敗しました",
-    "importSuccess": "インポート成功！"
+    "importSuccess": "インポート成功！",
+    "exportSuccess": "エクスポート成功！",
+    "importFailed": "インポートに失敗しました。データ形式を確認してください。",
+    "selectFile": "JSONファイルを選択",
+    "chooseFile": "ファイルを選択",
+    "confirmDelete": "これを削除してもよろしいですか？",
+    "importDataLabel": "インポートするデータをここに貼り付け"
   },
   "nav": {
     "home": "タイマー休憩",
@@ -175,11 +178,7 @@
     "saveBook": "変更を保存",
     "saveQuote": "変更を保存",
     "settings": "設定",
-    "exportSuccess": "エクスポート成功！",
-    "importSuccess": "インポート成功！",
-    "importFailed": "インポートに失敗しました。データ形式を確認してください。",
     "dataManagement": "データ管理",
-    "dataManagementDesc": "バックアップのために本と引用をエクスポートするか、以前のバックアップからデータをインポートします。",
-    "importDataLabel": "インポートするデータをここに貼り付け"
+    "dataManagementDesc": "バックアップのために本と引用をエクスポートするか、以前のバックアップからデータをインポートします。"
   }
 }
