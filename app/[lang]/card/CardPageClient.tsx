@@ -80,7 +80,7 @@ export default function CardPageClient() {
     };
 
     document.addEventListener('fullscreenchange', handleFullscreenChange);
-    
+
     const resetUITimer = () => {
       setShowUI(true);
       if (uiTimeoutRef.current) clearTimeout(uiTimeoutRef.current);
@@ -139,13 +139,7 @@ export default function CardPageClient() {
 
   const handleQuoteClick = useCallback((quoteId: string) => {
     if (isDragging) return;
-    if (document.fullscreenElement) {
-      document.exitFullscreen().catch(() => {}).finally(() => {
-        router.push(`/card/quotes/${quoteId}`);
-      });
-    } else {
-      router.push(`/card/quotes/${quoteId}`);
-    }
+    router.push(`/card/quotes/${quoteId}`);
   }, [router, isDragging]);
 
   if (quotesWithBooks.length === 0) {
@@ -168,7 +162,7 @@ export default function CardPageClient() {
 
   return (
     <div ref={containerRef} className="relative w-full flex flex-col items-center px-4 h-full bg-bg-base transition-colors duration-500 overflow-hidden">
-      <motion.div 
+      <motion.div
         animate={{ y: showUI ? 0 : -100, opacity: showUI ? 1 : 0 }}
         className="mb-8 text-center pt-4"
       >
@@ -206,33 +200,33 @@ export default function CardPageClient() {
         {/* Quick Navigation Buttons (Side) */}
         <AnimatePresence>
           {showUI && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
               className="absolute right-[-10px] sm:right-[-60px] top-1/2 -translate-y-1/2 flex flex-col gap-3 z-20"
             >
-              <button 
+              <button
                 onClick={() => {
                   if (!isAutoPlaying) {
-                    containerRef.current?.requestFullscreen().catch(() => {});
+                    containerRef.current?.requestFullscreen().catch(() => { });
                   }
                   setIsAutoPlaying(!isAutoPlaying);
-                }} 
+                }}
                 className={`w-10 h-10 rounded-full neumorphic-button flex items-center justify-center transition-all ${isAutoPlaying ? 'text-accent shadow-inset' : 'text-fg-muted'}`}
                 title={isAutoPlaying ? "Pause" : "Auto Play"}
               >
                 {isAutoPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
               </button>
-              <button 
-                onClick={() => setIsRandom(!isRandom)} 
+              <button
+                onClick={() => setIsRandom(!isRandom)}
                 className={`w-10 h-10 rounded-full neumorphic-button flex items-center justify-center transition-all ${isRandom ? 'text-accent shadow-inset' : 'text-fg-muted'}`}
                 title="Shuffle"
               >
                 <Shuffle className="w-5 h-5" />
               </button>
-              <button 
-                onClick={toggleFullscreen} 
+              <button
+                onClick={toggleFullscreen}
                 className={`w-10 h-10 rounded-full neumorphic-button flex items-center justify-center transition-all ${isFullscreen ? 'text-accent shadow-inset' : 'text-fg-muted'}`}
                 title="Toggle Fullscreen"
               >
@@ -251,7 +245,7 @@ export default function CardPageClient() {
       </div>
 
       {/* Pagination Dots */}
-      <motion.div 
+      <motion.div
         animate={{ y: showUI ? 0 : 100, opacity: showUI ? 1 : 0 }}
         className="mt-8 flex gap-2 flex-wrap justify-center max-w-xs pb-4"
       >
@@ -259,9 +253,8 @@ export default function CardPageClient() {
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`h-1.5 rounded-full transition-all duration-300 ${
-              index === currentIndex ? 'w-6 bg-accent' : 'w-1.5 bg-fg-muted/20 hover:bg-fg-muted/40'
-            }`}
+            className={`h-1.5 rounded-full transition-all duration-300 ${index === currentIndex ? 'w-6 bg-accent' : 'w-1.5 bg-fg-muted/20 hover:bg-fg-muted/40'
+              }`}
           />
         ))}
       </motion.div>
