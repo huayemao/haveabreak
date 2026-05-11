@@ -42,7 +42,7 @@ export default function QuoteCard({ card, isActive, onEdit, onDelete, isFullscre
     <ContextMenu>
       <ContextMenuTrigger>
         <div 
-          className={`w-full max-w-lg mx-auto relative flex flex-col p-6 sm:p-10 rounded-[32px] bg-bg-base shadow-extruded overflow-hidden select-none ${isFullscreen ? 'min-h-[76vh]' : ''} ${onClick ? 'cursor-pointer hover:scale-[1.02] transition-transform duration-300' : ''}`}
+          className={`w-full max-w-lg mx-auto relative flex flex-col p-5 sm:p-10 rounded-[28px] sm:rounded-[32px] bg-bg-base shadow-extruded overflow-hidden select-none ${isFullscreen ? 'h-full min-h-0' : ''} ${onClick ? 'cursor-pointer hover:scale-[1.02] transition-transform duration-300' : ''}`}
           onClick={onClick}
         >
       {/* Decorative Circles */}
@@ -81,18 +81,12 @@ export default function QuoteCard({ card, isActive, onEdit, onDelete, isFullscre
 
       {/* Quote Content */}
       <div 
-        className={`relative z-10 flex-1 flex flex-col ${isFullscreen ? 'overflow-y-auto pr-2 custom-scrollbar' : 'overflow-hidden'}`}
+        className="relative z-10 flex-1 flex flex-col overflow-hidden"
         onPointerDown={(e) => e.stopPropagation()}
       >
-     
-        
-        <div className={`text-lg sm:text-xl text-fg-primary leading-relaxed font-body mb-6 ${isFullscreen ? '' : 'line-clamp-6'}`}>
-          {content}
-        </div>
-
-        {/* Extended Metadata */}
+        {/* Extended Metadata - Now at top */}
         {(chapter || page) && (
-          <div className="mt-auto pt-6 border-t border-fg-muted/10 flex flex-wrap gap-4 text-xs font-bold text-accent/70 uppercase tracking-widest font-display">
+          <div className="mb-4 flex flex-wrap gap-4 text-[10px] font-bold text-accent/70 uppercase tracking-widest font-display">
             {chapter && (
               <div className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-accent/30" />
@@ -107,6 +101,10 @@ export default function QuoteCard({ card, isActive, onEdit, onDelete, isFullscre
             )}
           </div>
         )}
+        
+        <div className={`text-lg sm:text-xl text-fg-primary leading-relaxed font-body ${isFullscreen ? 'line-clamp-[10] sm:line-clamp-[15]' : 'line-clamp-6'}`}>
+          {content}
+        </div>
       </div>
 
       {/* Bottom Glow */}

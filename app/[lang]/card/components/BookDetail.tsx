@@ -24,11 +24,12 @@ interface BookDetailProps {
   onAddQuote: () => void;
   onEditQuote?: (quote: QuoteType) => void;
   onDeleteQuote?: (quoteId: string) => void;
+  onQuoteClick?: (quote: QuoteType) => void;
   bookId?: string;
   onBack?: () => void;
 }
 
-export default function BookDetail({ onAddQuote, onEditQuote, onDeleteQuote, bookId, onBack }: BookDetailProps) {
+export default function BookDetail({ onAddQuote, onEditQuote, onDeleteQuote, onQuoteClick, bookId, onBack }: BookDetailProps) {
   const { books, quotes: allQuotes, selectedBookId, setView, deleteQuote, deleteBook } = useCardStore();
   const t = useTranslations();
 
@@ -120,8 +121,11 @@ export default function BookDetail({ onAddQuote, onEditQuote, onDeleteQuote, boo
             {quotes.map((quote) => (
               <ContextMenu key={quote.id}>
                 <ContextMenuTrigger>
-                  <div className="relative bg-bg-base p-6 rounded-[24px] shadow-extruded-sm group cursor-pointer">
-                    <p className="text-fg-primary leading-relaxed mb-4 text-left text-balance">&quot;{quote.content}&quot;</p>
+                  <div 
+                    onClick={() => onQuoteClick?.(quote)}
+                    className={`relative bg-bg-base p-6 rounded-[24px] shadow-extruded-sm group transition-all duration-300 ${onQuoteClick ? 'cursor-pointer hover:scale-[1.01] hover:shadow-extruded active:scale-[0.99]' : ''}`}
+                  >
+                    <p className="text-fg-primary leading-relaxed mb-4 text-left text-balance group-hover:text-accent transition-colors">&quot;{quote.content}&quot;</p>
                     <div className="flex items-center justify-between">
                       <div className="flex gap-4 text-[10px] font-bold text-accent/70 uppercase tracking-widest">
                         {quote.chapter && <span>{quote.chapter}</span>}

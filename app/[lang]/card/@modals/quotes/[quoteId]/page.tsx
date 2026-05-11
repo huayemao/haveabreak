@@ -4,94 +4,260 @@ import { useParams } from 'next/navigation';
 import { useRouter } from 'i18n/routing';
 import { useCardStore, selectQuotesWithBooks } from '@/apps/card/store';
 import { motion, AnimatePresence } from 'motion/react';
-import { X } from 'lucide-react';
-import { useEffect } from 'react';
+import { X, ChevronLeft, ChevronRight, Maximize2, Minimize2 } from 'lucide-react';
+import { useEffect, useState, useRef } from 'react';
 import QuoteCard from '../../../components/QuoteCard';
 
 export default function FullscreenQuotePage() {
   const params = useParams<{ quoteId: string; lang: string }>();
   const router = useRouter();
+  const containerRef = useRef<HTMLDivElement>(null);
   const { books, quotes, deleteQuote } = useCardStore();
 
   const quotesWithBooks = selectQuotesWithBooks({ books, quotes } as any);
-  const quote = quotesWithBooks.find(q => q.id === params.quoteId);
+  const initialQuote = quotesWithBooks.find(q => q.id === params.quoteId);
+
+  // Filter quotes by the same book
+  const bookQuotes = initialQuote
+    ? quotesWithBooks.filter(q => q.book.id === initialQuote.book.id)
+    : [];
+
+  const initialIndex = bookQuotes.findIndex(q => q.id === params.quoteId);
+  const [currentIndex, setCurrentIndex] = useState(initialIndex !== -1 ? initialIndex : 0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [showUI, setShowUI] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const uiTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
+
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+
+    // Auto-hide UI on inactivity
+    const resetUITimer = () => {
+      setShowUI(true);
+      if (uiTimeoutRef.current) clearTimeout(uiTimeoutRef.current);
+      uiTimeoutRef.current = setTimeout(() => {
+        if (!isDragging) setShowUI(false);
+      }, 3000);
+    };
+
+    window.addEventListener('mousemove', resetUITimer);
+    window.addEventListener('touchstart', resetUITimer);
+    resetUITimer();
+
     return () => {
       document.body.style.overflow = '';
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      window.removeEventListener('mousemove', resetUITimer);
+      window.removeEventListener('touchstart', resetUITimer);
+      if (uiTimeoutRef.current) clearTimeout(uiTimeoutRef.current);
     };
-  }, []);
+  }, [isDragging]);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      containerRef.current?.requestFullscreen().catch(err => {
+        console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  };
 
   const handleClose = () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    }
     router.back();
+  };
+
+  const handleNext = () => {
+    if (currentIndex < bookQuotes.length - 1) {
+      setCurrentIndex(prev => prev + 1);
+    } else {
+      setCurrentIndex(0);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(prev => prev - 1);
+    } else {
+      setCurrentIndex(bookQuotes.length - 1);
+    }
+  };
+
+  const onDragEnd = (event: any, info: any) => {
+    setIsDragging(false);
+    const threshold = 80;
+    if (info.offset.y < -threshold || info.offset.x < -threshold) {
+      handleNext();
+    } else if (info.offset.y > threshold || info.offset.x > threshold) {
+      handlePrev();
+    }
   };
 
   const handleEditQuote = (quoteId: string) => {
     const quote = quotes.find(q => q.id === quoteId);
     if (quote) {
-      window.location.href = `/${params.lang}/card/add-quote?quoteId=${quote.id}`;
+      router.push(`/card/add-quote?quoteId=${quote.id}`);
     }
   };
 
   const handleDeleteQuote = (quoteId: string) => {
     if (confirm('Are you sure you want to delete this quote?')) {
       deleteQuote(quoteId);
-      router.back();
+      if (bookQuotes.length <= 1) {
+        handleClose();
+      } else {
+        handleNext();
+      }
     }
   };
 
-  if (!quote) {
+  if (!initialQuote || bookQuotes.length === 0) {
     return (
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-bg-base/90 backdrop-blur-md flex items-center justify-center z-50"
+        className="fixed inset-0 bg-bg-base flex items-center justify-center z-[100]"
       >
         <p className="text-fg-muted">Quote not found</p>
       </motion.div>
     );
   }
 
+  const currentQuote = bookQuotes[currentIndex];
+
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-      className="fixed inset-0 bg-bg-base/90 backdrop-blur-md flex items-center justify-center z-50 p-4"
-      onClick={handleClose}
+      ref={containerRef}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-bg-base z-[100] flex flex-col touch-none"
     >
+      {/* Immersive Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-accent/5 blur-[120px]" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-accent/10 blur-[150px]" />
+      </div>
+
+      {/* Header */}
       <motion.div
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 20, opacity: 0 }}
-        transition={{ delay: 0.1 }}
-        onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-2xl max-h-[90vh] p-4 overflow-hidden"
+        animate={{ y: showUI ? 0 : -100, opacity: showUI ? 1 : 0 }}
+        transition={{ type: 'spring', damping: 20, stiffness: 100 }}
+        className="relative z-50 flex items-center justify-between p-6 sm:p-8"
       >
-        <QuoteCard
-          card={quote}
-          isActive={true}
-          isFullscreen={true}
-          onEdit={handleEditQuote}
-          onDelete={handleDeleteQuote}
-        />
+        <div className="flex flex-col">
+          <span className="text-[10px] font-bold text-accent uppercase tracking-[0.2em] mb-1">
+            Book Collection
+          </span>
+          <h2 className="text-lg font-bold text-fg-primary line-clamp-1 max-w-[200px] sm:max-w-md">
+            {currentQuote.book.title}
+          </h2>
+        </div>
+
+        <div className="flex gap-3">
+          <button
+            onClick={toggleFullscreen}
+            className="w-12 h-12 rounded-full neumorphic-button flex items-center justify-center hover:scale-110 active:scale-95 transition-all"
+            title="Toggle Fullscreen"
+          >
+            {isFullscreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+          </button>
+          <button
+            onClick={handleClose}
+            className="w-12 h-12 rounded-full neumorphic-button flex items-center justify-center hover:scale-110 active:scale-95 transition-all"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
       </motion.div>
 
-      <motion.button
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.2 }}
-        onClick={(e) => {
-          e.stopPropagation();
-          handleClose();
-        }}
-        className="absolute top-4 right-4 sm:top-8 sm:right-8 w-12 h-12 rounded-full neumorphic-button flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50"
+      {/* Content Area */}
+      <div className="flex-1 relative flex items-center justify-center p-4 sm:p-6 overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentQuote.id}
+            initial={{ opacity: 0, x: 20, scale: 0.95 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: -20, scale: 0.95 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.2}
+            onDragStart={() => {
+              setIsDragging(true);
+              setShowUI(true);
+            }}
+            onDragEnd={onDragEnd}
+            className="w-full max-w-2xl h-full flex items-center justify-center"
+          >
+            <div className="w-full h-full">
+              <QuoteCard
+                card={currentQuote}
+                isActive={true}
+                isFullscreen={true}
+                onEdit={handleEditQuote}
+                onDelete={handleDeleteQuote}
+              />
+            </div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Navigation Indicators (Desktop) */}
+        <AnimatePresence>
+          {showUI && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute left-4 right-4 top-1/2 -translate-y-1/2 hidden sm:flex justify-between pointer-events-none z-50"
+            >
+              <button
+                onClick={handlePrev}
+                className="w-12 h-12 rounded-full neumorphic-button flex items-center justify-center hover:scale-110 active:scale-95 transition-all pointer-events-auto shadow-lg"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <button
+                onClick={handleNext}
+                className="w-12 h-12 rounded-full neumorphic-button flex items-center justify-center hover:scale-110 active:scale-95 transition-all pointer-events-auto shadow-lg"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Footer / Pagination */}
+      <motion.div
+        animate={{ y: showUI ? 0 : 100, opacity: showUI ? 1 : 0 }}
+        transition={{ type: 'spring', damping: 20, stiffness: 100 }}
+        className="relative z-50 p-4 sm:p-8 flex flex-col items-center"
       >
-        <X className="w-6 h-6" />
-      </motion.button>
+        <div className="flex gap-1.5 mb-2">
+          {bookQuotes.map((_, index) => (
+            <div
+              key={index}
+              className={`h-1 rounded-full transition-all duration-300 ${index === currentIndex ? 'w-6 bg-accent' : 'w-1.5 bg-fg-muted/20'
+                }`}
+            />
+          ))}
+        </div>
+        <span className="text-[10px] font-bold text-fg-muted uppercase tracking-widest">
+          {currentIndex + 1} / {bookQuotes.length}
+        </span>
+      </motion.div>
     </motion.div>
   );
 }

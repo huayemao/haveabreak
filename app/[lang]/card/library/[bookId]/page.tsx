@@ -20,6 +20,10 @@ export default function BookDetailPage() {
     router.push(`/card/add-quote?quoteId=${quote.id}`);
   };
 
+  const handleQuoteClick = (quote: QuoteType) => {
+    router.push(`/card/quotes/${quote.id}`);
+  };
+
   const handleDeleteQuote = (quoteId: string) => {
     deleteQuote(quoteId);
   };
@@ -33,6 +37,7 @@ export default function BookDetailPage() {
       bookId={bookId}
       onAddQuote={handleAddQuote}
       onEditQuote={handleEditQuote}
+      onQuoteClick={handleQuoteClick}
       onDeleteQuote={handleDeleteQuote}
       onBack={handleBack}
     />
