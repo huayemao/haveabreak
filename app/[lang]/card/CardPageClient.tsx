@@ -137,9 +137,15 @@ export default function CardPageClient() {
     }
   }, [deleteQuote, t]);
 
-  const handleFullscreen = useCallback((quoteId: string) => {
+  const handleQuoteClick = useCallback((quoteId: string) => {
     if (isDragging) return;
-    router.push(`/card/quotes/${quoteId}`);
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {}).finally(() => {
+        router.push(`/card/quotes/${quoteId}`);
+      });
+    } else {
+      router.push(`/card/quotes/${quoteId}`);
+    }
   }, [router, isDragging]);
 
   if (quotesWithBooks.length === 0) {
@@ -191,7 +197,7 @@ export default function CardPageClient() {
                 isActive={true}
                 onEdit={handleEditQuote}
                 onDelete={handleDeleteQuote}
-                onClick={() => handleFullscreen(quotesWithBooks[currentIndex].id)}
+                onClick={() => handleQuoteClick(quotesWithBooks[currentIndex].id)}
               />
             </div>
           </motion.div>
