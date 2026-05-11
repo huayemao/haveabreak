@@ -110,3 +110,16 @@ const serwist = new Serwist({
 });
 
 serwist.addEventListeners();
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+    self.clients.claim().then(() => {
+      self.clients.matchAll({ type: 'window' }).then((clients) => {
+        clients.forEach((client) => {
+          client.postMessage({ type: 'SW_UPDATED' });
+        });
+      });
+    });
+  }
+});

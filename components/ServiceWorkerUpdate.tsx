@@ -60,6 +60,14 @@ export function ServiceWorkerUpdate() {
       window.location.reload();
     };
 
+    const onMessageFromSW = (event: MessageEvent) => {
+      if (event.data && event.data.type === 'SW_UPDATED') {
+        if (isRefreshing) return;
+        isRefreshing = true;
+        window.location.reload();
+      }
+    };
+
     const trackWorker = (sw: ServiceWorker) => {
       if (sw.state === 'installed') {
         // A new SW is installed and waiting — the old one is still active.
@@ -115,8 +123,12 @@ export function ServiceWorkerUpdate() {
     // after skipWaiting, this event fires and we can safely reload.
     navigator.serviceWorker.addEventListener('controllerchange', onControllerChange);
 
+    // Listen to messages from Service Worker - for delayed refresh after SW activation
+    navigator.serviceWorker.addEventListener('message', onMessageFromSW);
+
     return () => {
       navigator.serviceWorker.removeEventListener('controllerchange', onControllerChange);
+      navigator.serviceWorker.removeEventListener('message', onMessageFromSW);
     };
   }, [t]);
 
