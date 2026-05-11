@@ -132,15 +132,13 @@ export default function AddBookModal({ isOpen, onClose, onAdd, editingBook }: Ad
                   <input value={publisher} onChange={(e) => setPublisher(e.target.value)} className="w-full p-3 rounded-xl bg-bg-base shadow-inset outline-none text-fg-primary" />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-fg-muted">ISBN</label>
-                  <div className="flex gap-2">
-                    <input value={isbn} onChange={(e) => setIsbn(e.target.value)} className="flex-1 w-full p-3 rounded-xl bg-bg-base shadow-inset outline-none text-fg-primary" />
-                    <button type="button" onClick={fetchCoverByIsbn} disabled={isLoadingCover || !isbn.trim()} className="px-4 py-3 rounded-xl bg-accent text-white font-bold shadow-extruded-sm hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                      {isLoadingCover ? '...' : t('card.parseIsbn', { defaultValue: 'Parse' })}
-                    </button>
-                  </div>
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-fg-muted">ISBN</label>
+                <div className="flex gap-2">
+                  <input value={isbn} onChange={(e) => setIsbn(e.target.value)} className="flex-1 w-full p-3 rounded-xl bg-bg-base shadow-inset outline-none text-fg-primary" />
+                  <button type="button" onClick={fetchCoverByIsbn} disabled={isLoadingCover || !isbn.trim()} className="px-4 py-3 rounded-xl bg-accent text-white font-bold shadow-extruded-sm hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                    {isLoadingCover ? '...' : t('card.parseIsbn', { defaultValue: 'Parse' })}
+                  </button>
                 </div>
               </div>
               <div className="space-y-2">
