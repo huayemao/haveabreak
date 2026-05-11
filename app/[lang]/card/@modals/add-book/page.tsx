@@ -16,7 +16,7 @@ export default function AddBookModal({ params }: { params: Promise<EditBookParam
   const router = useRouter();
   const t = useTranslations();
   const { addBook, updateBook, books } = useCardStore();
-  
+
   const [resolvedParams, setResolvedParams] = useState<EditBookParams | null>(null);
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
@@ -128,7 +128,7 @@ export default function AddBookModal({ params }: { params: Promise<EditBookParam
               <input value={publisher} onChange={(e) => setPublisher(e.target.value)} className="w-full p-3 rounded-xl bg-bg-base shadow-inset outline-none text-fg-primary" />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid gap-4">
             <div className="space-y-2">
               <label className="text-sm font-bold text-fg-muted">ISBN</label>
               <div className="flex gap-2">
