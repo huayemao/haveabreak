@@ -121,6 +121,8 @@ export default function FullscreenQuotePage() {
     }
   };
 
+  if(!params.quoteId) return null;
+
   if (!initialQuote || bookQuotes.length === 0) {
     return (
       <motion.div
