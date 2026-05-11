@@ -2,7 +2,7 @@
 
 import { useRouter } from 'i18n/routing';
 import { useCardStore } from '@/apps/card/store';
-import CardSettingsPanel from '../../components/CardSettingsPanel';
+import CardSettingsPanel from '../components/CardSettingsPanel';
 
 export default function SettingsModal() {
   const router = useRouter();

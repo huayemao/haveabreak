@@ -6,7 +6,7 @@ import { useCardStore, selectQuotesWithBooks } from '@/apps/card/store';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, ChevronLeft, ChevronRight, Maximize2, Minimize2 } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
-import QuoteCard from '../../../components/QuoteCard';
+import QuoteCard from '../../components/QuoteCard';
 
 export default function FullscreenQuotePage() {
   const params = useParams<{ quoteId: string; lang: string }>();
