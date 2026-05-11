@@ -10,7 +10,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   const messages: any = await getMessages({ locale: lang });
 
   return {
-    title: `Card - haveabreak`,
+    title: messages['card.title'],
     description: 'Swipe through beautiful book quotes.',
   };
 }
