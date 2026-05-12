@@ -21,6 +21,24 @@ export interface Quote {
 export interface CardSettings {
   autoPlay: boolean;
   swipeInterval: number;
+  subscriptionUrl: string;
+  lastCheckTime: number;
+  lastUpdateTime: number;
+}
+
+export interface SubscriptionDiff {
+  newBooks: Book[];
+  updatedBooks: Book[];
+  deletedBooks: string[];
+  newQuotes: Quote[];
+  updatedQuotes: Quote[];
+  deletedQuotes: string[];
+}
+
+export interface SubscriptionConfig {
+  books: Book[];
+  quotes: Quote[];
+  lastModified: number;
 }
 
 // For UI convenience

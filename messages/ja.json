@@ -136,7 +136,24 @@
     "selectFile": "JSONファイルを選択",
     "chooseFile": "ファイルを選択",
     "confirmDelete": "これを削除してもよろしいですか？",
-    "importDataLabel": "インポートするデータをここに貼り付け"
+    "importDataLabel": "インポートするデータをここに貼り付け",
+    "subscriptionUrlSaved": "サブスクリプション URL を保存しました！",
+    "never": "なし",
+    "subscriptionUrl": "サブスクリプション URL",
+    "enterUrl": "JSON ファイル URL を入力",
+    "checking": "確認中...",
+    "checkUpdate": "更新を確認",
+    "applyUpdate": "更新を適用",
+    "updateAvailable": "利用可能な更新",
+    "close": "閉じる",
+    "newBooks": "新しい本 {count} 冊",
+    "updatedBooks": "更新された本 {count} 冊",
+    "deletedBooks": "削除された本 {count} 冊",
+    "newQuotes": "新しい引用 {count} 件",
+    "updatedQuotes": "更新された引用 {count} 件",
+    "deletedQuotes": "削除された引用 {count} 件",
+    "lastChecked": "最終確認：{time}",
+    "lastUpdated": "最終更新：{time}"
   },
   "nav": {
     "home": "タイマー休憩",
@@ -182,6 +199,8 @@
     "saveQuote": "変更を保存",
     "settings": "設定",
     "dataManagement": "データ管理",
-    "dataManagementDesc": "バックアップのために本と引用をエクスポートするか、以前のバックアップからデータをインポートします。"
+    "dataManagementDesc": "バックアップのために本と引用をエクスポートするか、以前のバックアップからデータをインポートします。",
+    "subscription": "サブスクリプション",
+    "subscriptionDesc": "リモート JSON 設定ファイルを購読して自動更新を取得します。"
   }
 }

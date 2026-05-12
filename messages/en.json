@@ -136,7 +136,24 @@
     "confirmDelete": "Are you sure you want to delete this?",
     "selectFile": "Select a JSON file",
     "chooseFile": "Choose File",
-    "importDataLabel": "Paste imported data here"
+    "importDataLabel": "Paste imported data here",
+    "subscriptionUrlSaved": "Subscription URL saved!",
+    "never": "Never",
+    "subscriptionUrl": "Subscription URL",
+    "enterUrl": "Enter JSON file URL",
+    "checking": "Checking...",
+    "checkUpdate": "Check Update",
+    "applyUpdate": "Apply Update",
+    "updateAvailable": "Update Available",
+    "close": "Close",
+    "newBooks": "{count} new books",
+    "updatedBooks": "{count} updated books",
+    "deletedBooks": "{count} deleted books",
+    "newQuotes": "{count} new quotes",
+    "updatedQuotes": "{count} updated quotes",
+    "deletedQuotes": "{count} deleted quotes",
+    "lastChecked": "Last checked: {time}",
+    "lastUpdated": "Last updated: {time}"
   },
   "nav": {
     "home": "Timed Break",
@@ -182,6 +199,8 @@
     "saveQuote": "Save Changes",
     "settings": "Settings",
     "dataManagement": "Data Management",
-    "dataManagementDesc": "Export your books and quotes to back them up, or import data from a previous backup."
+    "dataManagementDesc": "Export your books and quotes to back them up, or import data from a previous backup.",
+    "subscription": "Subscription",
+    "subscriptionDesc": "Subscribe to a remote JSON configuration file for automatic updates."
   }
 }

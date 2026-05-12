@@ -136,7 +136,23 @@
     "selectFile": "JSON-Datei auswählen",
     "chooseFile": "Datei auswählen",
     "confirmDelete": "Sind Sie sicher, dass Sie dies löschen möchten?",
-    "importDataLabel": "Importierte Daten hier einfügen"
+    "importDataLabel": "Importierte Daten hier einfügen",
+    "subscriptionUrlSaved": "Abonnement-URL gespeichert!",
+    "never": "Niemals",
+    "subscriptionUrl": "Abonnement-URL",
+    "checking": "Überprüfen...",
+    "checkUpdate": "Update prüfen",
+    "applyUpdate": "Update anwenden",
+    "updateAvailable": "Update verfügbar",
+    "close": "Schließen",
+    "newBooks": "{count} neue Bücher",
+    "updatedBooks": "{count} aktualisierte Bücher",
+    "deletedBooks": "{count} gelöschte Bücher",
+    "newQuotes": "{count} neue Zitate",
+    "updatedQuotes": "{count} aktualisierte Zitate",
+    "deletedQuotes": "{count} gelöschte Zitate",
+    "lastChecked": "Zuletzt geprüft: {time}",
+    "lastUpdated": "Zuletzt aktualisiert: {time}"
   },
   "nav": {
     "home": "Zeitgesteuerte Pause",
@@ -182,6 +198,8 @@
     "saveQuote": "Änderungen speichern",
     "settings": "Einstellungen",
     "dataManagement": "Datenverwaltung",
-    "dataManagementDesc": "Exportieren Sie Ihre Bücher und Zitate zum Sichern, oder importieren Sie Daten aus einem vorherigen Backup."
+    "dataManagementDesc": "Exportieren Sie Ihre Bücher und Zitate zum Sichern, oder importieren Sie Daten aus einem vorherigen Backup.",
+    "subscription": "Abonnement",
+    "subscriptionDesc": "Abonnieren Sie eine entfernte JSON-Konfigurationsdatei für automatische Updates."
   }
 }

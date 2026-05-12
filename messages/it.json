@@ -136,7 +136,23 @@
     "selectFile": "Seleziona un file JSON",
     "chooseFile": "Scegli file",
     "confirmDelete": "Sei sicuro di voler eliminare questo?",
-    "importDataLabel": "Incolla i dati importati qui"
+    "importDataLabel": "Incolla i dati importati qui",
+    "subscriptionUrlSaved": "URL di sottoscrizione salvato!",
+    "never": "Mai",
+    "subscriptionUrl": "URL di sottoscrizione",
+    "checking": "Verifica...",
+    "checkUpdate": "Controlla aggiornamento",
+    "applyUpdate": "Applica aggiornamento",
+    "updateAvailable": "Aggiornamento disponibile",
+    "close": "Chiudi",
+    "newBooks": "{count} nuovi libri",
+    "updatedBooks": "{count} libri aggiornati",
+    "deletedBooks": "{count} libri eliminati",
+    "newQuotes": "{count} nuove citazioni",
+    "updatedQuotes": "{count} citazioni aggiornate",
+    "deletedQuotes": "{count} citazioni eliminate",
+    "lastChecked": "Ultima verifica: {time}",
+    "lastUpdated": "Ultimo aggiornamento: {time}"
   },
   "nav": {
     "home": "Pausa temporizzata",
@@ -182,6 +198,8 @@
     "saveQuote": "Salva modifiche",
     "settings": "Impostazioni",
     "dataManagement": "Gestione dati",
-    "dataManagementDesc": "Esporta i tuoi libri e citazioni per eseguire il backup, o importa dati da un backup precedente."
+    "dataManagementDesc": "Esporta i tuoi libri e citazioni per eseguire il backup, o importa dati da un backup precedente.",
+    "subscription": "Sottoscrizione",
+    "subscriptionDesc": "Sottoscrivi un file di configurazione JSON remoto per aggiornamenti automatici."
   }
 }

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Book, Quote, CardSettings, QuoteWithBook } from './types';
+import { Book, Quote, CardSettings, QuoteWithBook, SubscriptionDiff, SubscriptionConfig } from './types';
 import {
   getStoredBooks,
   getStoredQuotes,
@@ -21,6 +21,12 @@ interface CardState {
   settings: CardSettings;
   isLoading: boolean;
 
+  // Subscription
+  subscriptionDiff: SubscriptionDiff | null;
+  isChecking: boolean;
+  hasUpdate: boolean;
+  checkError: string | null;
+
   // Views
   currentView: 'feed' | 'library' | 'detail';
   selectedBookId: string | null;
@@ -37,6 +43,12 @@ interface CardState {
   exportData: () => Promise<string>;
   importData: (data: string) => void;
   
+  // Subscription Actions
+  setSubscriptionUrl: (url: string) => void;
+  checkSubscription: () => Promise<void>;
+  applyUpdate: () => void;
+  clearUpdate: () => void;
+  
   // Navigation
   setView: (view: 'feed' | 'library' | 'detail', bookId?: string) => void;
 }
@@ -47,8 +59,15 @@ export const useCardStore = create<CardState>((set, get) => ({
   settings: {
     autoPlay: false,
     swipeInterval: 5000,
+    subscriptionUrl: '',
+    lastCheckTime: 0,
+    lastUpdateTime: 0,
   },
   isLoading: true,
+  subscriptionDiff: null,
+  isChecking: false,
+  hasUpdate: false,
+  checkError: null,
   currentView: 'feed',
   selectedBookId: null,
 
@@ -154,6 +173,159 @@ export const useCardStore = create<CardState>((set, get) => ({
 
   setView: (view, bookId?: string) => {
     set({ currentView: view, selectedBookId: bookId });
+  },
+
+  setSubscriptionUrl: (url: string) => {
+    const state = get();
+    const newSettings = { ...state.settings, subscriptionUrl: url };
+    storageSaveSettings(newSettings);
+    set({ settings: newSettings });
+  },
+
+  checkSubscription: async () => {
+    const state = get();
+    const { subscriptionUrl } = state.settings;
+    
+    if (!subscriptionUrl) {
+      set({ checkError: 'Please set a subscription URL first', isChecking: false });
+      return;
+    }
+
+    set({ isChecking: true, checkError: null });
+
+    try {
+      const response = await fetch(subscriptionUrl);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const config: SubscriptionConfig = await response.json();
+
+      const currentBooks = new Map(state.books.map(b => [b.id, b]));
+      const currentQuotes = new Map(state.quotes.map(q => [q.id, q]));
+
+      const remoteBooks = new Map(config.books.map(b => [b.id, b]));
+      const remoteQuotes = new Map(config.quotes.map(q => [q.id, q]));
+
+      const diff: SubscriptionDiff = {
+        newBooks: [],
+        updatedBooks: [],
+        deletedBooks: [],
+        newQuotes: [],
+        updatedQuotes: [],
+        deletedQuotes: [],
+      };
+
+      remoteBooks.forEach((remoteBook, id) => {
+        const localBook = currentBooks.get(id);
+        if (!localBook) {
+          diff.newBooks.push(remoteBook);
+        } else if (remoteBook.createdAt > localBook.createdAt) {
+          diff.updatedBooks.push(remoteBook);
+        }
+      });
+
+      currentBooks.forEach((_, id) => {
+        if (!remoteBooks.has(id)) {
+          diff.deletedBooks.push(id);
+        }
+      });
+
+      remoteQuotes.forEach((remoteQuote, id) => {
+        const localQuote = currentQuotes.get(id);
+        if (!localQuote) {
+          diff.newQuotes.push(remoteQuote);
+        } else if (remoteQuote.createdAt > localQuote.createdAt) {
+          diff.updatedQuotes.push(remoteQuote);
+        }
+      });
+
+      currentQuotes.forEach((_, id) => {
+        if (!remoteQuotes.has(id)) {
+          diff.deletedQuotes.push(id);
+        }
+      });
+
+      const hasChanges = 
+        diff.newBooks.length > 0 || 
+        diff.updatedBooks.length > 0 || 
+        diff.deletedBooks.length > 0 ||
+        diff.newQuotes.length > 0 ||
+        diff.updatedQuotes.length > 0 ||
+        diff.deletedQuotes.length > 0;
+
+      set({
+        subscriptionDiff: diff,
+        hasUpdate: hasChanges,
+        isChecking: false,
+        checkError: null,
+      });
+
+      const newSettings = { ...state.settings, lastCheckTime: Date.now() };
+      storageSaveSettings(newSettings);
+      set({ settings: newSettings });
+
+    } catch (error) {
+      set({ 
+        checkError: error instanceof Error ? error.message : 'Failed to check subscription',
+        isChecking: false 
+      });
+    }
+  },
+
+  applyUpdate: () => {
+    const state = get();
+    const { subscriptionDiff } = state;
+
+    if (!subscriptionDiff) return;
+
+    let newBooks = [...state.books];
+    let newQuotes = [...state.quotes];
+
+    subscriptionDiff.newBooks.forEach(book => {
+      if (!newBooks.find(b => b.id === book.id)) {
+        newBooks.push(book);
+      }
+    });
+
+    subscriptionDiff.updatedBooks.forEach(book => {
+      newBooks = newBooks.map(b => b.id === book.id ? book : b);
+    });
+
+    subscriptionDiff.deletedBooks.forEach(id => {
+      newBooks = newBooks.filter(b => b.id !== id);
+      newQuotes = newQuotes.filter(q => q.bookId !== id);
+    });
+
+    subscriptionDiff.newQuotes.forEach(quote => {
+      if (!newQuotes.find(q => q.id === quote.id)) {
+        newQuotes.push(quote);
+      }
+    });
+
+    subscriptionDiff.updatedQuotes.forEach(quote => {
+      newQuotes = newQuotes.map(q => q.id === quote.id ? quote : q);
+    });
+
+    subscriptionDiff.deletedQuotes.forEach(id => {
+      newQuotes = newQuotes.filter(q => q.id !== id);
+    });
+
+    const newSettings = { ...state.settings, lastUpdateTime: Date.now() };
+    storageSaveSettings(newSettings);
+    localStorage.setItem('card_books', JSON.stringify(newBooks));
+    localStorage.setItem('card_quotes', JSON.stringify(newQuotes));
+
+    set({ 
+      books: newBooks, 
+      quotes: newQuotes, 
+      settings: newSettings,
+      subscriptionDiff: null,
+      hasUpdate: false,
+    });
+  },
+
+  clearUpdate: () => {
+    set({ subscriptionDiff: null, hasUpdate: false, checkError: null });
   },
 }));
 

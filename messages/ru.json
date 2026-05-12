@@ -136,7 +136,23 @@
     "selectFile": "Выберите JSON файл",
     "chooseFile": "Выбрать файл",
     "confirmDelete": "Вы уверены, что хотите удалить это?",
-    "importDataLabel": "Вставьте импортируемые данные сюда"
+    "importDataLabel": "Вставьте импортируемые данные сюда",
+    "subscriptionUrlSaved": "URL подписки сохранен!",
+    "never": "Никогда",
+    "subscriptionUrl": "URL подписки",
+    "checking": "Проверка...",
+    "checkUpdate": "Проверить обновление",
+    "applyUpdate": "Применить обновление",
+    "updateAvailable": "Доступно обновление",
+    "close": "Закрыть",
+    "newBooks": "новых книг: {count}",
+    "updatedBooks": "обновлено книг: {count}",
+    "deletedBooks": "удалено книг: {count}",
+    "newQuotes": "новых цитат: {count}",
+    "updatedQuotes": "обновлено цитат: {count}",
+    "deletedQuotes": "удалено цитат: {count}",
+    "lastChecked": "Последняя проверка: {time}",
+    "lastUpdated": "Последнее обновление: {time}"
   },
   "nav": {
     "home": "Таймерный перерыв",
@@ -182,6 +198,8 @@
     "saveQuote": "Сохранить изменения",
     "settings": "Настройки",
     "dataManagement": "Управление данными",
-    "dataManagementDesc": "Экспортируйте свои книги и цитаты для резервного копирования или импортируйте данные из предыдущей резервной копии."
+    "dataManagementDesc": "Экспортируйте свои книги и цитаты для резервного копирования или импортируйте данные из предыдущей резервной копии.",
+    "subscription": "Подписка",
+    "subscriptionDesc": "Подпишитесь на удаленный JSON файл конфигурации для автоматических обновлений."
   }
 }

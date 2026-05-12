@@ -3,9 +3,10 @@
 import { useTranslations } from 'next-intl';
 import { useScrollLock } from '@/apps/frame/utils/useScrollLock';
 import { useState } from 'react';
-import { X, Download, Upload } from 'lucide-react';
+import { X, Download, Upload, RefreshCw, Check, AlertCircle, Clock, Link2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Book } from '@/apps/card/types';
+import { useCardStore } from '@/apps/card/store';
 
 interface CardSettingsPanelProps {
   onClose: () => void;
@@ -24,6 +25,33 @@ export default function CardSettingsPanel({
   useScrollLock();
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [subscriptionUrlInput, setSubscriptionUrlInput] = useState('');
+
+  const {
+    settings,
+    subscriptionDiff,
+    isChecking,
+    hasUpdate,
+    checkError,
+    setSubscriptionUrl,
+    checkSubscription,
+    applyUpdate,
+    clearUpdate,
+  } = useCardStore();
+
+  const handleSaveSubscriptionUrl = () => {
+    if (subscriptionUrlInput.trim()) {
+      setSubscriptionUrl(subscriptionUrlInput.trim());
+      setSuccessMessage(t('common.subscriptionUrlSaved'));
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+    }
+  };
+
+  const formatTime = (timestamp: number) => {
+    if (!timestamp) return t('common.never');
+    return new Date(timestamp).toLocaleString();
+  };
 
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -132,6 +160,128 @@ export default function CardSettingsPanel({
                   className="hidden"
                 />
               </label>
+            </div>
+          </div>
+
+          <div className="space-y-4 pt-4 border-t border-white/10">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-fg-primary flex items-center gap-2">
+                <Link2 className="w-5 h-5 text-accent" />
+                {t('card.subscription', { defaultValue: 'Subscription' })}
+              </h3>
+            </div>
+            <p className="text-sm text-fg-muted">
+              {t('card.subscriptionDesc', { defaultValue: 'Subscribe to a remote JSON configuration file for automatic updates.' })}
+            </p>
+
+            <div className="space-y-3">
+              <label className="text-sm font-bold text-fg-muted flex items-center gap-2">
+                <Link2 className="w-4 h-4" />
+                {t('common.subscriptionUrl', { defaultValue: 'Subscription URL' })}
+              </label>
+              <div className="flex gap-3">
+                <input
+                  type="url"
+                  placeholder={t('common.enterUrl', { defaultValue: 'Enter JSON file URL' })}
+                  value={subscriptionUrlInput || settings.subscriptionUrl}
+                  onChange={(e) => setSubscriptionUrlInput(e.target.value)}
+                  className="flex-1 px-4 py-3 bg-bg-elevated border border-white/10 rounded-xl focus:outline-none focus:border-accent"
+                />
+                <button
+                  onClick={handleSaveSubscriptionUrl}
+                  className="neumorphic-button px-4 flex items-center justify-center"
+                >
+                  <Check className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {checkError && (
+              <div className="p-4 rounded-xl bg-red-100 text-red-700 text-sm flex items-start gap-2">
+                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                {checkError}
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <button
+                onClick={checkSubscription}
+                disabled={isChecking || !settings.subscriptionUrl}
+                className="flex-1 neumorphic-button py-3 rounded-xl flex items-center justify-center gap-2 font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <RefreshCw className={`w-5 h-5 ${isChecking ? 'animate-spin' : ''}`} />
+                {isChecking ? t('common.checking', { defaultValue: 'Checking...' }) : t('common.checkUpdate', { defaultValue: 'Check Update' })}
+              </button>
+              {hasUpdate && (
+                <button
+                  onClick={applyUpdate}
+                  className="flex-1 neumorphic-button-primary py-3 rounded-xl flex items-center justify-center gap-2 font-bold"
+                >
+                  <RefreshCw className="w-5 h-5" />
+                  {t('common.applyUpdate', { defaultValue: 'Apply Update' })}
+                </button>
+              )}
+            </div>
+
+            {subscriptionDiff && (
+              <div className="p-4 rounded-xl bg-bg-elevated space-y-3">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="font-bold text-fg-primary">{t('common.updateAvailable', { defaultValue: 'Update Available' })}</h4>
+                  <button onClick={clearUpdate} className="text-sm text-fg-muted hover:text-fg-primary">
+                    {t('common.close', { defaultValue: 'Close' })}
+                  </button>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  {subscriptionDiff.newBooks.length > 0 && (
+                    <div className="flex items-center gap-2 text-green-600">
+                      <Check className="w-4 h-4" />
+                      {t('common.newBooks', { defaultValue: '{count} new books', count: subscriptionDiff.newBooks.length })}
+                    </div>
+                  )}
+                  {subscriptionDiff.updatedBooks.length > 0 && (
+                    <div className="flex items-center gap-2 text-blue-600">
+                      <RefreshCw className="w-4 h-4" />
+                      {t('common.updatedBooks', { defaultValue: '{count} updated books', count: subscriptionDiff.updatedBooks.length })}
+                    </div>
+                  )}
+                  {subscriptionDiff.deletedBooks.length > 0 && (
+                    <div className="flex items-center gap-2 text-red-600">
+                      <AlertCircle className="w-4 h-4" />
+                      {t('common.deletedBooks', { defaultValue: '{count} deleted books', count: subscriptionDiff.deletedBooks.length })}
+                    </div>
+                  )}
+                  {subscriptionDiff.newQuotes.length > 0 && (
+                    <div className="flex items-center gap-2 text-green-600">
+                      <Check className="w-4 h-4" />
+                      {t('common.newQuotes', { defaultValue: '{count} new quotes', count: subscriptionDiff.newQuotes.length })}
+                    </div>
+                  )}
+                  {subscriptionDiff.updatedQuotes.length > 0 && (
+                    <div className="flex items-center gap-2 text-blue-600">
+                      <RefreshCw className="w-4 h-4" />
+                      {t('common.updatedQuotes', { defaultValue: '{count} updated quotes', count: subscriptionDiff.updatedQuotes.length })}
+                    </div>
+                  )}
+                  {subscriptionDiff.deletedQuotes.length > 0 && (
+                    <div className="flex items-center gap-2 text-red-600">
+                      <AlertCircle className="w-4 h-4" />
+                      {t('common.deletedQuotes', { defaultValue: '{count} deleted quotes', count: subscriptionDiff.deletedQuotes.length })}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <div className="text-xs text-fg-muted space-y-1">
+              <div className="flex items-center gap-2">
+                <Clock className="w-3 h-3" />
+                {t('common.lastChecked', { defaultValue: 'Last checked: {time}', time: formatTime(settings.lastCheckTime) })}
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="w-3 h-3" />
+                {t('common.lastUpdated', { defaultValue: 'Last updated: {time}', time: formatTime(settings.lastUpdateTime) })}
+              </div>
             </div>
           </div>
         </div>

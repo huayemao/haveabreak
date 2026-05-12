@@ -136,7 +136,23 @@
     "confirmDelete": "你确定要删除吗？",
     "selectFile": "选择一个 JSON 文件",
     "chooseFile": "选择文件",
-    "importDataLabel": "在此粘贴导入的数据"
+    "importDataLabel": "在此粘贴导入的数据",
+    "subscriptionUrlSaved": "订阅链接已保存！",
+    "never": "从未",
+    "subscriptionUrl": "订阅链接",
+    "checking": "检查中...",
+    "checkUpdate": "检查更新",
+    "applyUpdate": "应用更新",
+    "updateAvailable": "发现更新",
+    "close": "关闭",
+    "newBooks": "{count} 本新书",
+    "updatedBooks": "{count} 本更新",
+    "deletedBooks": "{count} 本删除",
+    "newQuotes": "{count} 条新句子",
+    "updatedQuotes": "{count} 条更新",
+    "deletedQuotes": "{count} 条删除",
+    "lastChecked": "最后检查：{time}",
+    "lastUpdated": "最后更新：{time}"
   },
   "nav": {
     "home": "计时休息",
@@ -182,6 +198,8 @@
     "saveQuote": "保存更改",
     "settings": "设置",
     "dataManagement": "数据管理",
-    "dataManagementDesc": "导出你的图书和句子以备份，或从之前的备份中导入数据。"
+    "dataManagementDesc": "导出你的图书和句子以备份，或从之前的备份中导入数据。",
+    "subscription": "订阅管理",
+    "subscriptionDesc": "订阅远程JSON配置文件以获取自动更新。"
   }
 }

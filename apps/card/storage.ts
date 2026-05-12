@@ -138,16 +138,22 @@ export function importData(data: string): void {
 }
 
 export async function getSettings(): Promise<CardSettings> {
-  if (typeof window === 'undefined') return presets.settings;
+  if (typeof window === 'undefined') return { ...presets.settings, subscriptionUrl: '', lastCheckTime: 0, lastUpdateTime: 0 };
   const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
   if (stored) {
     try {
-      return JSON.parse(stored);
+      const parsed = JSON.parse(stored);
+      return {
+        ...parsed,
+        subscriptionUrl: parsed.subscriptionUrl || '',
+        lastCheckTime: parsed.lastCheckTime || 0,
+        lastUpdateTime: parsed.lastUpdateTime || 0,
+      };
     } catch (e) {
       console.error('Failed to parse card settings', e);
     }
   }
-  return presets.settings;
+  return { ...presets.settings, subscriptionUrl: '', lastCheckTime: 0, lastUpdateTime: 0 };
 }
 
 export function saveSettings(settings: CardSettings): void {
