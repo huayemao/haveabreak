@@ -138,9 +138,12 @@
     "confirmDelete": "これを削除してもよろしいですか？",
     "importDataLabel": "インポートするデータをここに貼り付け",
     "subscriptionUrlSaved": "サブスクリプション URL を保存しました！",
+    "subscriptionAdded": "購読を追加しました！",
     "never": "なし",
     "subscriptionUrl": "サブスクリプション URL",
+    "subscriptionName": "購読名",
     "enterUrl": "JSON ファイル URL を入力",
+    "enterName": "購読名を入力",
     "checking": "確認中...",
     "checkUpdate": "更新を確認",
     "applyUpdate": "更新を適用",
@@ -153,7 +156,10 @@
     "updatedQuotes": "更新された引用 {count} 件",
     "deletedQuotes": "削除された引用 {count} 件",
     "lastChecked": "最終確認：{time}",
-    "lastUpdated": "最終更新：{time}"
+    "lastUpdated": "最終更新：{time}",
+    "noSubscriptions": "購読がまだありません。",
+    "selectSubscription": "購読を選択",
+    "add": "追加"
   },
   "nav": {
     "home": "タイマー休憩",

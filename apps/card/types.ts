@@ -18,10 +18,20 @@ export interface Quote {
   createdAt: number;
 }
 
+export interface Subscription {
+  id: string;
+  name: string;
+  url: string;
+  lastCheckTime: number;
+  lastUpdateTime: number;
+  enabled: boolean;
+}
+
 export interface CardSettings {
   autoPlay: boolean;
   swipeInterval: number;
-  subscriptionUrl: string;
+  subscriptions: Subscription[];
+  activeSubscriptionId: string | null;
   lastCheckTime: number;
   lastUpdateTime: number;
 }

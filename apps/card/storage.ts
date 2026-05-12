@@ -1,4 +1,4 @@
-import { Book, Quote, CardSettings } from './types';
+import { Book, Quote, CardSettings, Subscription } from './types';
 import presets from './presets.json';
 
 const BOOKS_STORAGE_KEY = 'card_books';
@@ -138,14 +138,30 @@ export function importData(data: string): void {
 }
 
 export async function getSettings(): Promise<CardSettings> {
-  if (typeof window === 'undefined') return { ...presets.settings, subscriptionUrl: '', lastCheckTime: 0, lastUpdateTime: 0 };
+  if (typeof window === 'undefined') return { ...presets.settings, subscriptions: [], activeSubscriptionId: null, lastCheckTime: 0, lastUpdateTime: 0 };
   const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
   if (stored) {
     try {
       const parsed = JSON.parse(stored);
+      let subscriptions: Subscription[] = parsed.subscriptions || [];
+      let activeSubscriptionId: string | null = parsed.activeSubscriptionId || null;
+      
+      if (parsed.subscriptionUrl && !subscriptions.length) {
+        subscriptions = [{
+          id: `sub_${Date.now()}`,
+          name: 'Default',
+          url: parsed.subscriptionUrl,
+          lastCheckTime: parsed.lastCheckTime || 0,
+          lastUpdateTime: parsed.lastUpdateTime || 0,
+          enabled: true,
+        }];
+        activeSubscriptionId = subscriptions[0].id;
+      }
+      
       return {
         ...parsed,
-        subscriptionUrl: parsed.subscriptionUrl || '',
+        subscriptions,
+        activeSubscriptionId,
         lastCheckTime: parsed.lastCheckTime || 0,
         lastUpdateTime: parsed.lastUpdateTime || 0,
       };
@@ -153,7 +169,7 @@ export async function getSettings(): Promise<CardSettings> {
       console.error('Failed to parse card settings', e);
     }
   }
-  return { ...presets.settings, subscriptionUrl: '', lastCheckTime: 0, lastUpdateTime: 0 };
+  return { ...presets.settings, subscriptions: [], activeSubscriptionId: null, lastCheckTime: 0, lastUpdateTime: 0 };
 }
 
 export function saveSettings(settings: CardSettings): void {

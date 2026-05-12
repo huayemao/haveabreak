@@ -138,8 +138,11 @@
     "confirmDelete": "Sind Sie sicher, dass Sie dies löschen möchten?",
     "importDataLabel": "Importierte Daten hier einfügen",
     "subscriptionUrlSaved": "Abonnement-URL gespeichert!",
+    "subscriptionAdded": "Abonnement hinzugefügt!",
     "never": "Niemals",
     "subscriptionUrl": "Abonnement-URL",
+    "subscriptionName": "Abonnementsname",
+    "enterName": "Abonnementsname eingeben",
     "checking": "Überprüfen...",
     "checkUpdate": "Update prüfen",
     "applyUpdate": "Update anwenden",
@@ -152,7 +155,10 @@
     "updatedQuotes": "{count} aktualisierte Zitate",
     "deletedQuotes": "{count} gelöschte Zitate",
     "lastChecked": "Zuletzt geprüft: {time}",
-    "lastUpdated": "Zuletzt aktualisiert: {time}"
+    "lastUpdated": "Zuletzt aktualisiert: {time}",
+    "noSubscriptions": "Noch keine Abonnements hinzugefügt.",
+    "selectSubscription": "Abonnement auswählen",
+    "add": "Hinzufügen"
   },
   "nav": {
     "home": "Zeitgesteuerte Pause",

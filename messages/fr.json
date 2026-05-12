@@ -138,8 +138,11 @@
     "confirmDelete": "Êtes-vous sûr de vouloir supprimer ceci ?",
     "importDataLabel": "Coller les données importées ici",
     "subscriptionUrlSaved": "URL d'abonnement enregistrée !",
+    "subscriptionAdded": "Abonnement ajouté !",
     "never": "Jamais",
     "subscriptionUrl": "URL d'abonnement",
+    "subscriptionName": "Nom d'abonnement",
+    "enterName": "Entrer le nom d'abonnement",
     "checking": "Vérification...",
     "checkUpdate": "Vérifier la mise à jour",
     "applyUpdate": "Appliquer la mise à jour",
@@ -152,7 +155,10 @@
     "updatedQuotes": "{count} citations mises à jour",
     "deletedQuotes": "{count} citations supprimées",
     "lastChecked": "Dernière vérification: {time}",
-    "lastUpdated": "Dernière mise à jour: {time}"
+    "lastUpdated": "Dernière mise à jour: {time}",
+    "noSubscriptions": "Aucun abonnement ajouté.",
+    "selectSubscription": "Sélectionner un abonnement",
+    "add": "Ajouter"
   },
   "nav": {
     "home": "Pause chronométrée",

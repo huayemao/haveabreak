@@ -138,8 +138,11 @@
     "confirmDelete": "이것을 삭제하시겠습니까?",
     "importDataLabel": "가져올 데이터를 여기에 붙여넣으세요",
     "subscriptionUrlSaved": "구독 URL 이 저장되었습니다!",
+    "subscriptionAdded": "구독이 추가되었습니다!",
     "never": "없음",
     "subscriptionUrl": "구독 URL",
+    "subscriptionName": "구독 이름",
+    "enterName": "구독 이름을 입력",
     "checking": "확인 중...",
     "checkUpdate": "업데이트 확인",
     "applyUpdate": "업데이트 적용",
@@ -152,7 +155,10 @@
     "updatedQuotes": "업데이트된 인용구 {count} 개",
     "deletedQuotes": "삭제된 인용구 {count} 개",
     "lastChecked": "마지막 확인：{time}",
-    "lastUpdated": "마지막 업데이트：{time}"
+    "lastUpdated": "마지막 업데이트：{time}",
+    "noSubscriptions": "아직 구독이 없습니다.",
+    "selectSubscription": "구독을 선택",
+    "add": "추가"
   },
   "nav": {
     "home": "타이머 휴식",

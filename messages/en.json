@@ -138,9 +138,12 @@
     "chooseFile": "Choose File",
     "importDataLabel": "Paste imported data here",
     "subscriptionUrlSaved": "Subscription URL saved!",
+    "subscriptionAdded": "Subscription added!",
     "never": "Never",
     "subscriptionUrl": "Subscription URL",
+    "subscriptionName": "Subscription Name",
     "enterUrl": "Enter JSON file URL",
+    "enterName": "Enter subscription name",
     "checking": "Checking...",
     "checkUpdate": "Check Update",
     "applyUpdate": "Apply Update",
@@ -153,7 +156,10 @@
     "updatedQuotes": "{count} updated quotes",
     "deletedQuotes": "{count} deleted quotes",
     "lastChecked": "Last checked: {time}",
-    "lastUpdated": "Last updated: {time}"
+    "lastUpdated": "Last updated: {time}",
+    "noSubscriptions": "No subscriptions added yet.",
+    "selectSubscription": "Select Subscription",
+    "add": "Add"
   },
   "nav": {
     "home": "Timed Break",

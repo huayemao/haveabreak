@@ -138,8 +138,11 @@
     "confirmDelete": "Sei sicuro di voler eliminare questo?",
     "importDataLabel": "Incolla i dati importati qui",
     "subscriptionUrlSaved": "URL di sottoscrizione salvato!",
+    "subscriptionAdded": "Sottoscrizione aggiunta!",
     "never": "Mai",
     "subscriptionUrl": "URL di sottoscrizione",
+    "subscriptionName": "Nome sottoscrizione",
+    "enterName": "Inserisci nome sottoscrizione",
     "checking": "Verifica...",
     "checkUpdate": "Controlla aggiornamento",
     "applyUpdate": "Applica aggiornamento",
@@ -152,7 +155,10 @@
     "updatedQuotes": "{count} citazioni aggiornate",
     "deletedQuotes": "{count} citazioni eliminate",
     "lastChecked": "Ultima verifica: {time}",
-    "lastUpdated": "Ultimo aggiornamento: {time}"
+    "lastUpdated": "Ultimo aggiornamento: {time}",
+    "noSubscriptions": "Nessuna sottoscrizione ancora.",
+    "selectSubscription": "Seleziona sottoscrizione",
+    "add": "Aggiungi"
   },
   "nav": {
     "home": "Pausa temporizzata",

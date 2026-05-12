@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Book, Quote, CardSettings, QuoteWithBook, SubscriptionDiff, SubscriptionConfig } from './types';
+import { Book, Quote, CardSettings, QuoteWithBook, SubscriptionDiff, SubscriptionConfig, Subscription } from './types';
 import {
   getStoredBooks,
   getStoredQuotes,
@@ -26,6 +26,7 @@ interface CardState {
   isChecking: boolean;
   hasUpdate: boolean;
   checkError: string | null;
+  currentCheckingSubscriptionId: string | null;
 
   // Views
   currentView: 'feed' | 'library' | 'detail';
@@ -44,8 +45,11 @@ interface CardState {
   importData: (data: string) => void;
   
   // Subscription Actions
-  setSubscriptionUrl: (url: string) => void;
-  checkSubscription: () => Promise<void>;
+  addSubscription: (name: string, url: string) => void;
+  updateSubscription: (id: string, updates: Partial<Subscription>) => void;
+  deleteSubscription: (id: string) => void;
+  setActiveSubscription: (id: string | null) => void;
+  checkSubscription: (subscriptionId?: string) => Promise<void>;
   applyUpdate: () => void;
   clearUpdate: () => void;
   
@@ -59,7 +63,8 @@ export const useCardStore = create<CardState>((set, get) => ({
   settings: {
     autoPlay: false,
     swipeInterval: 5000,
-    subscriptionUrl: '',
+    subscriptions: [],
+    activeSubscriptionId: null,
     lastCheckTime: 0,
     lastUpdateTime: 0,
   },
@@ -68,6 +73,7 @@ export const useCardStore = create<CardState>((set, get) => ({
   isChecking: false,
   hasUpdate: false,
   checkError: null,
+  currentCheckingSubscriptionId: null,
   currentView: 'feed',
   selectedBookId: null,
 
@@ -175,26 +181,78 @@ export const useCardStore = create<CardState>((set, get) => ({
     set({ currentView: view, selectedBookId: bookId });
   },
 
-  setSubscriptionUrl: (url: string) => {
+  addSubscription: (name: string, url: string) => {
     const state = get();
-    const newSettings = { ...state.settings, subscriptionUrl: url };
+    const newSubscription: Subscription = {
+      id: `sub_${Date.now()}`,
+      name,
+      url,
+      lastCheckTime: 0,
+      lastUpdateTime: 0,
+      enabled: true,
+    };
+    const newSubscriptions = [...state.settings.subscriptions, newSubscription];
+    const newSettings = { 
+      ...state.settings, 
+      subscriptions: newSubscriptions,
+      activeSubscriptionId: newSubscription.id 
+    };
     storageSaveSettings(newSettings);
     set({ settings: newSettings });
   },
 
-  checkSubscription: async () => {
+  updateSubscription: (id: string, updates: Partial<Subscription>) => {
     const state = get();
-    const { subscriptionUrl } = state.settings;
+    const newSubscriptions = state.settings.subscriptions.map(sub => 
+      sub.id === id ? { ...sub, ...updates } : sub
+    );
+    const newSettings = { ...state.settings, subscriptions: newSubscriptions };
+    storageSaveSettings(newSettings);
+    set({ settings: newSettings });
+  },
+
+  deleteSubscription: (id: string) => {
+    const state = get();
+    const newSubscriptions = state.settings.subscriptions.filter(sub => sub.id !== id);
+    let newActiveId = state.settings.activeSubscriptionId;
+    if (newActiveId === id) {
+      newActiveId = newSubscriptions.length > 0 ? newSubscriptions[0].id : null;
+    }
+    const newSettings = { 
+      ...state.settings, 
+      subscriptions: newSubscriptions,
+      activeSubscriptionId: newActiveId 
+    };
+    storageSaveSettings(newSettings);
+    set({ settings: newSettings });
+  },
+
+  setActiveSubscription: (id: string | null) => {
+    const state = get();
+    const newSettings = { ...state.settings, activeSubscriptionId: id };
+    storageSaveSettings(newSettings);
+    set({ settings: newSettings });
+  },
+
+  checkSubscription: async (subscriptionId?: string) => {
+    const state = get();
+    const id = subscriptionId || state.settings.activeSubscriptionId;
     
-    if (!subscriptionUrl) {
-      set({ checkError: 'Please set a subscription URL first', isChecking: false });
+    if (!id) {
+      set({ checkError: 'Please select a subscription first', isChecking: false });
       return;
     }
 
-    set({ isChecking: true, checkError: null });
+    const subscription = state.settings.subscriptions.find(sub => sub.id === id);
+    if (!subscription) {
+      set({ checkError: 'Subscription not found', isChecking: false });
+      return;
+    }
+
+    set({ isChecking: true, checkError: null, currentCheckingSubscriptionId: id });
 
     try {
-      const response = await fetch(subscriptionUrl);
+      const response = await fetch(subscription.url);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -253,21 +311,30 @@ export const useCardStore = create<CardState>((set, get) => ({
         diff.updatedQuotes.length > 0 ||
         diff.deletedQuotes.length > 0;
 
+      const newSubscriptions = state.settings.subscriptions.map(sub =>
+        sub.id === id ? { ...sub, lastCheckTime: Date.now() } : sub
+      );
+      const newSettings = { 
+        ...state.settings, 
+        subscriptions: newSubscriptions,
+        lastCheckTime: Date.now() 
+      };
+      storageSaveSettings(newSettings);
+
       set({
         subscriptionDiff: diff,
         hasUpdate: hasChanges,
         isChecking: false,
         checkError: null,
+        currentCheckingSubscriptionId: null,
+        settings: newSettings,
       });
-
-      const newSettings = { ...state.settings, lastCheckTime: Date.now() };
-      storageSaveSettings(newSettings);
-      set({ settings: newSettings });
 
     } catch (error) {
       set({ 
         checkError: error instanceof Error ? error.message : 'Failed to check subscription',
-        isChecking: false 
+        isChecking: false,
+        currentCheckingSubscriptionId: null,
       });
     }
   },
@@ -310,7 +377,16 @@ export const useCardStore = create<CardState>((set, get) => ({
       newQuotes = newQuotes.filter(q => q.id !== id);
     });
 
-    const newSettings = { ...state.settings, lastUpdateTime: Date.now() };
+    const newSubscriptions = state.settings.subscriptions.map(sub =>
+      sub.id === state.settings.activeSubscriptionId 
+        ? { ...sub, lastUpdateTime: Date.now() } 
+        : sub
+    );
+    const newSettings = { 
+      ...state.settings, 
+      subscriptions: newSubscriptions,
+      lastUpdateTime: Date.now() 
+    };
     storageSaveSettings(newSettings);
     localStorage.setItem('card_books', JSON.stringify(newBooks));
     localStorage.setItem('card_quotes', JSON.stringify(newQuotes));

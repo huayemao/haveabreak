@@ -138,8 +138,12 @@
     "chooseFile": "选择文件",
     "importDataLabel": "在此粘贴导入的数据",
     "subscriptionUrlSaved": "订阅链接已保存！",
+    "subscriptionAdded": "订阅已添加！",
     "never": "从未",
     "subscriptionUrl": "订阅链接",
+    "subscriptionName": "订阅名称",
+    "enterUrl": "输入JSON文件链接",
+    "enterName": "输入订阅名称",
     "checking": "检查中...",
     "checkUpdate": "检查更新",
     "applyUpdate": "应用更新",
@@ -152,7 +156,10 @@
     "updatedQuotes": "{count} 条更新",
     "deletedQuotes": "{count} 条删除",
     "lastChecked": "最后检查：{time}",
-    "lastUpdated": "最后更新：{time}"
+    "lastUpdated": "最后更新：{time}",
+    "noSubscriptions": "还没有添加订阅。",
+    "selectSubscription": "选择订阅",
+    "add": "添加"
   },
   "nav": {
     "home": "计时休息",

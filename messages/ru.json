@@ -138,8 +138,11 @@
     "confirmDelete": "Вы уверены, что хотите удалить это?",
     "importDataLabel": "Вставьте импортируемые данные сюда",
     "subscriptionUrlSaved": "URL подписки сохранен!",
+    "subscriptionAdded": "Подписка добавлена!",
     "never": "Никогда",
     "subscriptionUrl": "URL подписки",
+    "subscriptionName": "Название подписки",
+    "enterName": "Введите название подписки",
     "checking": "Проверка...",
     "checkUpdate": "Проверить обновление",
     "applyUpdate": "Применить обновление",
@@ -152,7 +155,10 @@
     "updatedQuotes": "обновлено цитат: {count}",
     "deletedQuotes": "удалено цитат: {count}",
     "lastChecked": "Последняя проверка: {time}",
-    "lastUpdated": "Последнее обновление: {time}"
+    "lastUpdated": "Последнее обновление: {time}",
+    "noSubscriptions": "Подписки еще не добавлены.",
+    "selectSubscription": "Выберите подписку",
+    "add": "Добавить"
   },
   "nav": {
     "home": "Таймерный перерыв",

@@ -138,8 +138,11 @@
     "confirmDelete": "¿Estás seguro de que quieres eliminar esto?",
     "importDataLabel": "Pega los datos importados aquí",
     "subscriptionUrlSaved": "¡URL de suscripción guardada!",
+    "subscriptionAdded": "¡Suscripción añadida!",
     "never": "Nunca",
     "subscriptionUrl": "URL de suscripción",
+    "subscriptionName": "Nombre de suscripción",
+    "enterName": "Ingresar nombre de suscripción",
     "checking": "Comprobando...",
     "checkUpdate": "Comprobar actualización",
     "applyUpdate": "Aplicar actualización",
@@ -152,7 +155,10 @@
     "updatedQuotes": "{count} citas actualizadas",
     "deletedQuotes": "{count} citas eliminadas",
     "lastChecked": "Última comprobación: {time}",
-    "lastUpdated": "Última actualización: {time}"
+    "lastUpdated": "Última actualización: {time}",
+    "noSubscriptions": "No hay suscripciones aún.",
+    "selectSubscription": "Seleccionar suscripción",
+    "add": "Añadir"
   },
   "nav": {
     "home": "Descanso cronometrado",
