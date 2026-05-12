@@ -196,7 +196,7 @@ export default function FullscreenQuotePage() {
             }}
             className="w-full max-w-2xl h-full flex items-center justify-center"
           >
-            <div className="w-full h-full">
+            <div className="w-full h-full flex flex-col  justify-center">
               <QuoteCard
                 card={currentQuote}
                 isActive={true}
