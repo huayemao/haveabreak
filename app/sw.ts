@@ -19,21 +19,9 @@ const serwist = new Serwist({
   navigationPreload: true,
   runtimeCaching: [
     {
-      matcher: ({ url }) => url.searchParams.has("_rsc"),
+      matcher: ({ url }) => url.pathname.startsWith("/api/"),
       handler: new StaleWhileRevalidate({
-        cacheName: "next-rsc-data",
-        plugins: [
-          new ExpirationPlugin({
-            maxEntries: 200,
-            maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
-          }),
-        ],
-      }),
-    },
-    {
-      matcher: ({ request }) => request.destination === "document",
-      handler: new StaleWhileRevalidate({
-        cacheName: "pages",
+        cacheName: "api",
         plugins: [
           new ExpirationPlugin({
             maxEntries: 100,
@@ -43,55 +31,13 @@ const serwist = new Serwist({
       }),
     },
     {
-      matcher: ({ request }) =>
-        request.destination === "script" ||
-        request.destination === "worker",
+      matcher: () => true,
       handler: new CacheFirst({
-        cacheName: "static-scripts",
-        plugins: [
-          new ExpirationPlugin({
-            maxEntries: 60,
-            maxAgeSeconds: 60 * 60 * 24 * 365,
-          }),
-        ],
-      }),
-    },
-    {
-      matcher: ({ request }) => request.destination === "style",
-      handler: new CacheFirst({
-        cacheName: "static-styles",
-        plugins: [
-          new ExpirationPlugin({
-            maxEntries: 30,
-            maxAgeSeconds: 60 * 60 * 24 * 365,
-          }),
-        ],
-      }),
-    },
-    {
-      matcher: ({ request }) =>
-        request.destination === "image" ||
-        request.destination === "font",
-      handler: new CacheFirst({
-        cacheName: "static-assets",
+        cacheName: "static",
         plugins: [
           new ExpirationPlugin({
             maxEntries: 200,
             maxAgeSeconds: 60 * 60 * 24 * 365,
-          }),
-        ],
-      }),
-    },
-    {
-      matcher: ({ url }) =>
-        url.pathname.startsWith("/api/") ||
-        url.pathname.startsWith("/_next/static/"),
-      handler: new StaleWhileRevalidate({
-        cacheName: "api-and-static",
-        plugins: [
-          new ExpirationPlugin({
-            maxEntries: 100,
-            maxAgeSeconds: 60 * 60 * 24 * 30,
           }),
         ],
       }),
