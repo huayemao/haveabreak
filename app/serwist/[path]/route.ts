@@ -6,4 +6,6 @@ const revision = spawnSync("git", ["rev-parse", "HEAD"], { encoding: "utf-8" }).
 export const { dynamic, dynamicParams, revalidate, generateStaticParams, GET } = createSerwistRoute({
   swSrc: "app/sw.ts",
   useNativeEsbuild: true,
+  // 这个不能加，会冲突
+  // additionalPrecacheEntries: [{ url: "/~offline", revision }],
 });
