@@ -5,15 +5,33 @@ import { Link } from '@/i18n/routing';
 import { useTranslations } from 'next-intl';
 import LanguageSwitcher from './LanguageSwitcher';
 import { usePathname } from 'i18n/routing';
-import { Home, Frame, ScrollText, Menu, X } from 'lucide-react';
+import { Home, Frame, ScrollText, Menu, X, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavbar } from '@/context/NavbarContext';
+
+interface VersionInfo {
+  revision: string;
+  shortRevision: string;
+}
+
+async function fetchVersion(): Promise<VersionInfo> {
+  const res = await fetch('/api/version');
+  return res.json();
+}
 
 export default function Navbar() {
   const t = useTranslations();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const { isHidden } = useNavbar();
+  const [version, setVersion] = useState<string | null>(null);
+  const [showVersionTooltip, setShowVersionTooltip] = useState(false);
+
+  useEffect(() => {
+    fetchVersion().then((data) => {
+      setVersion(data.shortRevision);
+    });
+  }, []);
 
   const isRoot = !pathname.includes('/frame') && !pathname.includes('/card');
   const isFrame = pathname.includes('/frame');
@@ -50,8 +68,8 @@ export default function Navbar() {
               key={link.href}
               href={link.href}
               className={`flex items-center gap-2 px-4 py-2 rounded-2xl transition-all duration-300 ${link.active
-                  ? 'shadow-inset bg-bg-base text-accent font-bold scale-[0.98]'
-                  : 'text-fg-muted hover:text-fg-primary hover:scale-105'
+                ? 'shadow-inset bg-bg-base text-accent font-bold scale-[0.98]'
+                : 'text-fg-muted hover:text-fg-primary hover:scale-105'
                 }`}
             >
               <link.icon className={`w-5 h-5 ${link.active ? 'text-accent' : 'text-fg-muted'}`} />
@@ -59,6 +77,29 @@ export default function Navbar() {
             </Link>
           ))}
           <div className="w-px h-6 bg-fg-muted opacity-20 mx-2" />
+          <div className="relative group">
+            <button
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-fg-muted hover:text-fg-primary transition-colors"
+              onMouseEnter={() => setShowVersionTooltip(true)}
+              onMouseLeave={() => setShowVersionTooltip(false)}
+            >
+              <Info className="w-4 h-4" />
+              <span className="text-xs font-mono">{version ?? '...'}</span>
+            </button>
+            <AnimatePresence>
+              {showVersionTooltip && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 rounded-xl bg-bg-base shadow-extruded border border-white/10 whitespace-nowrap"
+                >
+                  <span className="text-xs font-mono text-fg-muted">Version: {version ?? 'loading...'}</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
           <LanguageSwitcher />
         </div>
 
@@ -98,8 +139,8 @@ export default function Navbar() {
                   key={link.href}
                   href={link.href}
                   className={`flex items-center gap-4 p-4 rounded-2xl transition-all ${link.active
-                      ? 'shadow-inset bg-bg-base text-accent font-bold'
-                      : 'neumorphic-button text-fg-muted border-none shadow-extruded-sm'
+                    ? 'shadow-inset bg-bg-base text-accent font-bold'
+                    : 'neumorphic-button text-fg-muted border-none shadow-extruded-sm'
                     }`}
                 >
                   <div className={`p-2 rounded-xl ${link.active ? 'shadow-inset' : 'shadow-extruded-sm bg-bg-base'}`}>
@@ -114,6 +155,10 @@ export default function Navbar() {
               <div className="flex justify-between items-center px-2">
                 <span className="text-sm font-medium text-fg-muted">{t('settingsTitle')}</span>
                 <LanguageSwitcher />
+              </div>
+              <div className="flex justify-end items-center gap-2">
+                <Info className="w-4 h-4" />
+                <span className="text-xs font-mono">{version ?? '...'}</span>
               </div>
             </div>
           </motion.div>
