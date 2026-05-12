@@ -26,16 +26,39 @@ export function useSwipeNavigation(options: UseSwipeNavigationOptions = {}) {
     [onNext, onPrev, threshold]
   );
 
+  const onKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
+      switch (event.key) {
+        case 'ArrowUp':
+        case 'PageUp':
+        case 'ArrowLeft':
+          event.preventDefault();
+          onPrev?.();
+          break;
+        case 'ArrowDown':
+        case 'PageDown':
+        case 'ArrowRight':
+          event.preventDefault();
+          onNext?.();
+          break;
+      }
+    },
+    [onNext, onPrev]
+  );
+
   return {
     isDragging,
     onDragStart,
     onDragEnd,
+    onKeyDown,
     dragProps: {
       drag: 'y' as const,
       dragConstraints: { top: 0, bottom: 0 },
       dragElastic: 0.1,
       onDragStart,
       onDragEnd,
+      tabIndex: 0,
+      onKeyDown,
     },
   };
 }
