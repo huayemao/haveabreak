@@ -44,12 +44,28 @@ export function ServiceWorkerUpdate() {
     };
 
     let waitingWorker: ServiceWorker | null = null;
+    let activeWorker: ServiceWorker | null = null;
 
     const applyUpdate = () => {
       if (waitingWorker) {
         waitingWorker.postMessage({ type: 'SKIP_WAITING' });
+        setTimeout(() => {
+          navigator.serviceWorker.ready.then((registration) => {
+            if (registration.active) {
+              registration.active.postMessage({ type: 'CLIENTS_CLAIM' });
+            } else {
+              window.location.reload();
+            }
+          });
+        }, 100);
       } else {
-        window.location.reload();
+        navigator.serviceWorker.ready.then((registration) => {
+          if (registration.active) {
+            registration.active.postMessage({ type: 'CLIENTS_CLAIM' });
+          } else {
+            window.location.reload();
+          }
+        });
       }
     };
 
@@ -93,6 +109,9 @@ export function ServiceWorkerUpdate() {
       if (registration.waiting) {
         waitingWorker = registration.waiting;
         showUpdateToast();
+      } else if (registration.active) {
+        // Check if active SW is the latest by comparing with installing
+        activeWorker = registration.active;
       }
 
       // 2. Listen for future updates detected by the browser
@@ -100,10 +119,10 @@ export function ServiceWorkerUpdate() {
         onUpdateFound(registration)
       );
 
-      // 3. Poll every 5 minutes
+      // 3. Poll every 1 minute (more frequent for better UX)
       const pollInterval = setInterval(() => {
         registration.update().catch(() => {});
-      }, 5 * 60 * 1000);
+      }, 60 * 1000);
 
       // 4. Check on tab focus / visibility restore
       const handleVisibility = () => {

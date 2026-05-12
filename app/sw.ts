@@ -31,9 +31,26 @@ const serwist = new Serwist({
       }),
     },
     {
+      matcher: ({ request }) => {
+        return request.destination === 'image' || 
+               request.destination === 'video' || 
+               request.destination === 'audio' || 
+               request.destination === 'font';
+      },
+      handler: new CacheFirst({
+        cacheName: "assets",
+        plugins: [
+          new ExpirationPlugin({
+            maxEntries: 300,
+            maxAgeSeconds: 60 * 60 * 24 * 365,
+          }),
+        ],
+      }),
+    },
+    {
       matcher: () => true,
       handler: new CacheFirst({
-        cacheName: "static",
+        cacheName: "others",
         plugins: [
           new ExpirationPlugin({
             maxEntries: 200,
@@ -57,9 +74,29 @@ const serwist = new Serwist({
 
 serwist.addEventListeners();
 
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames
+          .filter((cacheName) => {
+            // 只清理动态内容缓存，保留静态资源（assets）
+            // 保留：assets (图片、视频、音频、字体)
+            return cacheName.startsWith('serwist-') || cacheName === 'api' || cacheName === 'others';
+          })
+          .map((cacheName) => {
+            return caches.delete(cacheName);
+          })
+      );
+    })
+  );
+});
+
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
+  }
+  if (event.data && event.data.type === 'CLIENTS_CLAIM') {
     self.clients.claim().then(() => {
       self.clients.matchAll({ type: 'window' }).then((clients) => {
         clients.forEach((client) => {
