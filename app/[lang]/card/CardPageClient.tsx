@@ -177,7 +177,7 @@ export default function CardPageClient() {
             }}
             className="w-full z-10 flex items-center justify-center"
           >
-            <div className="w-full max-w-lg max-h-[70vh] sm:max-h-full">
+            <div className="w-full max-h-[70vh] sm:max-h-full">
               <QuoteCard
                 card={quotesWithBooks[currentIndex]}
                 isActive={true}
