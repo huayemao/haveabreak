@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useRouter } from 'i18n/routing';
+import { useRouter,usePathname } from 'i18n/routing';
 import { useCardStore, selectQuotesWithBooks } from '@/apps/card/store';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, ChevronUp, ChevronDown, Maximize2, Minimize2 } from 'lucide-react';
@@ -14,6 +14,7 @@ export default function FullscreenQuotePage() {
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
   const { books, quotes, deleteQuote } = useCardStore();
+  const pathname = usePathname();
 
   const quotesWithBooks = selectQuotesWithBooks({ books, quotes } as any);
   const initialQuote = quotesWithBooks.find(q => q.id === params.quoteId);
@@ -116,8 +117,9 @@ export default function FullscreenQuotePage() {
       }
     }
   };
+  console.log(params.quoteId,pathname);
 
-  if(!params.quoteId) return null;
+  if(!pathname.includes('/card/quotes/') || !params.quoteId) return null;
 
   if (!initialQuote || bookQuotes.length === 0) {
     return (
