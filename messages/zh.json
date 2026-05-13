@@ -162,10 +162,30 @@
     "add": "添加"
   },
   "nav": {
-    "home": "计时休息",
+    "home": "首页",
+    "timer": "计时休息",
     "frame": "电子画框",
     "card": "书摘阅读器",
     "apps": "应用"
+  },
+  "home": {
+    "title": "haveabreak",
+    "subtitle": "你的个人效率工具集",
+    "timer": {
+      "title": "计时休息",
+      "subtitle": "正念休息",
+      "description": "远离屏幕，真正放松。移动检测确保你专注于休息。"
+    },
+    "frame": {
+      "title": "电子画框",
+      "subtitle": "媒体展示",
+      "description": "将设备变成精美的数字画框，展示你的照片和视频。"
+    },
+    "card": {
+      "title": "书摘阅读器",
+      "subtitle": "阅读收藏",
+      "description": "收藏和管理你喜欢的书摘，随时阅读优美的段落。"
+    }
   },
   "card": {
     "pageTitle": "书摘阅读器",

@@ -161,10 +161,30 @@
     "add": "Ajouter"
   },
   "nav": {
-    "home": "Pause chronométrée",
+    "home": "Accueil",
+    "timer": "Pause chronométrée",
     "frame": "Cadre numérique",
     "card": "Extraits de livres",
     "apps": "Applications"
+  },
+  "home": {
+    "title": "haveabreak",
+    "subtitle": "Votre boîte à outils de productivité personnelle",
+    "timer": {
+      "title": "Pause chronométrée",
+      "subtitle": "Repos conscient",
+      "description": "Éloignez-vous de votre écran et détendez-vous vraiment. La détection de mouvement vous aide à rester concentré sur le repos."
+    },
+    "frame": {
+      "title": "Cadre numérique",
+      "subtitle": "Affichage média",
+      "description": "Transformez votre appareil en un beau cadre numérique pour présenter vos photos et vidéos."
+    },
+    "card": {
+      "title": "Extraits de livres",
+      "subtitle": "Collection de lecture",
+      "description": "Collectionnez et gérez vos extraits de livres préférés. Lisez de beaux passages à tout moment."
+    }
   },
   "card": {
     "pageTitle": "Lecteur d'Extraits",

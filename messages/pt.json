@@ -161,10 +161,30 @@
     "add": "Adicionar"
   },
   "nav": {
-    "home": "Pausa cronometrada",
+    "home": "Início",
+    "timer": "Pausa cronometrada",
     "frame": "Moldura digital",
     "card": "Trechos de livros",
     "apps": "Aplicativos"
+  },
+  "home": {
+    "title": "haveabreak",
+    "subtitle": "Seu kit de ferramentas de produtividade pessoal",
+    "timer": {
+      "title": "Pausa cronometrada",
+      "subtitle": "Descanso consciente",
+      "description": "Afaste-se da tela e relaxe de verdade. A detecção de movimento ajuda você a ficar focado em descansar."
+    },
+    "frame": {
+      "title": "Moldura digital",
+      "subtitle": "Exibição de mídia",
+      "description": "Transforme seu dispositivo em uma linda moldura digital para exibir suas fotos e vídeos."
+    },
+    "card": {
+      "title": "Trechos de livros",
+      "subtitle": "Coleção de leitura",
+      "description": "Colete e gerencie seus trechos de livros favoritos. Leia passagens bonitas a qualquer momento."
+    }
   },
   "card": {
     "pageTitle": "Leitor de Trechos",

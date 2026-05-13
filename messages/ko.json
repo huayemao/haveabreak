@@ -161,10 +161,30 @@
     "add": "추가"
   },
   "nav": {
-    "home": "타이머 휴식",
+    "home": "홈",
+    "timer": "타이머 휴식",
     "frame": "디지털 액자",
     "card": "책 발췌",
     "apps": "앱"
+  },
+  "home": {
+    "title": "haveabreak",
+    "subtitle": "당신의 개인 생산성 도구 모음",
+    "timer": {
+      "title": "타이머 휴식",
+      "subtitle": "마음챙김 휴식",
+      "description": "화면에서 벗어나 진정으로 휴식하세요. 동작 감지 기능이 휴식에 집중할 수 있도록 도와줍니다."
+    },
+    "frame": {
+      "title": "디지털 액자",
+      "subtitle": "미디어 표시",
+      "description": "장치를 아름다운 디지털 액자로 변환하여 사진과 동영상을 전시하세요."
+    },
+    "card": {
+      "title": "책 발췌",
+      "subtitle": "독서 컬렉션",
+      "description": "좋아하는 책 발췌문을 수집하고 관리하세요. 언제든지 아름다운 구절을 읽을 수 있습니다."
+    }
   },
   "card": {
     "pageTitle": "책 발췌 리더",

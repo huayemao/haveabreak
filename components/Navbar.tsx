@@ -5,7 +5,7 @@ import { Link } from '@/i18n/routing';
 import { useTranslations } from 'next-intl';
 import LanguageSwitcher from './LanguageSwitcher';
 import { usePathname } from 'i18n/routing';
-import { Home, Frame, ScrollText, Menu, X, Info, Settings, LayoutGrid } from 'lucide-react';
+import { Home, Frame, ScrollText, Menu, X, Info, Settings, LayoutGrid, Timer } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavbar } from '@/context/NavbarContext';
 import {
@@ -41,7 +41,8 @@ export default function Navbar() {
     });
   }, []);
 
-  const isRoot = !pathname.includes('/frame') && !pathname.includes('/card');
+  const isRoot = pathname === '/' || pathname === '';
+  const isTimer = pathname.includes('/timer');
   const isFrame = pathname.includes('/frame');
   const isCard = pathname.includes('/card');
 
@@ -52,6 +53,7 @@ export default function Navbar() {
 
   const navLinks = [
     { href: '/', label: t('nav.home'), icon: Home, active: isRoot },
+    { href: '/timer', label: t('nav.timer'), icon: Timer, active: isTimer },
     { href: '/card', label: t('nav.card'), icon: ScrollText, active: isCard },
     { href: '/frame', label: t('nav.frame'), icon: Frame, active: isFrame },
   ];

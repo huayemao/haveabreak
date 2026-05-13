@@ -162,10 +162,30 @@
     "add": "Add"
   },
   "nav": {
-    "home": "Timed Break",
+    "home": "Home",
+    "timer": "Timed Break",
     "frame": "Digital Frame",
     "card": "Book Excerpts",
     "apps": "Apps"
+  },
+  "home": {
+    "title": "haveabreak",
+    "subtitle": "Your Personal Productivity Toolkit",
+    "timer": {
+      "title": "Timed Break",
+      "subtitle": "Mindful Rest",
+      "description": "Step away from your screen and truly relax. Movement detection ensures you stay focused on resting."
+    },
+    "frame": {
+      "title": "Digital Frame",
+      "subtitle": "Media Display",
+      "description": "Transform your device into a beautiful digital frame to showcase your photos and videos."
+    },
+    "card": {
+      "title": "Book Excerpts",
+      "subtitle": "Reading Collection",
+      "description": "Collect and manage your favorite book excerpts. Read beautiful passages anytime."
+    }
   },
   "card": {
     "pageTitle": "Book Excerpt Reader",

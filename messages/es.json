@@ -161,10 +161,30 @@
     "add": "Añadir"
   },
   "nav": {
-    "home": "Descanso cronometrado",
+    "home": "Inicio",
+    "timer": "Descanso cronometrado",
     "frame": "Marco digital",
     "card": "Extractos de libros",
     "apps": "Aplicaciones"
+  },
+  "home": {
+    "title": "haveabreak",
+    "subtitle": "Tu kit de herramientas de productividad personal",
+    "timer": {
+      "title": "Descanso cronometrado",
+      "subtitle": "Descanso consciente",
+      "description": "Aléjate de tu pantalla y relájate de verdad. La detección de movimiento te ayuda a mantenerte enfocado en descansar."
+    },
+    "frame": {
+      "title": "Marco digital",
+      "subtitle": "Visualización de medios",
+      "description": "Transforma tu dispositivo en un hermoso marco digital para mostrar tus fotos y videos."
+    },
+    "card": {
+      "title": "Extractos de libros",
+      "subtitle": "Colección de lectura",
+      "description": "Recopila y gestiona tus extractos de libros favoritos. Lee pasajes hermosos en cualquier momento."
+    }
   },
   "card": {
     "pageTitle": "Lector de Extractos",

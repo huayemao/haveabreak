@@ -161,10 +161,30 @@
     "add": "Aggiungi"
   },
   "nav": {
-    "home": "Pausa temporizzata",
+    "home": "Home",
+    "timer": "Pausa temporizzata",
     "frame": "Cornice digitale",
     "card": "Estratti di libri",
     "apps": "Applicazioni"
+  },
+  "home": {
+    "title": "haveabreak",
+    "subtitle": "La tua cassetta degli attrezzi per la produttività personale",
+    "timer": {
+      "title": "Pausa temporizzata",
+      "subtitle": "Riposo consapevole",
+      "description": "Allontanati dallo schermo e rilassati davvero. Il rilevamento del movimento ti aiuta a rimanere concentrato sul riposo."
+    },
+    "frame": {
+      "title": "Cornice digitale",
+      "subtitle": "Visualizzazione media",
+      "description": "Trasforma il tuo dispositivo in una bella cornice digitale per mostrare le tue foto e video."
+    },
+    "card": {
+      "title": "Estratti di libri",
+      "subtitle": "Collezione di lettura",
+      "description": "Raccogli e gestisci i tuoi estratti di libri preferiti. Leggi bei passaggi in qualsiasi momento."
+    }
   },
   "card": {
     "pageTitle": "Lettore di Estratti",

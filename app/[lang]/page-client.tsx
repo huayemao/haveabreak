@@ -1,208 +1,125 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import confetti from 'canvas-confetti';
 import { useTranslations } from 'next-intl';
-import { AnimatePresence, motion } from 'motion/react';
-import TimeSelector from '@/components/TimeSelector';
-import TimerDisplay from '@/components/TimerDisplay';
-import FinishedDisplay from '@/components/FinishedDisplay';
-import LandingSection from '@/components/LandingSection';
-import { useNavbar } from '@/context/NavbarContext';
-import { useTimerStore } from '@/store/timerStore';
+import { motion } from 'motion/react';
+import { Link } from '@/i18n/routing';
+import { Timer, Frame, ScrollText, ArrowRight } from 'lucide-react';
 
-export default function TimerApp() {
-  const t = useTranslations();
-  const { setIsHidden } = useNavbar();
-  const {
-    settings,
-    isRunning,
-    isInterrupted,
-    isFinished,
-    timeLeft,
-    startTimer,
-    stopTimer,
-    interruptTimer,
-    tickTimer,
-    setSelectedMinutes,
-    addCustomTip,
-    removeCustomTip,
-    togglePresetTip,
-  } = useTimerStore();
+interface AppCardProps {
+  href: string;
+  icon: React.ReactNode;
+  title: string;
+  subtitle: string;
+  description: string;
+  color: string;
+}
 
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+function AppCard({ href, icon, title, subtitle, description, color }: AppCardProps) {
+  return (
+    <Link href={href}>
+      <motion.div
+        whileHover={{ scale: 1.02, y: -4 }}
+        whileTap={{ scale: 0.98 }}
+        className="group p-8 rounded-[32px] shadow-extruded bg-bg-base space-y-6 cursor-pointer transition-all duration-300 hover:shadow-[12px_12px_24px_rgb(163,177,198,0.5),-12px_-12px_24px_rgba(255,255,255,0.7)]"
+      >
+        <div className="flex items-start justify-between">
+          <div
+            className="w-16 h-16 rounded-2xl flex items-center justify-center"
+            style={{ backgroundColor: color }}
+          >
+            {icon}
+          </div>
+          <ArrowRight className="w-6 h-6 text-fg-muted opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform group-hover:translate-x-1" />
+        </div>
+        <div className="space-y-2">
+          <h3 className="font-display font-bold text-2xl text-fg-primary">{title}</h3>
+          <p className="text-sm font-medium" style={{ color }}>{subtitle}</p>
+        </div>
+        <p className="text-fg-muted leading-relaxed">{description}</p>
+      </motion.div>
+    </Link>
+  );
+}
 
-  const timerTips = t.raw('timerTips') as string[];
-  const enabledPresetTips = timerTips.filter(tip => !settings.disabledPresetTips.includes(tip));
-  const allTips = [...enabledPresetTips, ...settings.customTips];
-  
-  const handleInterrupt = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    interruptTimer();
-  };
+export default function HomePage() {
+  const t = useTranslations('home');
 
-  const triggerConfetti = () => {
-    const duration = 3000;
-    const end = Date.now() + duration;
-
-    const frame = () => {
-      confetti({
-        particleCount: 5,
-        angle: 60,
-        spread: 55,
-        origin: { x: 0 },
-        colors: ['#6C63FF', '#8B84FF', '#38B2AC']
-      });
-      confetti({
-        particleCount: 5,
-        angle: 120,
-        spread: 55,
-        origin: { x: 1 },
-        colors: ['#6C63FF', '#8B84FF', '#38B2AC']
-      });
-
-      if (Date.now() < end) {
-        requestAnimationFrame(frame);
-      }
-    };
-    frame();
-  };
-
-  useEffect(() => {
-    setIsHidden(isRunning || isInterrupted);
-  }, [isRunning, isInterrupted, setIsHidden]);
-
-  useEffect(() => {
-    if (isRunning) {
-      let canInterrupt = false;
-      const gracePeriodTimeout = setTimeout(() => {
-        canInterrupt = true;
-      }, 500);
-
-      try {
-        if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
-          document.documentElement.requestFullscreen().catch(() => { });
-        }
-      } catch (e) {
-        // ignore
-      }
-
-      timerRef.current = setInterval(() => {
-        tickTimer();
-      }, 1000);
-
-      const handleMovement = () => {
-        if (!isFinished && isRunning && !isInterrupted && canInterrupt) {
-          handleInterrupt();
-        }
-      };
-
-      window.addEventListener('mousemove', handleMovement);
-      window.addEventListener('keydown', handleMovement);
-      window.addEventListener('scroll', handleMovement);
-      window.addEventListener('mousedown', handleMovement);
-      window.addEventListener('touchstart', handleMovement);
-
-      return () => {
-        clearTimeout(gracePeriodTimeout);
-        if (timerRef.current) clearInterval(timerRef.current);
-        window.removeEventListener('mousemove', handleMovement);
-        window.removeEventListener('keydown', handleMovement);
-        window.removeEventListener('scroll', handleMovement);
-        window.removeEventListener('mousedown', handleMovement);
-        window.removeEventListener('touchstart', handleMovement);
-      };
-    }
-  }, [isRunning, isFinished, isInterrupted, tickTimer]);
-
-
-
-  useEffect(() => {
-    if (isFinished) {
-      triggerConfetti();
-      try {
-        if (document.fullscreenElement) {
-          document.exitFullscreen().catch(() => { });
-        }
-      } catch (e) { }
-    }
-  }, [isFinished]);
-
-
-
-  const handleStopTimer = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    stopTimer();
-    try {
-      if (document.fullscreenElement) {
-        document.exitFullscreen().catch(() => { });
-      }
-    } catch (e) { }
-  };
-
-  const handleTipsChange = (tips: string[]) => {
-    settings.customTips.forEach(tip => removeCustomTip(tip));
-    tips.forEach(tip => addCustomTip(tip));
-  };
-
-  const handleDisabledPresetTipsChange = (tips: string[]) => {
-    settings.disabledPresetTips.forEach(tip => togglePresetTip(tip));
-    tips.forEach(tip => togglePresetTip(tip));
-  };
+  const apps = [
+    {
+      href: '/timer',
+      icon: <Timer className="w-8 h-8 text-white" />,
+      titleKey: 'timer.title',
+      subtitleKey: 'timer.subtitle',
+      descriptionKey: 'timer.description',
+      color: '#6C63FF',
+    },
+    {
+      href: '/frame',
+      icon: <Frame className="w-8 h-8 text-white" />,
+      titleKey: 'frame.title',
+      subtitleKey: 'frame.subtitle',
+      descriptionKey: 'frame.description',
+      color: '#38B2AC',
+    },
+    {
+      href: '/card',
+      icon: <ScrollText className="w-8 h-8 text-white" />,
+      titleKey: 'card.title',
+      subtitleKey: 'card.subtitle',
+      descriptionKey: 'card.description',
+      color: '#ED8936',
+    },
+  ];
 
   return (
     <main className="flex-1 relative overflow-x-hidden flex flex-col">
+      <div className="flex-1 flex flex-col p-8 pt-20 sm:pt-28">
+        {/* Hero Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center space-y-6 mb-16"
+        >
+          <div className="w-24 h-24 mx-auto rounded-full shadow-extruded p-1 mb-8 bg-bg-base">
+            <img src="/api/icon?size=96" alt="haveabreak logo" className="w-full h-full rounded-full" />
+          </div>
+          <h1 className="font-display text-5xl font-extrabold tracking-tight text-fg-primary">
+            {t('title', { defaultValue: 'haveabreak' })}
+          </h1>
+          <p className="text-fg-muted text-lg max-w-md mx-auto">
+            {t('subtitle', { defaultValue: '你的个人效率工具集' })}
+          </p>
+        </motion.div>
 
-      <AnimatePresence mode="wait">
-        {!isRunning && !isInterrupted && !isFinished ? (
-          <motion.div
-            key="idle"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="flex-1 flex flex-col p-8 pt-20 sm:pt-28"
-          >
-            <div className="flex-1 flex flex-col items-center justify-center z-10 relative">
-              <div className="w-full max-w-md mx-auto flex flex-col items-center text-center space-y-12">
-                <TimeSelector
-                  selectedMinutes={settings.selectedMinutes}
-                  onSelect={setSelectedMinutes}
-                  onStart={startTimer}
-                  customTips={settings.customTips}
-                  onTipsChange={handleTipsChange}
-                  disabledPresetTips={settings.disabledPresetTips}
-                  onDisabledPresetTipsChange={handleDisabledPresetTipsChange}
+        {/* Apps Grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="w-full max-w-4xl mx-auto"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {apps.map((app, index) => (
+              <motion.div
+                key={app.href}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.3 + index * 0.1 }}
+              >
+                <AppCard
+                  href={app.href}
+                  icon={app.icon}
+                  title={t(app.titleKey)}
+                  subtitle={t(app.subtitleKey)}
+                  description={t(app.descriptionKey)}
+                  color={app.color}
                 />
-              </div>
-            </div>
-            <LandingSection />
-          </motion.div>
-        ) : (
-          <motion.div
-            key="running-or-finished"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="flex-1 flex flex-col"
-          >
-            <div className="flex-1 flex flex-col items-center justify-center z-10 relative">
-              {isFinished ? (
-                <div className="w-full max-w-md mx-auto flex flex-col items-center text-center">
-                  <FinishedDisplay onRestart={startTimer} />
-                </div>
-              ) : (
-                <TimerDisplay
-                  timeLeft={timeLeft}
-                  totalSeconds={settings.selectedMinutes * 60}
-                  onStop={handleStopTimer}
-                  isInterrupted={isInterrupted}
-                  tips={allTips}
-                />
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
     </main>
   );
 }

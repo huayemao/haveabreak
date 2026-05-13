@@ -161,10 +161,30 @@
     "add": "Hinzufügen"
   },
   "nav": {
-    "home": "Zeitgesteuerte Pause",
+    "home": "Startseite",
+    "timer": "Zeitgesteuerte Pause",
     "frame": "Digitaler Bilderrahmen",
     "card": "Buchauszüge",
     "apps": "Anwendungen"
+  },
+  "home": {
+    "title": "haveabreak",
+    "subtitle": "Ihre persönliche Produktivitäts-Toolbox",
+    "timer": {
+      "title": "Zeitgesteuerte Pause",
+      "subtitle": "Achtsame Ruhe",
+      "description": "Treten Sie von Ihrem Bildschirm zurück und entspannen Sie sich wirklich. Bewegungserkennung stellt sicher, dass Sie sich auf die Ruhe konzentrieren."
+    },
+    "frame": {
+      "title": "Digitaler Bilderrahmen",
+      "subtitle": "Medienanzeige",
+      "description": "Verwandeln Sie Ihr Gerät in einen schönen digitalen Rahmen, um Ihre Fotos und Videos zu präsentieren."
+    },
+    "card": {
+      "title": "Buchauszüge",
+      "subtitle": "Lese-Sammlung",
+      "description": "Sammeln und verwalten Sie Ihre Lieblingsbuchauszüge. Lesen Sie jederzeit schöne Passagen."
+    }
   },
   "card": {
     "pageTitle": "Buchauszug-Leser",
