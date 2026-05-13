@@ -96,9 +96,9 @@ export default function Navbar() {
                 <DropdownMenuLabel className="font-display">{t('nav.apps', { defaultValue: 'Apps' })}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {navLinks.map((link) => (
-                  <DropdownMenuItem key={link.href}  className={link.active ? 'text-accent' : ''}>
-                    <Link href={link.href} className="w-full">
-                      <link.icon className="w-4 h-4 mr-2" />
+                  <DropdownMenuItem key={link.href} className={link.active ? 'bg-accent text-accent-foreground' : ''}>
+                    <Link href={link.href} className="w-full flex items-center gap-2">
+                      <link.icon className="w-4 h-4" />
                       {link.label}
                     </Link>
                   </DropdownMenuItem>
@@ -122,7 +122,7 @@ export default function Navbar() {
                 <DropdownMenuLabel className="font-display">{t('settingsTitle', { defaultValue: 'Settings' })}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-fg-muted">
-                  <Info className="w-4 h-4 mr-2" />
+                  <Info className="w-4 h-4" />
                   <span className="text-xs font-mono">v{version ?? '...'}</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
