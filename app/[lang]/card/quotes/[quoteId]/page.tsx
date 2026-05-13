@@ -209,31 +209,6 @@ export default function FullscreenQuotePage() {
             </div>
           </motion.div>
         </AnimatePresence>
-
-        {/* Navigation Indicators (Desktop) */}
-        <AnimatePresence>
-          {showUI && (
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              className="absolute right-[-10px] sm:right-6 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-50"
-            >
-              <button
-                onClick={handlePrev}
-                className="w-10 h-10 rounded-full neumorphic-button flex items-center justify-center hover:scale-110 active:scale-95 transition-all"
-              >
-                <ChevronUp className="w-5 h-5" />
-              </button>
-              <button
-                onClick={handleNext}
-                className="w-10 h-10 rounded-full neumorphic-button flex items-center justify-center hover:scale-110 active:scale-95 transition-all"
-              >
-                <ChevronDown className="w-5 h-5" />
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
 
       {/* Footer / Pagination */}
