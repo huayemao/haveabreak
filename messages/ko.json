@@ -234,6 +234,8 @@
     "sortByCreatedTimeDesc": "추가된 시간순으로 정렬",
     "sortByPageNumber": "페이지 번호",
     "sortByPageNumberDesc": "페이지 번호순으로 정렬",
-    "sortByPageNote": "페이지 번호가 없는 인용구는 생성 시간순으로 마지막에 정렬됩니다."
+    "sortByPageNote": "페이지 번호가 없는 인용구는 생성 시간순으로 마지막에 정렬됩니다.",
+    "sort": "정렬",
+    "sortOrderChanged": "정렬 순서가 업데이트되었습니다!"
   }
 }

@@ -235,6 +235,8 @@
     "sortByCreatedTimeDesc": "按添加时间排序",
     "sortByPageNumber": "页码",
     "sortByPageNumberDesc": "按页码排序",
-    "sortByPageNote": "没有页码的语录将按创建时间排在最后。"
+    "sortByPageNote": "没有页码的语录将按创建时间排在最后。",
+    "sort": "排序",
+    "sortOrderChanged": "排序方式已更新！"
   }
 }

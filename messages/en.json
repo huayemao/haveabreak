@@ -235,6 +235,8 @@
     "sortByCreatedTimeDesc": "Sort by when quotes were added",
     "sortByPageNumber": "Page Number",
     "sortByPageNumberDesc": "Sort by page number",
-    "sortByPageNote": "Quotes without page numbers will be sorted last by creation time."
+    "sortByPageNote": "Quotes without page numbers will be sorted last by creation time.",
+    "sort": "Sort",
+    "sortOrderChanged": "Sort order updated!"
   }
 }

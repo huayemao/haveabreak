@@ -234,6 +234,8 @@
     "sortByCreatedTimeDesc": "Nach Hinzufügungszeit sortieren",
     "sortByPageNumber": "Seitenzahl",
     "sortByPageNumberDesc": "Nach Seitenzahl sortieren",
-    "sortByPageNote": "Zitate ohne Seitenzahl werden zuletzt nach Erstellungszeit sortiert."
+    "sortByPageNote": "Zitate ohne Seitenzahl werden zuletzt nach Erstellungszeit sortiert.",
+    "sort": "Sortierung",
+    "sortOrderChanged": "Sortierreihenfolge aktualisiert!"
   }
 }

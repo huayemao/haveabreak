@@ -234,6 +234,8 @@
     "sortByCreatedTimeDesc": "Ordenar por fecha de adición",
     "sortByPageNumber": "Número de página",
     "sortByPageNumberDesc": "Ordenar por número de página",
-    "sortByPageNote": "Las citas sin número de página se ordenarán al final por fecha de creación."
+    "sortByPageNote": "Las citas sin número de página se ordenarán al final por fecha de creación.",
+    "sort": "Ordenar",
+    "sortOrderChanged": "Orden de clasificación actualizado!"
   }
 }

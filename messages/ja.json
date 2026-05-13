@@ -235,6 +235,8 @@
     "sortByCreatedTimeDesc": "追加された時間で並べる",
     "sortByPageNumber": "ページ番号",
     "sortByPageNumberDesc": "ページ番号で並べる",
-    "sortByPageNote": "ページ番号のない引用は作成時間で最後に並べられます。"
+    "sortByPageNote": "ページ番号のない引用は作成時間で最後に並べられます。",
+    "sort": "並べ替え",
+    "sortOrderChanged": "並べ替え順序が更新されました！"
   }
 }

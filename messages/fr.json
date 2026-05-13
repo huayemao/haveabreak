@@ -234,6 +234,8 @@
     "sortByCreatedTimeDesc": "Trier par date d'ajout",
     "sortByPageNumber": "Numéro de page",
     "sortByPageNumberDesc": "Trier par numéro de page",
-    "sortByPageNote": "Les citations sans numéro de page seront triées en dernier par date de création."
+    "sortByPageNote": "Les citations sans numéro de page seront triées en dernier par date de création.",
+    "sort": "Trier",
+    "sortOrderChanged": "Ordre de tri mis à jour !"
   }
 }
