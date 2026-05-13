@@ -80,9 +80,7 @@ export default function Navbar() {
               }`}
           >
             <Home className={`w-5 h-5 ${isRoot ? 'text-accent' : 'text-fg-muted'}`} />
-            <span className="font-display">{t('nav.home')}</span>
           </Link>
-
           {/* Apps Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger>
@@ -95,7 +93,7 @@ export default function Navbar() {
               <DropdownMenuGroup>
                 <DropdownMenuLabel className="font-display">{t('nav.apps', { defaultValue: 'Apps' })}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {navLinks.filter(link => link.href !== '/').map((link) => (
+                {navLinks.map((link) => (
                   <DropdownMenuItem key={link.href}  className={link.active ? 'text-accent' : ''}>
                     <Link href={link.href} className="w-full">
                       <link.icon className="w-4 h-4 mr-2" />
