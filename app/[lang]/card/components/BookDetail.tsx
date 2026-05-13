@@ -30,15 +30,30 @@ interface BookDetailProps {
 }
 
 export default function BookDetail({ onAddQuote, onEditQuote, onDeleteQuote, onQuoteClick, bookId, onBack }: BookDetailProps) {
-  const { books, quotes: allQuotes, selectedBookId, setView, deleteQuote, deleteBook } = useCardStore();
+  const { books, quotes: allQuotes, selectedBookId, setView, deleteQuote, deleteBook, settings } = useCardStore();
   const t = useTranslations();
 
   const currentBookId = bookId || selectedBookId;
   const book = books.find((b) => b.id === currentBookId);
-  const quotes = useMemo(() =>
-    currentBookId ? allQuotes.filter(q => q.bookId === currentBookId) : [],
-    [allQuotes, currentBookId]
-  );
+  const quotes = useMemo(() => {
+    const filteredQuotes = currentBookId ? allQuotes.filter(q => q.bookId === currentBookId) : [];
+    
+    if (settings.quoteSortOrder === 'page') {
+      return [...filteredQuotes].sort((a, b) => {
+        const aPage = a.page ? parseInt(a.page, 10) : null;
+        const bPage = b.page ? parseInt(b.page, 10) : null;
+        
+        if (aPage === null && bPage === null) {
+          return a.createdAt - b.createdAt;
+        }
+        if (aPage === null) return 1;
+        if (bPage === null) return -1;
+        return aPage - bPage;
+      });
+    }
+    
+    return [...filteredQuotes].sort((a, b) => a.createdAt - b.createdAt);
+  }, [allQuotes, currentBookId, settings.quoteSortOrder]);
 
   if (!book) return null;
 

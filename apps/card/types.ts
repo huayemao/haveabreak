@@ -30,6 +30,7 @@ export interface Subscription {
 export interface CardSettings {
   autoPlay: boolean;
   swipeInterval: number;
+  quoteSortOrder: 'createdAt' | 'page';
   subscriptions: Subscription[];
   activeSubscriptionId: string | null;
   lastCheckTime: number;

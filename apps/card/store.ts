@@ -41,6 +41,7 @@ interface CardState {
   deleteBook: (id: string) => Promise<void>;
   deleteQuote: (id: string) => Promise<void>;
   updateSettings: (settings: CardSettings) => void;
+  updateQuoteSortOrder: (order: 'createdAt' | 'page') => void;
   exportData: () => Promise<string>;
   importData: (data: string) => void;
   
@@ -63,6 +64,7 @@ export const useCardStore = create<CardState>((set, get) => ({
   settings: {
     autoPlay: false,
     swipeInterval: 5000,
+    quoteSortOrder: 'createdAt',
     subscriptions: [],
     activeSubscriptionId: null,
     lastCheckTime: 0,
@@ -167,6 +169,13 @@ export const useCardStore = create<CardState>((set, get) => ({
   updateSettings: (settings) => {
     storageSaveSettings(settings);
     set({ settings });
+  },
+
+  updateQuoteSortOrder: (order: 'createdAt' | 'page') => {
+    const state = get();
+    const newSettings = { ...state.settings, quoteSortOrder: order };
+    storageSaveSettings(newSettings);
+    set({ settings: newSettings });
   },
 
   exportData: async () => {

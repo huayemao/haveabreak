@@ -138,7 +138,7 @@ export function importData(data: string): void {
 }
 
 export async function getSettings(): Promise<CardSettings> {
-  if (typeof window === 'undefined') return { ...presets.settings, subscriptions: [], activeSubscriptionId: null, lastCheckTime: 0, lastUpdateTime: 0 };
+  if (typeof window === 'undefined') return { ...presets.settings, quoteSortOrder: 'createdAt', subscriptions: [], activeSubscriptionId: null, lastCheckTime: 0, lastUpdateTime: 0 };
   const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
   if (stored) {
     try {
@@ -160,6 +160,7 @@ export async function getSettings(): Promise<CardSettings> {
       
       return {
         ...parsed,
+        quoteSortOrder: parsed.quoteSortOrder || 'createdAt',
         subscriptions,
         activeSubscriptionId,
         lastCheckTime: parsed.lastCheckTime || 0,
@@ -169,7 +170,7 @@ export async function getSettings(): Promise<CardSettings> {
       console.error('Failed to parse card settings', e);
     }
   }
-  return { ...presets.settings, subscriptions: [], activeSubscriptionId: null, lastCheckTime: 0, lastUpdateTime: 0 };
+  return { ...presets.settings, quoteSortOrder: 'createdAt', subscriptions: [], activeSubscriptionId: null, lastCheckTime: 0, lastUpdateTime: 0 };
 }
 
 export function saveSettings(settings: CardSettings): void {

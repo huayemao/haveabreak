@@ -3,13 +3,14 @@
 import { useTranslations } from 'next-intl';
 import { useScrollLock } from '@/apps/frame/utils/useScrollLock';
 import { useState } from 'react';
-import { X, Download, Database, Link2 } from 'lucide-react';
+import { X, Download, Database, Link2, FileText } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Book, Subscription } from '@/apps/card/types';
 import { useCardStore } from '@/apps/card/store';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import DataManagementSection from './settings/DataManagementSection';
 import SubscriptionSection from './settings/SubscriptionSection';
+import SortSection from './settings/SortSection';
 
 interface CardSettingsPanelProps {
   onClose: () => void;
@@ -46,6 +47,7 @@ export default function CardSettingsPanel({
     checkSubscription,
     applyUpdate,
     clearUpdate,
+    updateQuoteSortOrder,
   } = useCardStore();
 
   const handleAddSubscription = () => {
@@ -106,6 +108,13 @@ export default function CardSettingsPanel({
     setTimeout(() => setShowSuccess(false), 3000);
   };
 
+  const handleSortOrderChange = (order: 'createdAt' | 'page') => {
+    updateQuoteSortOrder(order);
+    setSuccessMessage(t('card.sortOrderChanged', { defaultValue: 'Sort order updated!' }));
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 3000);
+  };
+
 
   return (
     <motion.div
@@ -148,6 +157,10 @@ export default function CardSettingsPanel({
                 <Database className="w-3 h-3" />
                 <span>{t('card.dataManagement', { defaultValue: 'Data' })}</span>
               </TabsTrigger>
+              <TabsTrigger value="sort" className="flex-1 gap-1" >
+                <FileText className="w-3 h-3" />
+                <span>{t('card.sort', { defaultValue: 'Sort' })}</span>
+              </TabsTrigger>
               <TabsTrigger value="subscription" className="flex-1 gap-1" >
                 <Link2 className="w-3 h-3" />
                 <span>{t('card.subscription', { defaultValue: 'Subscription' })}</span>
@@ -168,6 +181,18 @@ export default function CardSettingsPanel({
                 books={books}
                 onExport={handleExport}
                 onImport={handleImport}
+              />
+            </TabsContent>
+
+            <TabsContent value="sort" className="mt-0">
+              {showSuccess && (
+                <div className="p-4 rounded-2xl bg-green-100 text-green-700 text-center font-medium mb-6">
+                  {successMessage}
+                </div>
+              )}
+              <SortSection
+                quoteSortOrder={settings.quoteSortOrder}
+                onSortOrderChange={handleSortOrderChange}
               />
             </TabsContent>
 
