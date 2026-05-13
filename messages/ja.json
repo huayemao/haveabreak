@@ -164,7 +164,8 @@
   "nav": {
     "home": "タイマー休憩",
     "frame": "デジタルフォトフレーム",
-    "card": "本の引用"
+    "card": "本の引用",
+    "apps": "アプリ"
   },
   "card": {
     "pageTitle": "書摘リーダー",
@@ -207,6 +208,13 @@
     "dataManagement": "データ管理",
     "dataManagementDesc": "バックアップのために本と引用をエクスポートするか、以前のバックアップからデータをインポートします。",
     "subscription": "サブスクリプション",
-    "subscriptionDesc": "リモート JSON 設定ファイルを購読して自動更新を取得します。"
+    "subscriptionDesc": "リモート JSON 設定ファイルを購読して自動更新を取得します。",
+    "quoteSortOrder": "引用の並び順",
+    "quoteSortOrderDesc": "書籍の詳細表示で引用をどのように並べるかを選択します。",
+    "sortByCreatedTime": "作成時間",
+    "sortByCreatedTimeDesc": "追加された時間で並べる",
+    "sortByPageNumber": "ページ番号",
+    "sortByPageNumberDesc": "ページ番号で並べる",
+    "sortByPageNote": "ページ番号のない引用は作成時間で最後に並べられます。"
   }
 }

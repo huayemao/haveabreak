@@ -163,7 +163,8 @@
   "nav": {
     "home": "Pausa temporizzata",
     "frame": "Cornice digitale",
-    "card": "Estratti di libri"
+    "card": "Estratti di libri",
+    "apps": "Applicazioni"
   },
   "card": {
     "pageTitle": "Lettore di Estratti",
@@ -206,6 +207,13 @@
     "dataManagement": "Gestione dati",
     "dataManagementDesc": "Esporta i tuoi libri e citazioni per eseguire il backup, o importa dati da un backup precedente.",
     "subscription": "Sottoscrizione",
-    "subscriptionDesc": "Sottoscrivi un file di configurazione JSON remoto per aggiornamenti automatici."
+    "subscriptionDesc": "Sottoscrivi un file di configurazione JSON remoto per aggiornamenti automatici.",
+    "quoteSortOrder": "Ordine delle citazioni",
+    "quoteSortOrderDesc": "Scegli come ordinare le citazioni nella vista dettagliata del libro.",
+    "sortByCreatedTime": "Data di creazione",
+    "sortByCreatedTimeDesc": "Ordina per data di aggiunta",
+    "sortByPageNumber": "Numero di pagina",
+    "sortByPageNumberDesc": "Ordina per numero di pagina",
+    "sortByPageNote": "Le citazioni senza numero di pagina verranno ordinate per ultime per data di creazione."
   }
 }

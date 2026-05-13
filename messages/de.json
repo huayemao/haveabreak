@@ -163,7 +163,8 @@
   "nav": {
     "home": "Zeitgesteuerte Pause",
     "frame": "Digitaler Bilderrahmen",
-    "card": "Buchauszüge"
+    "card": "Buchauszüge",
+    "apps": "Anwendungen"
   },
   "card": {
     "pageTitle": "Buchauszug-Leser",
@@ -206,6 +207,13 @@
     "dataManagement": "Datenverwaltung",
     "dataManagementDesc": "Exportieren Sie Ihre Bücher und Zitate zum Sichern, oder importieren Sie Daten aus einem vorherigen Backup.",
     "subscription": "Abonnement",
-    "subscriptionDesc": "Abonnieren Sie eine entfernte JSON-Konfigurationsdatei für automatische Updates."
+    "subscriptionDesc": "Abonnieren Sie eine entfernte JSON-Konfigurationsdatei für automatische Updates.",
+    "quoteSortOrder": "Zitat-Sortierung",
+    "quoteSortOrderDesc": "Wählen Sie, wie Zitate in der Buchdetailansicht sortiert werden.",
+    "sortByCreatedTime": "Erstellungszeit",
+    "sortByCreatedTimeDesc": "Nach Hinzufügungszeit sortieren",
+    "sortByPageNumber": "Seitenzahl",
+    "sortByPageNumberDesc": "Nach Seitenzahl sortieren",
+    "sortByPageNote": "Zitate ohne Seitenzahl werden zuletzt nach Erstellungszeit sortiert."
   }
 }

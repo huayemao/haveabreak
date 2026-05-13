@@ -163,7 +163,8 @@
   "nav": {
     "home": "Pausa cronometrada",
     "frame": "Moldura digital",
-    "card": "Trechos de livros"
+    "card": "Trechos de livros",
+    "apps": "Aplicativos"
   },
   "card": {
     "pageTitle": "Leitor de Trechos",
@@ -206,6 +207,13 @@
     "dataManagement": "Gerenciamento de dados",
     "dataManagementDesc": "Exportar seus livros e citações para fazer backup, ou importar dados de um backup anterior.",
     "subscription": "Assinatura",
-    "subscriptionDesc": "Assine um arquivo de configuração JSON remoto para atualizações automáticas."
+    "subscriptionDesc": "Assine um arquivo de configuração JSON remoto para atualizações automáticas.",
+    "quoteSortOrder": "Ordem das citações",
+    "quoteSortOrderDesc": "Escolha como as citações são ordenadas na visualização detalhada do livro.",
+    "sortByCreatedTime": "Data de criação",
+    "sortByCreatedTimeDesc": "Ordenar por data de adição",
+    "sortByPageNumber": "Número da página",
+    "sortByPageNumberDesc": "Ordenar por número da página",
+    "sortByPageNote": "Citações sem número de página serão ordenadas por último pela data de criação."
   }
 }

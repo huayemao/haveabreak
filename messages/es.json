@@ -163,7 +163,8 @@
   "nav": {
     "home": "Descanso cronometrado",
     "frame": "Marco digital",
-    "card": "Extractos de libros"
+    "card": "Extractos de libros",
+    "apps": "Aplicaciones"
   },
   "card": {
     "pageTitle": "Lector de Extractos",
@@ -206,6 +207,13 @@
     "dataManagement": "Gestión de datos",
     "dataManagementDesc": "Exporta tus libros y citas para hacer una copia de seguridad, o importa datos de una copia de seguridad anterior.",
     "subscription": "Suscripción",
-    "subscriptionDesc": "Suscríbete a un archivo de configuración JSON remoto para actualizaciones automáticas."
+    "subscriptionDesc": "Suscríbete a un archivo de configuración JSON remoto para actualizaciones automáticas.",
+    "quoteSortOrder": "Orden de citas",
+    "quoteSortOrderDesc": "Elige cómo se ordenan las citas en la vista de detalles del libro.",
+    "sortByCreatedTime": "Fecha de creación",
+    "sortByCreatedTimeDesc": "Ordenar por fecha de adición",
+    "sortByPageNumber": "Número de página",
+    "sortByPageNumberDesc": "Ordenar por número de página",
+    "sortByPageNote": "Las citas sin número de página se ordenarán al final por fecha de creación."
   }
 }

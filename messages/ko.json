@@ -163,7 +163,8 @@
   "nav": {
     "home": "타이머 휴식",
     "frame": "디지털 액자",
-    "card": "책 발췌"
+    "card": "책 발췌",
+    "apps": "앱"
   },
   "card": {
     "pageTitle": "책 발췌 리더",
@@ -206,6 +207,13 @@
     "dataManagement": "데이터 관리",
     "dataManagementDesc": "백업을 위해 책과 인용구를 내보내거나, 이전 백업에서 데이터를 가져올 수 있습니다.",
     "subscription": "구독 관리",
-    "subscriptionDesc": "원격 JSON 설정 파일을 구독하여 자동 업데이트를 받습니다."
+    "subscriptionDesc": "원격 JSON 설정 파일을 구독하여 자동 업데이트를 받습니다.",
+    "quoteSortOrder": "인용구 정렬",
+    "quoteSortOrderDesc": "책 상세 보기에서 인용구를 어떻게 정렬할지 선택하세요.",
+    "sortByCreatedTime": "생성 시간",
+    "sortByCreatedTimeDesc": "추가된 시간순으로 정렬",
+    "sortByPageNumber": "페이지 번호",
+    "sortByPageNumberDesc": "페이지 번호순으로 정렬",
+    "sortByPageNote": "페이지 번호가 없는 인용구는 생성 시간순으로 마지막에 정렬됩니다."
   }
 }

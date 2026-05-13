@@ -164,7 +164,8 @@
   "nav": {
     "home": "计时休息",
     "frame": "电子画框",
-    "card": "书摘阅读器"
+    "card": "书摘阅读器",
+    "apps": "应用"
   },
   "card": {
     "pageTitle": "书摘阅读器",
@@ -207,6 +208,13 @@
     "dataManagement": "数据管理",
     "dataManagementDesc": "导出你的图书和句子以备份，或从之前的备份中导入数据。",
     "subscription": "订阅管理",
-    "subscriptionDesc": "订阅远程JSON配置文件以获取自动更新。"
+    "subscriptionDesc": "订阅远程JSON配置文件以获取自动更新。",
+    "quoteSortOrder": "语录排序",
+    "quoteSortOrderDesc": "选择语录在书籍详情页中的排序方式。",
+    "sortByCreatedTime": "创建时间",
+    "sortByCreatedTimeDesc": "按添加时间排序",
+    "sortByPageNumber": "页码",
+    "sortByPageNumberDesc": "按页码排序",
+    "sortByPageNote": "没有页码的语录将按创建时间排在最后。"
   }
 }

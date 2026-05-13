@@ -163,7 +163,8 @@
   "nav": {
     "home": "Pause chronométrée",
     "frame": "Cadre numérique",
-    "card": "Extraits de livres"
+    "card": "Extraits de livres",
+    "apps": "Applications"
   },
   "card": {
     "pageTitle": "Lecteur d'Extraits",
@@ -206,6 +207,13 @@
     "dataManagement": "Gestion des données",
     "dataManagementDesc": "Exporter vos livres et citations pour les sauvegarder, ou importer des données depuis une sauvegarde précédente.",
     "subscription": "Abonnement",
-    "subscriptionDesc": "Abonnez-vous à un fichier de configuration JSON distant pour des mises à jour automatiques."
+    "subscriptionDesc": "Abonnez-vous à un fichier de configuration JSON distant pour des mises à jour automatiques.",
+    "quoteSortOrder": "Ordre des citations",
+    "quoteSortOrderDesc": "Choisissez comment les citations sont triées dans la vue détaillée du livre.",
+    "sortByCreatedTime": "Date de création",
+    "sortByCreatedTimeDesc": "Trier par date d'ajout",
+    "sortByPageNumber": "Numéro de page",
+    "sortByPageNumberDesc": "Trier par numéro de page",
+    "sortByPageNote": "Les citations sans numéro de page seront triées en dernier par date de création."
   }
 }
