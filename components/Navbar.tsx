@@ -5,9 +5,18 @@ import { Link } from '@/i18n/routing';
 import { useTranslations } from 'next-intl';
 import LanguageSwitcher from './LanguageSwitcher';
 import { usePathname } from 'i18n/routing';
-import { Home, Frame, ScrollText, Menu, X, Info } from 'lucide-react';
+import { Home, Frame, ScrollText, Menu, X, Info, Settings, LayoutGrid } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavbar } from '@/context/NavbarContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuGroup,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface VersionInfo {
   revision: string;
@@ -25,7 +34,6 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { isHidden } = useNavbar();
   const [version, setVersion] = useState<string | null>(null);
-  const [showVersionTooltip, setShowVersionTooltip] = useState(false);
 
   useEffect(() => {
     fetchVersion().then((data) => {
@@ -63,44 +71,65 @@ export default function Navbar() {
       <div className="flex items-center gap-2 sm:gap-6 px-4 sm:px-6 py-2.5 rounded-full bg-bg-base shadow-extruded backdrop-blur-md bg-opacity-90 border border-white/10 relative z-50 pointer-events-auto md:mx-auto">
         {/* Desktop Links (Hidden on mobile) */}
         <div className="hidden md:flex items-center gap-4">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`flex items-center gap-2 px-4 py-2 rounded-2xl transition-all duration-300 ${link.active
-                ? 'shadow-inset bg-bg-base text-accent font-bold scale-[0.98]'
-                : 'text-fg-muted hover:text-fg-primary hover:scale-105'
-                }`}
-            >
-              <link.icon className={`w-5 h-5 ${link.active ? 'text-accent' : 'text-fg-muted'}`} />
-              <span className="font-display">{link.label}</span>
-            </Link>
-          ))}
+          {/* Home Link */}
+          <Link
+            href="/"
+            className={`flex items-center gap-2 px-4 py-2 rounded-2xl transition-all duration-300 ${isRoot
+              ? 'shadow-inset bg-bg-base text-accent font-bold scale-[0.98]'
+              : 'text-fg-muted hover:text-fg-primary hover:scale-105'
+              }`}
+          >
+            <Home className={`w-5 h-5 ${isRoot ? 'text-accent' : 'text-fg-muted'}`} />
+            <span className="font-display">{t('nav.home')}</span>
+          </Link>
+
+          {/* Apps Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <button className="flex items-center gap-2 px-4 py-2 rounded-2xl text-fg-muted hover:text-fg-primary hover:scale-105 transition-all duration-300">
+                <LayoutGrid className="w-5 h-5" />
+                <span className="font-display">{t('nav.apps', { defaultValue: 'Apps' })}</span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-48">
+              <DropdownMenuGroup>
+                <DropdownMenuLabel className="font-display">{t('nav.apps', { defaultValue: 'Apps' })}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {navLinks.filter(link => link.href !== '/').map((link) => (
+                  <DropdownMenuItem key={link.href}  className={link.active ? 'text-accent' : ''}>
+                    <Link href={link.href} className="w-full">
+                      <link.icon className="w-4 h-4 mr-2" />
+                      {link.label}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <div className="w-px h-6 bg-fg-muted opacity-20 mx-2" />
-          <div className="relative group">
-            <button
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-fg-muted hover:text-fg-primary transition-colors"
-              onMouseEnter={() => setShowVersionTooltip(true)}
-              onMouseLeave={() => setShowVersionTooltip(false)}
-            >
-              <Info className="w-4 h-4" />
-              <span className="text-xs font-mono">{version ?? '...'}</span>
-            </button>
-            <AnimatePresence>
-              {showVersionTooltip && (
-                <motion.div
-                  initial={{ opacity: 0, y: -8, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -8, scale: 0.95 }}
-                  transition={{ duration: 0.15 }}
-                  className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 rounded-xl bg-bg-base shadow-extruded border border-white/10 whitespace-nowrap"
-                >
-                  <span className="text-xs font-mono text-fg-muted">Version: {version ?? 'loading...'}</span>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-          <LanguageSwitcher />
+
+          {/* Settings Dropdown with Version */}
+          <DropdownMenu>
+            <DropdownMenuTrigger >
+              <button className="flex items-center gap-2 px-4 py-2 rounded-2xl text-fg-muted hover:text-fg-primary hover:scale-105 transition-all duration-300">
+                <Settings className="w-5 h-5" />
+                <span className="font-display">{t('settingsTitle', { defaultValue: 'Settings' })}</span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-48">
+              <DropdownMenuGroup>
+                <DropdownMenuLabel className="font-display">{t('settingsTitle', { defaultValue: 'Settings' })}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-fg-muted">
+                  <Info className="w-4 h-4 mr-2" />
+                  <span className="text-xs font-mono">v{version ?? '...'}</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <LanguageSwitcher />
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* Mobile Hamburger Button (Hidden on desktop) */}
