@@ -21,7 +21,7 @@ export default function NeumorphicBottomNav({ items }: NeumorphicBottomNavProps)
 
   const isActive = (item: NavItem) => {
     if (item.activePath) {
-      return pathname.startsWith(item.activePath);
+      return pathname === item.activePath;
     }
     return pathname === item.href;
   };
