@@ -1,7 +1,7 @@
 {
   "media": [
     {
-      "id": "preset-img-0",
+      "id": "preset-img-portrait-0",
       "url": "https://sns-img-hw.xhscdn.com/notes_pre_post/1040g3k031q2cgaru002048jjnrr56mgkkgr7p6o?imageView2/2/w/0/format/jpg",
       "type": "image",
       "orientation": "portrait",
@@ -9,7 +9,7 @@
       "createdAt": 0
     },
     {
-      "id": "preset-img-1",
+      "id": "preset-img-portrait-1",
       "url": "https://sns-img-hw.xhscdn.com/notes_pre_post/1040g3k031q2cgaru002g48jjnrr56mgkea9mkl8?imageView2/2/w/0/format/jpg",
       "type": "image",
       "orientation": "portrait",
@@ -17,7 +17,7 @@
       "createdAt": 0
     },
     {
-      "id": "preset-img-2",
+      "id": "preset-img-portrait-2",
       "url": "https://sns-img-hw.xhscdn.com/notes_pre_post/1040g3k031q2cgaru005g48jjnrr56mgk6mlui3o?imageView2/2/w/0/format/jpg",
       "type": "image",
       "orientation": "portrait",
@@ -25,24 +25,79 @@
       "createdAt": 0
     },
     {
-      "id": "preset-vid-0",
+      "id": "preset-vid-portrait-0",
       "url": "https://sns-bak-v1.xhscdn.com/stream/1/110/258/01e8f23dfae7d9e80103700199f2462433_258.mp4",
       "type": "video",
       "orientation": "portrait",
       "title": "Calming Waves",
       "createdAt": 0
+    },
+    {
+      "id": "preset-img-landscape-0",
+      "url": "https://sns-img-hw.xhscdn.com/1040g008316h3ngsu1e005ovab1rpguo3j50vlf0?imageView2/2/w/0/format/jpg",
+      "type": "image",
+      "orientation": "landscape",
+      "title": "Tranquil Landscape",
+      "createdAt": 0
+    },
+    {
+      "id": "preset-img-landscape-1",
+      "url": "https://sns-img-hw.xhscdn.com/1040g008316h3ngsu1e1g5ovab1rpguo3imktolo?imageView2/2/w/0/format/jpg",
+      "type": "image",
+      "orientation": "landscape",
+      "title": "Mountain View",
+      "createdAt": 0
+    },
+    {
+      "id": "preset-img-landscape-2",
+      "url": "https://sns-img-hw.xhscdn.com/1040g008316h3ngsu1e0g5ovab1rpguo3o4rco68?imageView2/2/w/0/format/jpg",
+      "type": "image",
+      "orientation": "landscape",
+      "title": "Ocean Sunset",
+      "createdAt": 0
+    },
+    {
+      "id": "preset-img-landscape-3",
+      "url": "https://sns-img-hw.xhscdn.com/1040g008316h3ngsu1e205ovab1rpguo3f4hmv3g?imageView2/2/w/0/format/jpg",
+      "type": "image",
+      "orientation": "landscape",
+      "title": "Forest Path",
+      "createdAt": 0
+    },
+    {
+      "id": "preset-vid-landscape-0",
+      "url": "https://sns-bak-v1.xhscdn.com/pre_post/1040g2t031ku7kqjt2ur0472skhjr8fl3horpcl0",
+      "type": "video",
+      "orientation": "landscape",
+      "title": "Flowing River",
+      "createdAt": 0
     }
   ],
   "collections": [
     {
-      "id": "default-collection",
-      "name": "Default Collection",
-      "description": "A beautiful collection of calming media",
+      "id": "portrait-collection",
+      "name": "Portrait Collection",
+      "description": "Beautiful portrait-oriented media for mobile and portrait displays",
       "mediaIds": [
-        "preset-img-0",
-        "preset-img-1",
-        "preset-img-2",
-        "preset-vid-0"
+        "preset-img-portrait-0",
+        "preset-img-portrait-1",
+        "preset-img-portrait-2",
+        "preset-vid-portrait-0"
+      ],
+      "slideInterval": 5000,
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "landscape-collection",
+      "name": "Landscape Collection",
+      "description": "Stunning landscape-oriented media for desktop and wide displays",
+      "mediaIds": [
+        "preset-img-landscape-0",
+        "preset-img-landscape-1",
+        "preset-img-landscape-2",
+        "preset-img-landscape-3",
+        "preset-vid-landscape-0"
       ],
       "slideInterval": 5000,
       "createdAt": 0,

@@ -99,17 +99,16 @@ export async function getCollections(): Promise<Collection[]> {
     return JSON.parse(stored);
   }
 
-  const media = await getStoredMedia();
+  await getStoredMedia();
 
-  const defaultCollection: Collection = {
-    ...presets.collections[0],
-    mediaIds: media.map((m) => m.id),
+  const collections: Collection[] = presets.collections.map((preset) => ({
+    ...preset,
     createdAt: Date.now(),
     updatedAt: Date.now(),
-  };
+  }));
 
-  localStorage.setItem(COLLECTION_STORAGE_KEY, JSON.stringify([defaultCollection]));
-  return [defaultCollection];
+  localStorage.setItem(COLLECTION_STORAGE_KEY, JSON.stringify(collections));
+  return collections;
 }
 
 export function saveCollections(collections: Collection[]): void {
