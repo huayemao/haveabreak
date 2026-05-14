@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
             justifyContent: 'center',
             width: size * 0.8,
             height: size * 0.8,
-            borderRadius: '50%',
+            borderRadius: '20%',
             backgroundColor: '#E0E5EC',
             boxShadow: `
               ${size * 0.035}px ${size * 0.035}px ${size * 0.06}px rgba(163, 177, 198, 0.6), 
@@ -42,127 +42,16 @@ export async function GET(request: NextRequest) {
               justifyContent: 'center',
               width: size * 0.6,
               height: size * 0.6,
-              borderRadius: '50%',
+              borderRadius: '20%',
               backgroundColor: '#E0E5EC',
+              color: '#6C63FF',
               boxShadow: `
                 inset ${size * 0.03}px ${size * 0.03}px ${size * 0.06}px rgba(163, 177, 198, 0.7), 
                 inset -${size * 0.03}px -${size * 0.03}px ${size * 0.06}px rgba(255, 255, 255, 0.6)
               `,
             }}
           >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                width: size * 0.4,
-                height: size * 0.3,
-                gap: size * 0.02,
-              }}
-            >
-              <div
-                style={{
-                  display: 'contents',
-                  width: size * 0.18,
-                  height: size * 0.28,
-                  borderRadius: size * 0.02,
-                  backgroundColor: '#6C63FF',
-                  boxShadow: `
-                    inset ${size * 0.01}px ${size * 0.01}px ${size * 0.02}px rgba(0, 0, 0, 0.2), 
-                    inset -${size * 0.01}px -${size * 0.01}px ${size * 0.02}px rgba(255, 255, 255, 0.2)
-                  `,
-                  position: 'relative',
-                }}
-              >
-                <div style={{
-                  position: 'absolute',
-                  left: size * 0.03,
-                  top: size * 0.03,
-                  width: size * 0.04,
-                  height: size * 0.04,
-                  borderRadius: '50%',
-                  backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                }} />
-                <div style={{
-                  position: 'absolute',
-                  left: size * 0.03,
-                  top: size * 0.1,
-                  width: size * 0.12,
-                  height: size * 0.015,
-                  borderRadius: size * 0.005,
-                  backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                }} />
-                <div style={{
-                  position: 'absolute',
-                  left: size * 0.03,
-                  top: size * 0.13,
-                  width: size * 0.1,
-                  height: size * 0.015,
-                  borderRadius: size * 0.005,
-                  backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                }} />
-                <div style={{
-                  position: 'absolute',
-                  left: size * 0.03,
-                  top: size * 0.16,
-                  width: size * 0.11,
-                  height: size * 0.015,
-                  borderRadius: size * 0.005,
-                  backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                }} />
-              </div>
-              <div
-                style={{
-                  display: 'contents',
-                  width: size * 0.18,
-                  height: size * 0.28,
-                  borderRadius: size * 0.02,
-                  backgroundColor: '#6C63FF',
-                  boxShadow: `
-                    inset ${size * 0.01}px ${size * 0.01}px ${size * 0.02}px rgba(0, 0, 0, 0.2), 
-                    inset -${size * 0.01}px -${size * 0.01}px ${size * 0.02}px rgba(255, 255, 255, 0.2)
-                  `,
-                  position: 'relative',
-                }}
-              >
-                <div style={{
-                  position: 'absolute',
-                  left: size * 0.03,
-                  top: size * 0.03,
-                  width: size * 0.04,
-                  height: size * 0.04,
-                  borderRadius: '50%',
-                  backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                }} />
-                <div style={{
-                  position: 'absolute',
-                  left: size * 0.03,
-                  top: size * 0.1,
-                  width: size * 0.12,
-                  height: size * 0.015,
-                  borderRadius: size * 0.005,
-                  backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                }} />
-                <div style={{
-                  position: 'absolute',
-                  left: size * 0.03,
-                  top: size * 0.13,
-                  width: size * 0.1,
-                  height: size * 0.015,
-                  borderRadius: size * 0.005,
-                  backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                }} />
-                <div style={{
-                  position: 'absolute',
-                  left: size * 0.03,
-                  top: size * 0.16,
-                  width: size * 0.11,
-                  height: size * 0.015,
-                  borderRadius: size * 0.005,
-                  backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                }} />
-              </div>
-            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" width={size * 0.4} height={size * 0.4} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-scroll-text-icon lucide-scroll-text"><path d="M15 12h-5" /><path d="M15 8h-5" /><path d="M19 17V5a2 2 0 0 0-2-2H4" /><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3" /></svg>
           </div>
         </div>
       </div>
