@@ -42,7 +42,7 @@ export default function QuoteCard({ card, isActive, onEdit, onDelete, isFullscre
     <ContextMenu>
       <ContextMenuTrigger>
         <div 
-          className={`w-full max-w-lg md:max-w-xl lg:max-w-2xl mx-auto relative flex flex-col p-5 sm:p-10 rounded-[28px] sm:rounded-[32px] bg-bg-base shadow-extruded overflow-hidden select-none ${isFullscreen ? 'h-full min-h-0' : ''} ${onClick ? 'cursor-pointer hover:scale-[1.02] transition-transform duration-300' : ''}`}
+          className={`w-full max-w-lg md:max-w-xl lg:max-w-2xl mx-auto relative flex flex-col p-5 sm:p-10 rounded-[28px] sm:rounded-[32px] max-h-[56vh] md:max-h-[60vh] bg-bg-base shadow-extruded overflow-hidden select-none ${isFullscreen ? 'h-full min-h-0' : ''} ${onClick ? 'cursor-pointer hover:scale-[1.02] transition-transform duration-300' : ''}`}
           onClick={onClick}
         >
       {/* Decorative Circles */}
