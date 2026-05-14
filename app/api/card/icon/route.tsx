@@ -53,14 +53,18 @@ export async function GET(request: NextRequest) {
             <div
               style={{
                 display: 'flex',
-                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: size * 0.4,
+                height: size * 0.3,
                 gap: size * 0.02,
               }}
             >
               <div
                 style={{
-                  width: size * 0.25,
-                  height: size * 0.32,
+                  display: 'contents',
+                  width: size * 0.18,
+                  height: size * 0.28,
                   borderRadius: size * 0.02,
                   backgroundColor: '#6C63FF',
                   boxShadow: `
@@ -83,15 +87,6 @@ export async function GET(request: NextRequest) {
                   position: 'absolute',
                   left: size * 0.03,
                   top: size * 0.1,
-                  width: size * 0.15,
-                  height: size * 0.015,
-                  borderRadius: size * 0.005,
-                  backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                }} />
-                <div style={{
-                  position: 'absolute',
-                  left: size * 0.03,
-                  top: size * 0.13,
                   width: size * 0.12,
                   height: size * 0.015,
                   borderRadius: size * 0.005,
@@ -100,8 +95,17 @@ export async function GET(request: NextRequest) {
                 <div style={{
                   position: 'absolute',
                   left: size * 0.03,
+                  top: size * 0.13,
+                  width: size * 0.1,
+                  height: size * 0.015,
+                  borderRadius: size * 0.005,
+                  backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                }} />
+                <div style={{
+                  position: 'absolute',
+                  left: size * 0.03,
                   top: size * 0.16,
-                  width: size * 0.14,
+                  width: size * 0.11,
                   height: size * 0.015,
                   borderRadius: size * 0.005,
                   backgroundColor: 'rgba(255, 255, 255, 0.3)',
@@ -109,8 +113,9 @@ export async function GET(request: NextRequest) {
               </div>
               <div
                 style={{
-                  width: size * 0.25,
-                  height: size * 0.32,
+                  display: 'contents',
+                  width: size * 0.18,
+                  height: size * 0.28,
                   borderRadius: size * 0.02,
                   backgroundColor: '#6C63FF',
                   boxShadow: `
@@ -133,15 +138,6 @@ export async function GET(request: NextRequest) {
                   position: 'absolute',
                   left: size * 0.03,
                   top: size * 0.1,
-                  width: size * 0.15,
-                  height: size * 0.015,
-                  borderRadius: size * 0.005,
-                  backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                }} />
-                <div style={{
-                  position: 'absolute',
-                  left: size * 0.03,
-                  top: size * 0.13,
                   width: size * 0.12,
                   height: size * 0.015,
                   borderRadius: size * 0.005,
@@ -150,8 +146,17 @@ export async function GET(request: NextRequest) {
                 <div style={{
                   position: 'absolute',
                   left: size * 0.03,
+                  top: size * 0.13,
+                  width: size * 0.1,
+                  height: size * 0.015,
+                  borderRadius: size * 0.005,
+                  backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                }} />
+                <div style={{
+                  position: 'absolute',
+                  left: size * 0.03,
                   top: size * 0.16,
-                  width: size * 0.14,
+                  width: size * 0.11,
                   height: size * 0.015,
                   borderRadius: size * 0.005,
                   backgroundColor: 'rgba(255, 255, 255, 0.3)',
