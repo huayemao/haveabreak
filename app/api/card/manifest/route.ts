@@ -5,33 +5,32 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const lang = searchParams.get('lang') || 'en';
   
-  // Fetch messages for the specific language
   const messages: any = await getMessages({ locale: lang });
-  const frameMessages = messages.frame || {};
+  const cardMessages = messages.card || {};
 
   const manifest = {
-    id: 'haveabreak-frame',
-    name: frameMessages.appTitle || 'Digital Frame',
-    short_name: 'DFrame',
-    description: frameMessages.appSubtitle || 'A beautiful digital frame for your mindful rest.',
-    start_url: `/${lang}/frame`,
-    scope: `/${lang}/frame`,
+    id: 'haveabreak-card',
+    name: cardMessages.pageTitle || 'Book Excerpts',
+    short_name: 'Excerpts',
+    description: cardMessages.pageSubtitle || 'Swipe up or down to explore beautiful passages',
+    start_url: `/${lang}/card`,
+    scope: `/${lang}/card`,
     display: 'standalone',
     background_color: '#E0E5EC',
     theme_color: '#E0E5EC',
     icons: [
       {
-        src: '/api/frame-icon?size=192',
+        src: '/api/card/icon?size=192',
         sizes: '192x192',
         type: 'image/png',
       },
       {
-        src: '/api/frame-icon?size=512',
+        src: '/api/card/icon?size=512',
         sizes: '512x512',
         type: 'image/png',
       },
       {
-        src: '/api/frame-icon?size=512',
+        src: '/api/card/icon?size=512',
         sizes: '512x512',
         type: 'image/png',
         purpose: 'maskable'

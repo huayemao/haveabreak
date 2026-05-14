@@ -8,7 +8,6 @@ export async function GET(request: NextRequest) {
   const sizeParam = searchParams.get('size');
   const size = sizeParam ? parseInt(sizeParam, 10) : 512;
 
-  // The neumorphic icon logic for Frame App
   return new ImageResponse(
     (
       <div
@@ -21,7 +20,6 @@ export async function GET(request: NextRequest) {
           backgroundColor: '#E0E5EC',
         }}
       >
-        {/* Outer extruded circle */}
         <div
           style={{
             display: 'flex',
@@ -29,7 +27,7 @@ export async function GET(request: NextRequest) {
             justifyContent: 'center',
             width: size * 0.8,
             height: size * 0.8,
-            borderRadius: '24%', // More like a rounded square/frame
+            borderRadius: '24%',
             backgroundColor: '#E0E5EC',
             boxShadow: `
               ${size * 0.035}px ${size * 0.035}px ${size * 0.06}px rgba(163, 177, 198, 0.6), 
@@ -37,7 +35,6 @@ export async function GET(request: NextRequest) {
             `,
           }}
         >
-          {/* Inner inset circle */}
           <div
             style={{
               display: 'flex',
@@ -53,7 +50,6 @@ export async function GET(request: NextRequest) {
               `,
             }}
           >
-            {/* Frame / Picture symbol */}
             <div
               style={{
                 display: 'flex',

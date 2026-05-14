@@ -8,10 +8,22 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   const resolvedParams = await params;
   const lang = resolvedParams.lang as Locale;
   const messages: any = await getMessages({ locale: lang });
+  const cardMessages = messages.card || {};
 
   return {
-    title: messages['card.title'],
-    description: 'Swipe through beautiful book quotes.',
+    title: cardMessages.pageTitle || 'Book Excerpts',
+    description: cardMessages.pageSubtitle || 'Swipe up or down to explore beautiful passages',
+    icons: {
+      icon: [
+        { url: '/api/card/icon?size=32', sizes: '32x32', type: 'image/png' },
+        { url: '/api/card/icon?size=192', sizes: '192x192', type: 'image/png' },
+        { url: '/api/card/icon?size=512', sizes: '512x512', type: 'image/png' },
+      ],
+      apple: [
+        { url: '/api/card/icon?size=180', sizes: '180x180', type: 'image/png' },
+      ]
+    },
+    manifest: `/api/card/manifest?lang=${lang}`,
   };
 }
 
