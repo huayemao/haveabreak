@@ -27,7 +27,7 @@ export default function NeumorphicBottomNav({ items }: NeumorphicBottomNavProps)
   };
 
   return (
-    <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[50] flex items-center p-2 rounded-full bg-bg-base/80 backdrop-blur-lg shadow-extruded border border-white/5">
+    <div className="fixed bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 z-[50] flex items-center p-2 rounded-full bg-bg-base/80 backdrop-blur-lg shadow-extruded border border-white/5">
       {items.map((item, index) => (
         <React.Fragment key={item.href}>
           {index > 0 && (

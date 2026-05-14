@@ -60,8 +60,8 @@ export default function CardLayoutClient({
   ];
 
   return (
-    <div className="h-screen bg-bg-base pt-12 md:pt-28 pb-24">
-      <main className="h-full max-w-7xl mx-auto px-4 py-6">
+    <div className="h-screen bg-bg-base pt-10 md:pt-28 pb-24">
+      <main className="h-full max-w-7xl mx-auto px-4">
         <Suspense fallback={null}>
           {children}
         </Suspense>

@@ -165,7 +165,7 @@
     "home": "首页",
     "timer": "计时休息",
     "frame": "电子画框",
-    "card": "书摘阅读器",
+    "card": "书摘查看器",
     "apps": "应用"
   },
   "home": {
@@ -182,13 +182,13 @@
       "description": "将设备变成精美的数字画框，展示你的照片和视频。"
     },
     "card": {
-      "title": "书摘阅读器",
+      "title": "书摘查看器",
       "subtitle": "阅读收藏",
       "description": "收藏和管理你喜欢的书摘，随时阅读优美的段落。"
     }
   },
   "card": {
-    "pageTitle": "书摘阅读器",
+    "pageTitle": "书摘查看器",
     "pageSubtitle": "上下滑动，探索优美的段落",
     "addTitle": "添加新句子",
     "addBook": "添加图书",

@@ -156,10 +156,41 @@ export default function CardPageClient() {
     <div ref={containerRef} className="relative w-full flex flex-col items-center px-8 h-full bg-bg-base transition-colors duration-500 overflow-hidden">
       <motion.div
         animate={{ y: showUI ? 0 : -100, opacity: showUI ? 1 : 0 }}
-        className="mb-8 text-center pt-4"
+        className="mb-4 text-center pt-2"
       >
-        <h2 className="text-3xl font-bold text-fg-primary font-display mb-2">{t('card.pageTitle')}</h2>
-        <p className="text-sm text-fg-muted">{t('card.pageSubtitle')}</p>
+        <h1 className="text-2xl font-bold text-fg-primary font-display">{t('card.pageTitle')}</h1>
+      </motion.div>
+
+      <motion.div
+        animate={{ y: showUI ? 0 : -100, opacity: showUI ? 1 : 0 }}
+        className="flex justify-center gap-3 mb-4"
+      >
+        <button
+          onClick={() => {
+            if (!isAutoPlaying) {
+              containerRef.current?.requestFullscreen().catch(() => { });
+            }
+            setIsAutoPlaying(!isAutoPlaying);
+          }}
+          className={cn('w-9 h-9 rounded-full neumorphic-button flex items-center justify-center transition-all', { '!text-primary shadow-inset': isAutoPlaying, 'text-fg-muted': !isAutoPlaying })}
+          title={isAutoPlaying ? "Pause" : "Auto Play"}
+        >
+          {isAutoPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+        </button>
+        <button
+          onClick={() => setIsRandom(!isRandom)}
+          className={`w-9 h-9 rounded-full neumorphic-button flex items-center justify-center transition-all ${isRandom ? '!text-primary shadow-inset' : 'text-fg-muted'}`}
+          title="Shuffle"
+        >
+          <Shuffle className="w-4 h-4" />
+        </button>
+        <button
+          onClick={toggleFullscreen}
+          className={`w-9 h-9 rounded-full neumorphic-button flex items-center justify-center transition-all ${isFullscreen ? '!text-primary shadow-inset' : 'text-fg-muted'}`}
+          title="Toggle Fullscreen"
+        >
+          {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+        </button>
       </motion.div>
 
       <div className="flex-1 relative w-full flex items-center justify-center">
@@ -198,33 +229,6 @@ export default function CardPageClient() {
               exit={{ opacity: 0, x: 20 }}
               className="absolute right-[-10px] sm:right-6 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-20"
             >
-              <button
-                onClick={() => {
-                  if (!isAutoPlaying) {
-                    containerRef.current?.requestFullscreen().catch(() => { });
-                  }
-                  setIsAutoPlaying(!isAutoPlaying);
-                }}
-                className={cn('w-10 h-10 rounded-full neumorphic-button flex items-center justify-center transition-all', { '!text-primary shadow-inset': isAutoPlaying, 'text-fg-muted': !isAutoPlaying })}
-                title={isAutoPlaying ? "Pause" : "Auto Play"}
-              >
-                {isAutoPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-              </button>
-              <button
-                onClick={() => setIsRandom(!isRandom)}
-                className={`w-10 h-10 rounded-full neumorphic-button flex items-center justify-center transition-all ${isRandom ? '!text-primary shadow-inset' : 'text-fg-muted'}`}
-                title="Shuffle"
-              >
-                <Shuffle className="w-5 h-5" />
-              </button>
-              <button
-                onClick={toggleFullscreen}
-                className={`w-10 h-10 rounded-full neumorphic-button flex items-center justify-center transition-all ${isFullscreen ? '!text-primary shadow-inset' : 'text-fg-muted'}`}
-                title="Toggle Fullscreen"
-              >
-                {isFullscreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
-              </button>
-              <div className="h-4" />
               <button onClick={handlePrev} className="w-10 h-10 rounded-full neumorphic-button flex items-center justify-center hover:scale-110 active:scale-95 transition-all">
                 <ChevronUp className="w-5 h-5" />
               </button>
