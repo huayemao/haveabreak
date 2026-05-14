@@ -20,7 +20,8 @@
   --shadow-inset-sm: inset 3px 3px 6px rgba(163, 177, 198, 0.6), inset -3px -3px 6px rgba(255, 255, 255, 0.5);
 
   --font-sans: var(--font-dm-sans);
-  --font-display: var(--font-plus-jakarta-sans);
+  --font-display: serif;
+  --font-title: 'Noto Serif SC', serif;
   --font-body: 'LXGWWenKai', sans-serif;
 }
 
@@ -97,12 +98,15 @@
 }
 
 @layer base {
-  html, body {
+
+  html,
+  body {
     height: 100%;
     width: 100%;
     margin: 0;
     padding: 0;
   }
+
   html {
     font-family: var(--font-dm-sans);
   }

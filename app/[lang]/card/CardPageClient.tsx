@@ -158,7 +158,8 @@ export default function CardPageClient() {
         animate={{ y: showUI ? 0 : -100, opacity: showUI ? 1 : 0 }}
         className="mb-4 text-center pt-2"
       >
-        <h1 className="text-2xl font-bold text-fg-primary font-display">{t('card.pageTitle')}</h1>
+        <h1 className="text-2xl font-bold text-fg-primary font-title">{t('card.pageTitle')}</h1>
+        <p className="text-sm text-fg-muted mt-1">{t('card.pageSubtitle')}</p>
       </motion.div>
 
       <motion.div

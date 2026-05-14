@@ -99,8 +99,8 @@ export default async function RootLayout({
   return (
     <html lang={lang} className={`${plusJakartaSans.variable} ${dmSans.variable}`}>
       <head>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/satouriko/LxgwWenKai_Webfonts@v1.101/dist/LXGWWenKai-Regular.css" />
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/satouriko/LxgwWenKai_Webfonts@v1.101/dist/LXGWWenKai-Bold.css" />
+        <link rel="preconnect" href="https://fonts.loli.net"/>
+        <link href="https://fonts.loli.net/css2?family=Noto+Serif+SC:wght@200..900&display=swap" rel="stylesheet"/>
       </head>
       <body suppressHydrationWarning className="bg-[#E0E5EC] text-slate-900 antialiased">
         <SerwistProvider swUrl="/serwist/sw.js">

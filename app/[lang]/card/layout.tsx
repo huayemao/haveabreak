@@ -11,8 +11,8 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   const cardMessages = messages.card || {};
 
   return {
-    title: cardMessages.pageTitle || 'Book Excerpts',
-    description: cardMessages.pageSubtitle || 'Swipe up or down to explore beautiful passages',
+    title: `${cardMessages.pageTitle || 'Book Excerpts'} - ${cardMessages.pageSubtitle || 'Swipe through book excerpts like short videos'}`,
+    description: cardMessages.pageSubtitle || 'Swipe through book excerpts like short videos',
     icons: {
       icon: [
         { url: '/api/card/icon?size=32', sizes: '32x32', type: 'image/png' },
