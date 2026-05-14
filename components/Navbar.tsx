@@ -100,8 +100,10 @@ export default function Navbar() {
                     ? 'shadow-[inset_3px_3px_6px_rgb(163,177,198,0.6),inset_-3px_-3px_6px_rgba(255,255,255,0.5)] bg-bg-base text-accent font-medium' 
                     : 'text-fg-muted hover:text-fg-primary hover:shadow-[inset_2px_2px_4px_rgb(163,177,198,0.4),inset_-2px_-2px_4px_rgba(255,255,255,0.4)] bg-bg-base'
                     }`}>
-                    <link.icon className="w-4 h-4" />
-                    <span className="font-display">{link.label}</span>
+                    <Link href={link.href} className="flex items-center gap-2 w-full">
+                      <link.icon className="w-4 h-4" />
+                      <span className="font-display">{link.label}</span>
+                    </Link>
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuGroup>
