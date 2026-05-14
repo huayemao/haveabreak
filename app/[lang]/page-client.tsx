@@ -11,10 +11,17 @@ interface AppCardProps {
   title: string;
   subtitle: string;
   description: string;
-  color: string;
 }
 
-function AppCard({ href, icon, title, subtitle, description, color }: AppCardProps) {
+function AppBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center px-3 py-1 rounded-xl shadow-[inset_3px_3px_6px_rgb(163,177,198,0.6),inset_-3px_-3px_6px_rgba(255,255,255,0.5)] bg-bg-base text-fg-muted text-xs font-medium">
+      {children}
+    </span>
+  );
+}
+
+function AppCard({ href, icon, title, subtitle, description }: AppCardProps) {
   return (
     <Link href={href}>
       <motion.div
@@ -23,17 +30,14 @@ function AppCard({ href, icon, title, subtitle, description, color }: AppCardPro
         className="group p-8 rounded-[32px] shadow-extruded bg-bg-base space-y-6 cursor-pointer transition-all duration-300 hover:shadow-[12px_12px_24px_rgb(163,177,198,0.5),-12px_-12px_24px_rgba(255,255,255,0.7)]"
       >
         <div className="flex items-start justify-between">
-          <div
-            className="w-16 h-16 rounded-2xl flex items-center justify-center"
-            style={{ backgroundColor: color }}
-          >
+          <div className="w-16 h-16 rounded-2xl text-primary flex items-center justify-center shadow-[inset_10px_10px_20px_rgb(163,177,198,0.7),inset_-10px_-10px_20px_rgba(255,255,255,0.6)] bg-bg-base">
             {icon}
           </div>
           <ArrowRight className="w-6 h-6 text-fg-muted opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform group-hover:translate-x-1" />
         </div>
-        <div className="space-y-2">
+        <div className="space-y-3">
           <h3 className="font-display font-bold text-2xl text-fg-primary">{title}</h3>
-          <p className="text-sm font-medium" style={{ color }}>{subtitle}</p>
+          <AppBadge>{subtitle}</AppBadge>
         </div>
         <p className="text-fg-muted leading-relaxed">{description}</p>
       </motion.div>
@@ -47,27 +51,24 @@ export default function HomePage() {
   const apps = [
     {
       href: '/timer',
-      icon: <Timer className="w-8 h-8 text-white" />,
+      icon: <Timer className="w-8 h-8 " />,
       titleKey: 'timer.title',
       subtitleKey: 'timer.subtitle',
       descriptionKey: 'timer.description',
-      color: '#6C63FF',
     },
     {
       href: '/frame',
-      icon: <Frame className="w-8 h-8 text-white" />,
+      icon: <Frame className="w-8 h-8 " />,
       titleKey: 'frame.title',
       subtitleKey: 'frame.subtitle',
       descriptionKey: 'frame.description',
-      color: '#38B2AC',
     },
     {
       href: '/card',
-      icon: <ScrollText className="w-8 h-8 text-white" />,
+      icon: <ScrollText className="w-8 h-8 " />,
       titleKey: 'card.title',
       subtitleKey: 'card.subtitle',
       descriptionKey: 'card.description',
-      color: '#ED8936',
     },
   ];
 
@@ -99,7 +100,7 @@ export default function HomePage() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="w-full max-w-4xl mx-auto"
         >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {apps.map((app, index) => (
               <motion.div
                 key={app.href}
@@ -113,7 +114,6 @@ export default function HomePage() {
                   title={t(app.titleKey)}
                   subtitle={t(app.subtitleKey)}
                   description={t(app.descriptionKey)}
-                  color={app.color}
                 />
               </motion.div>
             ))}

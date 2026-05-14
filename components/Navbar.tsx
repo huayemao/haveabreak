@@ -91,16 +91,17 @@ export default function Navbar() {
                 <span className="font-display">{t('nav.apps', { defaultValue: 'Apps' })}</span>
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-48">
-              <DropdownMenuGroup>
-                <DropdownMenuLabel className="font-display">{t('nav.apps', { defaultValue: 'Apps' })}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
+            <DropdownMenuContent className="w-48 bg-bg-base rounded-[24px] shadow-[9px_9px_16px_rgb(163,177,198,0.6),-9px_-9px_16px_rgba(255,255,255,0.5)] border-none p-3">
+              <DropdownMenuGroup className="space-y-1">
+                <DropdownMenuLabel className="font-display text-fg-primary px-3 py-2">{t('nav.apps', { defaultValue: 'Apps' })}</DropdownMenuLabel>
+                <div className="h-px bg-fg-muted opacity-20 my-1" />
                 {navLinks.map((link) => (
-                  <DropdownMenuItem key={link.href} className={link.active ? 'bg-accent text-accent-foreground' : ''}>
-                    <Link href={link.href} className="w-full flex items-center gap-2">
-                      <link.icon className="w-4 h-4" />
-                      {link.label}
-                    </Link>
+                  <DropdownMenuItem key={link.href} className={`flex items-center gap-2 px-3 py-2.5 rounded-xl transition-all duration-200 ${link.active 
+                    ? 'shadow-[inset_3px_3px_6px_rgb(163,177,198,0.6),inset_-3px_-3px_6px_rgba(255,255,255,0.5)] bg-bg-base text-accent font-medium' 
+                    : 'text-fg-muted hover:text-fg-primary hover:shadow-[inset_2px_2px_4px_rgb(163,177,198,0.4),inset_-2px_-2px_4px_rgba(255,255,255,0.4)] bg-bg-base'
+                    }`}>
+                    <link.icon className="w-4 h-4" />
+                    <span className="font-display">{link.label}</span>
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuGroup>
@@ -117,16 +118,18 @@ export default function Navbar() {
                 <span className="font-display">{t('settingsTitle', { defaultValue: 'Settings' })}</span>
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-48">
-              <DropdownMenuGroup>
-                <DropdownMenuLabel className="font-display">{t('settingsTitle', { defaultValue: 'Settings' })}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-fg-muted">
+            <DropdownMenuContent className="w-48 bg-bg-base rounded-[24px] shadow-[9px_9px_16px_rgb(163,177,198,0.6),-9px_-9px_16px_rgba(255,255,255,0.5)] border-none p-3">
+              <DropdownMenuGroup className="space-y-1">
+                <DropdownMenuLabel className="font-display text-fg-primary px-3 py-2">{t('settingsTitle', { defaultValue: 'Settings' })}</DropdownMenuLabel>
+                <div className="h-px bg-fg-muted opacity-20 my-1" />
+                <DropdownMenuItem className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-fg-muted hover:text-fg-primary hover:shadow-[inset_2px_2px_4px_rgb(163,177,198,0.4),inset_-2px_-2px_4px_rgba(255,255,255,0.4)] bg-bg-base transition-all duration-200">
                   <Info className="w-4 h-4" />
                   <span className="text-xs font-mono">v{version ?? '...'}</span>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <LanguageSwitcher />
+                <div className="h-px bg-fg-muted opacity-20 my-1" />
+                <div className="px-3">
+                  <LanguageSwitcher />
+                </div>
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
