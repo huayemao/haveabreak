@@ -168,6 +168,14 @@
     "card": "Book Excerpts",
     "apps": "Apps"
   },
+  "install": {
+    "title": "Install App",
+    "description": "Add this app to your home screen for the best experience",
+    "button": "Install"
+  },
+  "timer": {
+    "pageTitle": "Timed Break"
+  },
   "home": {
     "title": "haveabreak",
     "subtitle": "Tools for Taking a Good Break",

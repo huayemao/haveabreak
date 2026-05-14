@@ -9,6 +9,7 @@ import TimerDisplay from '@/components/TimerDisplay';
 import FinishedDisplay from '@/components/FinishedDisplay';
 import { useNavbar } from '@/context/NavbarContext';
 import { useTimerStore } from '@/store/timerStore';
+import InstallPrompt from '@/components/InstallPrompt';
 
 export default function TimerApp() {
   const t = useTranslations();
@@ -151,7 +152,7 @@ export default function TimerApp() {
 
   return (
     <main className="flex-1 relative overflow-x-hidden flex flex-col">
-
+      <InstallPrompt appId="timer" />
       <AnimatePresence mode="wait">
         {!isRunning && !isInterrupted && !isFinished ? (
           <motion.div

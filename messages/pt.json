@@ -167,6 +167,14 @@
     "card": "Trechos de livros",
     "apps": "Aplicativos"
   },
+  "install": {
+    "title": "Instalar aplicativo",
+    "description": "Adicione este aplicativo à sua tela inicial para melhor experiência",
+    "button": "Instalar"
+  },
+  "timer": {
+    "pageTitle": "Pausa cronometrada"
+  },
   "home": {
     "title": "haveabreak",
     "subtitle": "Ferramentas para descansar bem",

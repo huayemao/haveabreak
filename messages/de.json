@@ -167,6 +167,14 @@
     "card": "Buchauszüge",
     "apps": "Anwendungen"
   },
+  "install": {
+    "title": "App installieren",
+    "description": "Fügen Sie diese App zum Startbildschirm hinzu, um die beste Erfahrung zu erhalten",
+    "button": "Installieren"
+  },
+  "timer": {
+    "pageTitle": "Zeitgesteuerte Pause"
+  },
   "home": {
     "title": "haveabreak",
     "subtitle": "Werkzeuge für eine gute Pause",

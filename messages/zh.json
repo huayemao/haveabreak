@@ -168,6 +168,14 @@
     "card": "书摘查看器",
     "apps": "应用"
   },
+  "install": {
+    "title": "安装应用",
+    "description": "将此应用添加到主屏幕，获得最佳体验",
+    "button": "安装"
+  },
+  "timer": {
+    "pageTitle": "计时休息"
+  },
   "home": {
     "title": "haveabreak",
     "subtitle": "关于好好休息的工具集",

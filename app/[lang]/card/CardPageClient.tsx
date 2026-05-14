@@ -11,6 +11,7 @@ import { Link } from '@/i18n/routing';
 import { useRouter } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
+import InstallPrompt from '@/components/InstallPrompt';
 
 export default function CardPageClient() {
   const {
@@ -154,6 +155,7 @@ export default function CardPageClient() {
 
   return (
     <div ref={containerRef} className="relative w-full flex flex-col items-center px-8 h-full bg-bg-base transition-colors duration-500 overflow-hidden">
+      <InstallPrompt appId="card" />
       <motion.div
         animate={{ y: showUI ? 0 : -100, opacity: showUI ? 1 : 0 }}
         className="mb-4 text-center pt-2"

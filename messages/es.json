@@ -167,6 +167,14 @@
     "card": "Extractos de libros",
     "apps": "Aplicaciones"
   },
+  "install": {
+    "title": "Instalar aplicación",
+    "description": "Agrega esta aplicación a tu pantalla de inicio para una mejor experiencia",
+    "button": "Instalar"
+  },
+  "timer": {
+    "pageTitle": "Descanso cronometrado"
+  },
   "home": {
     "title": "haveabreak",
     "subtitle": "Herramientas para descansar bien",

@@ -167,6 +167,14 @@
     "card": "Extraits de livres",
     "apps": "Applications"
   },
+  "install": {
+    "title": "Installer l'application",
+    "description": "Ajoutez cette application à votre écran d'accueil pour une meilleure expérience",
+    "button": "Installer"
+  },
+  "timer": {
+    "pageTitle": "Pause chronométrée"
+  },
   "home": {
     "title": "haveabreak",
     "subtitle": "Outils pour bien se reposer",

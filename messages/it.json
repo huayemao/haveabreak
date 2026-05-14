@@ -167,6 +167,14 @@
     "card": "Estratti di libri",
     "apps": "Applicazioni"
   },
+  "install": {
+    "title": "Installa applicazione",
+    "description": "Aggiungi questa applicazione alla schermata iniziale per la migliore esperienza",
+    "button": "Installa"
+  },
+  "timer": {
+    "pageTitle": "Pausa temporizzata"
+  },
   "home": {
     "title": "haveabreak",
     "subtitle": "Strumenti per una buona pausa",

@@ -168,6 +168,14 @@
     "card": "本の引用",
     "apps": "アプリ"
   },
+  "install": {
+    "title": "アプリをインストール",
+    "description": "最高の体験のために、このアプリをホーム画面に追加してください",
+    "button": "インストール"
+  },
+  "timer": {
+    "pageTitle": "タイマー休憩"
+  },
   "home": {
     "title": "haveabreak",
     "subtitle": "良い休息のためのツール",

@@ -9,6 +9,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useCallback, useMemo, Suspense } from 'react';
 import { Plus, Settings } from 'lucide-react';
 import NeumorphicBottomNav from '@/components/NeumorphicBottomNav';
+import InstallPrompt from '@/components/InstallPrompt';
 
 export default function FrameLayoutClient({
   children,
@@ -169,6 +170,7 @@ export default function FrameLayoutClient({
 
   return (
     <div className="min-h-screen bg-bg-base pt-12 md:pt-28 pb-24">
+      <InstallPrompt appId="frame" />
       <header className=" bg-bg-base/90 backdrop-blur-lg border-b border-white/10 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
