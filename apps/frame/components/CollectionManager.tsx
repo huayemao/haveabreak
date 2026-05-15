@@ -205,7 +205,7 @@ export default function CollectionManager({
                     }`}
                     onClick={() => handleCollectionClick(collection)}
                   >
-                    <div className="aspect-video bg-muted">
+                    <div className="aspect-square bg-muted">
                       {firstMedia ? (
                         <MediaThumbnail item={firstMedia} className="w-full h-full" showPlayIcon={false} />
                       ) : (
@@ -231,7 +231,7 @@ export default function CollectionManager({
                       )}
                     </div>
 
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
                       <div className="absolute bottom-0 left-0 right-0 p-3">
                         <p className="text-white text-sm font-medium truncate">{collection.name}</p>
                         {collection.description && (
