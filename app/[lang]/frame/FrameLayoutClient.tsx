@@ -160,12 +160,6 @@ export default function FrameLayoutClient({
       label: t('frame.settings'),
       variant: 'action' as const,
     },
-    {
-      href: `${baseRoute}/add-media`,
-      icon: <Plus className="w-6 h-6" />,
-      label: t('frame.addMedia'),
-      variant: 'action' as const,
-    },
   ];
 
   return (
