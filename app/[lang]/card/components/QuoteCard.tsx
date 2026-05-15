@@ -2,6 +2,7 @@
 
 import { QuoteWithBook } from '@/apps/card/types';
 import { useRouter } from '@/i18n/routing';
+import { useTranslations } from 'next-intl';
 import {
   ContextMenu,
   ContextMenuContent,
@@ -23,6 +24,7 @@ interface QuoteCardProps {
 export default function QuoteCard({ card, isActive, onEdit, onDelete, isFullscreen = false, onClick }: QuoteCardProps) {
   const { content, book, chapter, page } = card;
   const router = useRouter();
+  const t = useTranslations('common');
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -128,14 +130,14 @@ export default function QuoteCard({ card, isActive, onEdit, onDelete, isFullscre
         {onEdit && (
           <ContextMenuItem onClick={handleEdit} className="gap-2">
             <Edit3 className="w-4 h-4" />
-            Edit
+            {t('edit')}
           </ContextMenuItem>
         )}
         <ContextMenuSeparator />
         {onDelete && (
           <ContextMenuItem onClick={handleDelete} className="gap-2 text-red-500 focus:text-red-500">
             <Trash2 className="w-4 h-4" />
-            Delete
+            {t('delete')}
           </ContextMenuItem>
         )}
       </ContextMenuContent>
