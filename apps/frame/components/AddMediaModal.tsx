@@ -8,12 +8,13 @@ import { MediaType } from '../types';
 interface AddMediaModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (url: string, type: MediaType, title?: string) => void;
-  onAddUrlList: (urls: string[], type: MediaType) => void;
+  onAdd: (url: string, type: MediaType, title?: string, collectionId?: string) => void;
+  onAddUrlList: (urls: string[], type: MediaType, collectionId?: string) => void;
   isImporting?: boolean;
+  collectionId?: string;
 }
 
-export default function AddMediaModal({ isOpen, onClose, onAdd, onAddUrlList, isImporting }: AddMediaModalProps) {
+export default function AddMediaModal({ isOpen, onClose, onAdd, onAddUrlList, isImporting, collectionId }: AddMediaModalProps) {
   const t = useTranslations();
   useScrollLock(isOpen);
   const [newUrl, setNewUrl] = useState('');
@@ -26,7 +27,7 @@ export default function AddMediaModal({ isOpen, onClose, onAdd, onAddUrlList, is
 
   const handleAdd = () => {
     if (newUrl.trim()) {
-      onAdd(newUrl.trim(), mediaType, newTitle.trim() || undefined);
+      onAdd(newUrl.trim(), mediaType, newTitle.trim() || undefined, collectionId);
       setNewUrl('');
       setNewTitle('');
       onClose();
@@ -75,10 +76,10 @@ export default function AddMediaModal({ isOpen, onClose, onAdd, onAddUrlList, is
       .map(item => item.url);
 
     if (images.length > 0) {
-      onAddUrlList(images, 'image');
+      onAddUrlList(images, 'image', collectionId);
     }
     if (videos.length > 0) {
-      onAddUrlList(videos, 'video');
+      onAddUrlList(videos, 'video', collectionId);
     }
 
     setShowResult(false);

@@ -214,6 +214,7 @@ export default function FrameLayoutClient({
         onAdd={addMedia}
         onAddUrlList={importUrlList}
         isImporting={isImporting}
+        collectionId={selectedCollectionId || undefined}
       />
     </div>
   );
