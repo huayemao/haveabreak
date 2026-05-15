@@ -10,7 +10,7 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
-import { Edit3, Trash2 } from 'lucide-react';
+import { Edit3, Trash2, Quote } from 'lucide-react';
 
 interface QuoteCardProps {
   card: QuoteWithBook;
@@ -44,7 +44,7 @@ export default function QuoteCard({ card, isActive, onEdit, onDelete, isFullscre
     <ContextMenu>
       <ContextMenuTrigger>
         <div 
-          className={`w-full max-w-lg md:max-w-xl lg:max-w-2xl mx-auto relative flex flex-col p-5 sm:p-10 rounded-[28px] sm:rounded-[32px] max-h-[56vh] md:max-h-[60vh] bg-bg-base shadow-extruded overflow-hidden select-none ${isFullscreen ? 'h-full min-h-0' : ''} ${onClick ? 'cursor-pointer hover:scale-[1.02] transition-transform duration-300' : ''}`}
+          className={`w-full max-w-lg md:max-w-xl lg:max-w-2xl mx-auto relative flex flex-col p-5 sm:p-10 rounded-[28px] sm:rounded-[32px]  bg-bg-base shadow-extruded overflow-hidden select-none ${isFullscreen ? 'h-full min-h-0 max-h-[68vh] md:max-h-[70vh]' : 'max-h-[56vh] md:max-h-[60vh]'} ${onClick ? 'cursor-pointer hover:scale-[1.02] transition-transform duration-300' : ''}`}
           onClick={onClick}
         >
       {/* Decorative Circles */}
@@ -104,8 +104,13 @@ export default function QuoteCard({ card, isActive, onEdit, onDelete, isFullscre
           </div>
         )}
         
-        <div className={`text-lg sm:text-xl text-fg-primary leading-relaxed font-body ${isFullscreen ? 'line-clamp-[10] sm:line-clamp-[15]' : 'line-clamp-6'}`}>
-          {content}
+        <div className={`relative ${isFullscreen ? 'overflow-y-auto custom-scrollbar max-h-[50vh] sm:max-h-[55vh]' : 'line-clamp-6'}`}>
+          <span  className="absolute top-0 left-0 w-8 h-8   ">
+          <Quote className="text-accent/60" />
+          </span>
+          <p className="text-lg sm:text-xl text-fg-primary leading-relaxed font-body pl-8 sm:pl-10">
+            {content}
+          </p>
         </div>
       </div>
 
