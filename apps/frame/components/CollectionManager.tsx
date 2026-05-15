@@ -7,6 +7,14 @@ import { useTranslations } from 'next-intl';
 import MediaThumbnail from './MediaThumbnail';
 import CollectionDetail from './CollectionDetail';
 import { useScrollLock } from '../utils/useScrollLock';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu';
+import { Play, Trash2, Share2, Edit3 } from 'lucide-react';
 
 interface CollectionManagerProps {
   collections: Collection[];
@@ -55,7 +63,6 @@ export default function CollectionManager({
 
   useScrollLock(showAddModal || showEditModal || showShareModal || !!confirmDeleteId);
   const [copied, setCopied] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   const editingCollection = useMemo(() => {
     if (editingId) {
@@ -76,16 +83,7 @@ export default function CollectionManager({
     }
   }, [showEditModal, showAddModal, editingCollection]);
 
-  useEffect(() => {
-    const handleClickOutside = () => {
-      setActiveDropdown(null);
-    };
 
-    if (activeDropdown) {
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
-    }
-  }, [activeDropdown]);
 
   const updateUrl = (params: Record<string, string | null>) => {
     const newParams = new URLSearchParams(searchParams.toString());
@@ -193,125 +191,95 @@ export default function CollectionManager({
           {t('frame.noCollections')}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {collections.map((collection) => (
-            <div
-              key={collection.id}
-              className={`rounded-[32px] p-6 transition-all duration-300 cursor-pointer ${
-                selectedCollectionId === collection.id
-                  ? 'ring-2 ring-accent ring-offset-2 ring-offset-bg-base'
-                  : ''
-              }`}
-              onClick={() => handleCollectionClick(collection)}
-              style={{
-                background: '#E0E5EC',
-                boxShadow: '9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5)',
-              }}
-            >
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="font-bold text-fg-primary">{collection.name}</h3>
-                <div className="flex gap-2">
-                  {collection.mediaIds.length > 0 && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onPlay(collection, false, 0);
-                      }}
-                      className="w-8 h-8 rounded-full bg-accent hover:bg-accent-light flex items-center justify-center text-white transition-all"
-                    >
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    </button>
-                  )}
-                  <div className="relative">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveDropdown(activeDropdown === collection.id ? null : collection.id);
-                      }}
-                      className="w-8 h-8 rounded-full bg-white/50 hover:bg-white/80 flex items-center justify-center text-fg-muted hover:text-fg-primary transition-all"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                      </svg>
-                    </button>
-                    {activeDropdown === collection.id && (
-                      <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-xl shadow-lg py-1 z-10" onClick={(e) => e.stopPropagation()}>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleShareModal(collection);
-                            setActiveDropdown(null);
-                          }}
-                          className="w-full px-4 py-2 text-left text-sm text-fg-primary hover:bg-gray-100 flex items-center gap-2"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                          </svg>
-                          {t('frame.share')}
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openEditModal(collection);
-                            setActiveDropdown(null);
-                          }}
-                          className="w-full px-4 py-2 text-left text-sm text-fg-primary hover:bg-gray-100 flex items-center gap-2"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
-                          {t('common.edit')}
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setConfirmDeleteId(collection.id);
-                            setActiveDropdown(null);
-                          }}
-                          className="w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-gray-100 flex items-center gap-2"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                          {t('common.delete')}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {collection.description && (
-                <p className="text-sm text-fg-muted mb-3">{collection.description}</p>
-              )}
-
-              <div className="flex items-center justify-between text-sm text-fg-muted">
-                <span>{collection.mediaIds.length} {t('frame.mediaLibrary')}</span>
-                <span>{(collection.slideInterval / 1000).toFixed(0)}s {t('frame.slideInterval')}</span>
-              </div>
-
-              <div className="mt-3 flex flex-wrap gap-2">
-                {collection.mediaIds.slice(0, 4).map((mediaId) => {
-                  const item = media.find((m) => m.id === mediaId);
-                  return item ? (
-                    <div
-                      key={mediaId}
-                      className="w-12 h-12 rounded-xl overflow-hidden bg-muted"
-                    >
-                      <MediaThumbnail item={item} className="w-full h-full" />
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {collections.map((collection) => {
+            const firstMediaId = collection.mediaIds[0];
+            const firstMedia = media.find((m) => m.id === firstMediaId);
+            
+            return (
+              <ContextMenu key={collection.id}>
+                <ContextMenuTrigger>
+                  <div
+                    className={`group relative rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${
+                      selectedCollectionId === collection.id ? 'ring-2 ring-accent ring-offset-2' : ''
+                    }`}
+                    onClick={() => handleCollectionClick(collection)}
+                  >
+                    <div className="aspect-video bg-muted">
+                      {firstMedia ? (
+                        <MediaThumbnail item={firstMedia} className="w-full h-full" showPlayIcon={false} />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-muted">
+                          <span className="text-fg-muted text-sm">{t('frame.noMedia')}</span>
+                        </div>
+                      )}
                     </div>
-                  ) : null;
-                })}
-                {collection.mediaIds.length > 4 && (
-                  <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center text-fg-muted text-sm">
-                    +{collection.mediaIds.length - 4}
+
+                    <div className="absolute inset-0 bg-black/10">
+                      {collection.mediaIds.length > 0 && (
+                        <button
+                          className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onPlay(collection, false, 0);
+                          }}
+                        >
+                          <svg className="w-12 h-12 text-white/80" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="absolute bottom-0 left-0 right-0 p-3">
+                        <p className="text-white text-sm font-medium truncate">{collection.name}</p>
+                        {collection.description && (
+                          <p className="text-white/70 text-xs mt-1 line-clamp-2">{collection.description}</p>
+                        )}
+                        <div className="flex items-center gap-2 mt-2 text-white/70 text-xs">
+                          <span>{collection.mediaIds.length} {t('frame.media')}</span>
+                          <span>•</span>
+                          <span>{(collection.slideInterval / 1000).toFixed(0)}s</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                )}
-              </div>
-            </div>
-          ))}
+                </ContextMenuTrigger>
+                <ContextMenuContent className="w-48">
+                  <ContextMenuItem
+                    onClick={() => onPlay(collection, false, 0)}
+                    className="gap-2"
+                  >
+                    <Play className="w-4 h-4" />
+                    {t('frame.play')}
+                  </ContextMenuItem>
+                  <ContextMenuItem
+                    onClick={() => openEditModal(collection)}
+                    className="gap-2"
+                  >
+                    <Edit3 className="w-4 h-4" />
+                    {t('common.edit')}
+                  </ContextMenuItem>
+                  <ContextMenuItem
+                    onClick={() => handleShareModal(collection)}
+                    className="gap-2"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    {t('frame.share')}
+                  </ContextMenuItem>
+                  <ContextMenuSeparator />
+                  <ContextMenuItem
+                    onClick={() => setConfirmDeleteId(collection.id)}
+                    className="gap-2 text-red-500 focus:text-red-500"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    {t('common.delete')}
+                  </ContextMenuItem>
+                </ContextMenuContent>
+              </ContextMenu>
+            );
+          })}
         </div>
       )}
 
