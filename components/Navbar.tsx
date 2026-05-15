@@ -67,10 +67,10 @@ export default function Navbar() {
         pointerEvents: isHidden ? 'none' : 'auto'
       }}
       transition={{ duration: 0.3, ease: 'easeInOut' }}
-      className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-7xl px-4 flex flex-col items-end md:items-center pointer-events-none"
+      className="fixed top-6 right-4 md:left-1/2 md:-translate-x-1/2 z-50 md:w-full max-w-7xl px-4 flex flex-col items-end md:items-center pointer-events-none"
     >
       {/* Desktop & Mobile Main Pill */}
-      <div className="flex items-center gap-2 sm:gap-6 px-4 sm:px-6 py-2.5 rounded-full bg-bg-base shadow-extruded backdrop-blur-md bg-opacity-90 border border-white/10 relative z-50 pointer-events-auto md:mx-auto">
+      <div className="flex items-center gap-2 sm:gap-6 p-1 sm:px-6 sm:py-2.5 rounded-2xl sm:rounded-full bg-bg-base shadow-extruded backdrop-blur-md bg-opacity-90 border border-white/10 relative z-50 pointer-events-auto md:mx-auto">
         {/* Desktop Links (Hidden on mobile) */}
         <div className="hidden md:flex items-center gap-4">
           {/* Home Link */}
@@ -140,7 +140,7 @@ export default function Navbar() {
         {/* Mobile Hamburger Button (Hidden on desktop) */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden flex items-center justify-center w-10 h-10 rounded-2xl neumorphic-button p-0 shadow-none hover:shadow-none active:shadow-inset"
+          className="md:hidden flex items-center justify-center w-10 h-10 rounded-2xl p-0 shadow-none hover:shadow-none active:shadow-inset"
           aria-label="Toggle Menu"
         >
           <AnimatePresence mode="wait">
