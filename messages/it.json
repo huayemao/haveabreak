@@ -250,6 +250,8 @@
     "translatorPrefix": " / ",
     "translatorSuffix": " trad.",
     "pagePrefix": "PAGINA ",
-    "pageSuffix": ""
+    "pageSuffix": "",
+    "isbn_empty": "ISBN non può essere vuoto",
+    "cover_fetch_failed": "Impossibile recuperare la copertina. Prova ad inserire l'URL della copertina manualmente."
   }
 }

@@ -8,6 +8,7 @@ import { useCardStore } from '@/apps/card/store';
 import { fetchCoverByIsbn } from '@/apps/card/services';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Book as BookIcon, Hash, Bookmark } from 'lucide-react';
+import { toast } from 'sonner';
 
 
 
@@ -49,11 +50,18 @@ export default function AddBookModal() {
   const handleFetchCover = async () => {
     if (!isbn.trim()) return;
     setIsLoadingCover(true);
-    const coverUrl = await fetchCoverByIsbn(isbn);
-    if (coverUrl) {
-      setCover(coverUrl);
+    try {
+      const coverUrl = await fetchCoverByIsbn(isbn);
+      if (coverUrl) {
+        setCover(coverUrl);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(t(`card.${error.message}`));
+      }
+    } finally {
+      setIsLoadingCover(false);
     }
-    setIsLoadingCover(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

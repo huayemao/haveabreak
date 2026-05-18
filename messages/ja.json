@@ -251,6 +251,8 @@
     "translatorPrefix": " / ",
     "translatorSuffix": " 訳",
     "pagePrefix": "第",
-    "pageSuffix": "ページ"
+    "pageSuffix": "ページ",
+    "isbn_empty": "ISBNを入力してください",
+    "cover_fetch_failed": "表紙の取得に失敗しました。手動で表紙URLを入力してください。"
   }
 }

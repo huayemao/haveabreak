@@ -250,6 +250,8 @@
     "translatorPrefix": " / ",
     "translatorSuffix": " пер.",
     "pagePrefix": "СТР. ",
-    "pageSuffix": ""
+    "pageSuffix": "",
+    "isbn_empty": "ISBN не может быть пустым",
+    "cover_fetch_failed": "Не удалось загрузить обложку. Попробуйте ввести URL обложки вручную."
   }
 }

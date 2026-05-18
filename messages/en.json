@@ -251,6 +251,8 @@
     "translatorPrefix": " / ",
     "translatorSuffix": " trans.",
     "pagePrefix": "PAGE ",
-    "pageSuffix": ""
+    "pageSuffix": "",
+    "isbn_empty": "ISBN cannot be empty",
+    "cover_fetch_failed": "Failed to fetch cover. Please try entering the cover URL manually."
   }
 }

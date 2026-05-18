@@ -250,6 +250,8 @@
     "translatorPrefix": " / ",
     "translatorSuffix": " trad.",
     "pagePrefix": "PAGE ",
-    "pageSuffix": ""
+    "pageSuffix": "",
+    "isbn_empty": "ISBN ne peut pas être vide",
+    "cover_fetch_failed": "Échec de la récupération de la couverture. Veuillez essayer de saisir l'URL de la couverture manuellement."
   }
 }

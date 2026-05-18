@@ -1,25 +1,47 @@
 export const fetchCoverByIsbn = async (isbn: string): Promise<string> => {
   if (!isbn.trim()) {
-    return '';
+    throw new Error('isbn_empty');
   }
 
-  let coverUrl = '';
+  const trimmedIsbn = isbn.trim();
 
-  try {
-    const response = await fetch(`https://bookcover.longitood.com/bookcover?isbn=${isbn.trim()}`);
-    if (response.ok) {
-      const data = await response.json();
-      if (data.url) {
-        coverUrl = data.url;
-      }
-    }
-  } catch (error) {
-    console.error('Failed to fetch cover from old API:', error);
+  const oldApiPromise = new Promise<string>((resolve) => {
+    fetch(`https://bookcover.longitood.com/bookcover?isbn=${trimmedIsbn}`)
+      .then(async (response) => {
+        if (response.ok) {
+          const data = await response.json();
+          if (data.url) {
+            resolve(data.url);
+            return;
+          }
+        }
+        resolve('');
+      })
+      .catch(() => {
+        resolve('');
+      });
+  });
+
+  const newApiPromise = new Promise<string>((resolve) => {
+    const coverUrl = `https://static.book345.com/covers/s/${trimmedIsbn}.jpg`;
+    fetch(coverUrl)
+      .then((response) => {
+        if (response.ok) {
+          resolve(coverUrl);
+        } else {
+          resolve('');
+        }
+      })
+      .catch(() => {
+        resolve('');
+      });
+  });
+
+  const result = await Promise.race([oldApiPromise, newApiPromise]);
+
+  if (!result) {
+    throw new Error('cover_fetch_failed');
   }
 
-  if (!coverUrl) {
-    coverUrl = `https://static.book345.com/covers/s/${isbn.trim()}.jpg`;
-  }
-
-  return coverUrl;
+  return result;
 };

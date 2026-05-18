@@ -250,6 +250,8 @@
     "translatorPrefix": " / ",
     "translatorSuffix": " 옮김",
     "pagePrefix": "제",
-    "pageSuffix": "쪽"
+    "pageSuffix": "쪽",
+    "isbn_empty": "ISBN을 입력하세요",
+    "cover_fetch_failed": "표지를 가져올 수 없습니다. 표지 URL을 수동으로 입력해 주세요."
   }
 }

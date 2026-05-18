@@ -250,6 +250,8 @@
     "translatorPrefix": " / ",
     "translatorSuffix": " übers.",
     "pagePrefix": "SEITE ",
-    "pageSuffix": ""
+    "pageSuffix": "",
+    "isbn_empty": "ISBN darf nicht leer sein",
+    "cover_fetch_failed": "Bildabruf fehlgeschlagen. Bitte versuchen Sie, die Bild-URL manuell einzugeben."
   }
 }

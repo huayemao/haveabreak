@@ -251,6 +251,8 @@
     "translatorPrefix": " / ",
     "translatorSuffix": " 译",
     "pagePrefix": "第",
-    "pageSuffix": "页"
+    "pageSuffix": "页",
+    "isbn_empty": "ISBN不能为空",
+    "cover_fetch_failed": "获取封面失败，请尝试手动输入封面链接"
   }
 }

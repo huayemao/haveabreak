@@ -250,6 +250,8 @@
     "translatorPrefix": " / ",
     "translatorSuffix": " trad.",
     "pagePrefix": "PÁGINA ",
-    "pageSuffix": ""
+    "pageSuffix": "",
+    "isbn_empty": "ISBN não pode estar vazio",
+    "cover_fetch_failed": "Falha ao buscar a capa. Tente inserir a URL da capa manualmente."
   }
 }
