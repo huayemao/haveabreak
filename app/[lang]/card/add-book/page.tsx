@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'i18n/routing';
 import { Book } from '@/apps/card/types';
 import { useCardStore } from '@/apps/card/store';
 import { fetchCoverByIsbn } from '@/apps/card/services';

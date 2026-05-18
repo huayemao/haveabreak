@@ -1,11 +1,11 @@
 'use client';
 import { useTranslations } from 'next-intl';
-import { Link } from '@/i18n/routing';
 import { useFrameStore } from '@/apps/frame/store';
 import { MediaItem } from '@/apps/frame/types';
 import FullscreenPlayer from '@/apps/frame/components/FullscreenPlayer';
 import AddMediaModal from '@/apps/frame/components/AddMediaModal';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, Link } from 'i18n/routing';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useCallback, useMemo, Suspense } from 'react';
 import { Plus, Settings } from 'lucide-react';
 import NeumorphicBottomNav from '@/components/NeumorphicBottomNav';

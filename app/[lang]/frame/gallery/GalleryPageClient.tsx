@@ -1,7 +1,8 @@
 "use client";
 import { useFrameStore } from '@/apps/frame/store';
 import MediaGallery from '@/apps/frame/components/MediaGallery';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useSearchParams, } from 'next/navigation';
+import { useRouter, usePathname } from 'i18n/routing';
 import { useCallback } from 'react';
 import { MediaItem } from '@/apps/frame/types';
 
@@ -46,7 +47,7 @@ export default function GalleryPageClient() {
       const filteredIndex = filtered.findIndex(item => item.id === originalMedia.id);
       finalIndex = filteredIndex >= 0 ? filteredIndex : 0;
     }
-    
+
     updateUrl({
       player: 'true',
       paused: paused ? 'true' : null,
