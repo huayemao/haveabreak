@@ -48,17 +48,25 @@ export default function AddBookModal() {
   const fetchCoverByIsbn = async () => {
     if (!isbn.trim()) return;
     setIsLoadingCover(true);
+    let coverUrl = '';
     try {
       const response = await fetch(`https://bookcover.longitood.com/bookcover?isbn=${isbn.trim()}`);
-      const data = await response.json();
-      if (data.url) {
-        setCover(data.url);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.url) {
+          coverUrl = data.url;
+        }
       }
     } catch (error) {
-      console.error('Failed to fetch cover:', error);
-    } finally {
-      setIsLoadingCover(false);
+      console.error('Failed to fetch cover from old API:', error);
     }
+    
+    if (!coverUrl) {
+      coverUrl = `https://static.book345.com/covers/s/${isbn.trim()}.jpg`;
+    }
+    
+    setCover(coverUrl);
+    setIsLoadingCover(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
