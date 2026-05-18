@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Book } from '@/apps/card/types';
 import { useCardStore } from '@/apps/card/store';
+import { fetchCoverByIsbn } from '@/apps/card/services';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Book as BookIcon, Hash, Bookmark } from 'lucide-react';
 
@@ -45,27 +46,13 @@ export default function AddBookModal() {
     }
   }, [books, searchParams]);
 
-  const fetchCoverByIsbn = async () => {
+  const handleFetchCover = async () => {
     if (!isbn.trim()) return;
     setIsLoadingCover(true);
-    let coverUrl = '';
-    try {
-      const response = await fetch(`https://bookcover.longitood.com/bookcover?isbn=${isbn.trim()}`);
-      if (response.ok) {
-        const data = await response.json();
-        if (data.url) {
-          coverUrl = data.url;
-        }
-      }
-    } catch (error) {
-      console.error('Failed to fetch cover from old API:', error);
+    const coverUrl = await fetchCoverByIsbn(isbn);
+    if (coverUrl) {
+      setCover(coverUrl);
     }
-    
-    if (!coverUrl) {
-      coverUrl = `https://static.book345.com/covers/s/${isbn.trim()}.jpg`;
-    }
-    
-    setCover(coverUrl);
     setIsLoadingCover(false);
   };
 
@@ -141,7 +128,7 @@ export default function AddBookModal() {
               <label className="text-sm font-bold text-fg-muted">ISBN</label>
               <div className="flex gap-2">
                 <input value={isbn} onChange={(e) => setIsbn(e.target.value)} className="flex-1 w-full p-3 rounded-xl bg-bg-base shadow-inset outline-none text-fg-primary" />
-                <button type="button" onClick={fetchCoverByIsbn} disabled={isLoadingCover || !isbn.trim()} className="px-4 py-3 rounded-xl bg-accent text-white font-bold shadow-extruded-sm hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                <button type="button" onClick={handleFetchCover} disabled={isLoadingCover || !isbn.trim()} className="px-4 py-3 rounded-xl bg-accent text-white font-bold shadow-extruded-sm hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                   {isLoadingCover ? '...' : t('card.parseIsbn', { defaultValue: 'Parse' })}
                 </button>
               </div>
