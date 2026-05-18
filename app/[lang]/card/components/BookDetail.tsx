@@ -3,6 +3,7 @@
 import { useCardStore } from '@/apps/card/store';
 import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { ArrowLeft, Plus, Quote, Trash2, Edit3, MoreHorizontal } from 'lucide-react';
 import {
   DropdownMenu,
@@ -32,6 +33,7 @@ interface BookDetailProps {
 export default function BookDetail({ onAddQuote, onEditQuote, onDeleteQuote, onQuoteClick, bookId, onBack }: BookDetailProps) {
   const { books, quotes: allQuotes, selectedBookId, setView, deleteQuote, deleteBook, settings } = useCardStore();
   const t = useTranslations();
+  const router = useRouter();
 
   const currentBookId = bookId || selectedBookId;
   const book = books.find((b) => b.id === currentBookId);
@@ -111,6 +113,11 @@ export default function BookDetail({ onAddQuote, onEditQuote, onDeleteQuote, onQ
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-40">
+                <DropdownMenuItem onClick={() => router.push(`/card/add-book?bookId=${book.id}`)} className="gap-2">
+                  <Edit3 className="w-4 h-4" />
+                  {t('card.editBook', { defaultValue: 'Edit Book' })}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleDeleteBook} className="gap-2 text-red-500 focus:text-red-500">
                   <Trash2 className="w-4 h-4" />
                   {t('card.deleteBook', { defaultValue: 'Delete Book' })}

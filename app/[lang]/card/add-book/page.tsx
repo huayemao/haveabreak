@@ -2,22 +2,20 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Book } from '@/apps/card/types';
 import { useCardStore } from '@/apps/card/store';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Book as BookIcon, Hash, Bookmark } from 'lucide-react';
 
-interface EditBookParams {
-  bookId?: string;
-}
 
-export default function AddBookModal({ params }: { params: Promise<EditBookParams> }) {
+
+export default function AddBookModal() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const t = useTranslations();
   const { addBook, updateBook, books } = useCardStore();
 
-  const [resolvedParams, setResolvedParams] = useState<EditBookParams | null>(null);
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [translator, setTranslator] = useState('');
@@ -28,22 +26,24 @@ export default function AddBookModal({ params }: { params: Promise<EditBookParam
   const [editingBook, setEditingBook] = useState<Book | null>(null);
 
   useEffect(() => {
-    params.then(p => {
-      setResolvedParams(p);
-      if (p?.bookId) {
-        const book = books.find(b => b.id === p.bookId);
-        if (book) {
-          setEditingBook(book);
-          setTitle(book.title);
-          setAuthor(book.author);
-          setTranslator(book.translator || '');
-          setCover(book.cover || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=200');
-          setPublisher(book.publisher || '');
-          setIsbn(book.isbn || '');
-        }
+    const fetchBook = (bookId: string) => {
+      const book = books.find(b => b.id === bookId);
+      if (book) {
+        setEditingBook(book);
+        setTitle(book.title);
+        setAuthor(book.author);
+        setTranslator(book.translator || '');
+        setCover(book.cover || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=200');
+        setPublisher(book.publisher || '');
+        setIsbn(book.isbn || '');
       }
-    });
-  }, [params, books]);
+    };
+
+    const queryBookId = searchParams.get('bookId');
+    if (queryBookId) {
+      fetchBook(queryBookId);
+    }
+  }, [books, searchParams]);
 
   const fetchCoverByIsbn = async () => {
     if (!isbn.trim()) return;
