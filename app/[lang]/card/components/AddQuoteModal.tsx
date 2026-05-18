@@ -71,7 +71,7 @@ export default function AddQuoteModal({ isOpen, onClose, onAdd, bookId: initialB
           >
             <div className="flex items-center justify-between px-8 py-6 border-b border-white/10">
               <h2 className="text-xl font-bold text-fg-primary font-display flex items-center gap-2">
-                <QuoteIcon className="w-5 h-5 text-accent" />
+                <QuoteIcon className="w-5 h-5 text-accent rotate-180" />
                 {editingQuote ? t('card.editQuote', { defaultValue: 'Edit Quote' }) : t('card.addQuote', { defaultValue: 'Add New Quote' })}
               </h2>
               <button onClick={onClose} className="w-10 h-10 rounded-full neumorphic-button flex items-center justify-center">

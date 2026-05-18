@@ -130,7 +130,7 @@ export default function BookDetail({ onAddQuote, onEditQuote, onDeleteQuote, onQ
 
       <div className="space-y-6">
         <h3 className="text-xl font-bold text-fg-primary font-display flex items-center gap-2 px-2">
-          <Quote className="w-5 h-5 text-accent" />
+          <Quote className="w-5 h-5 text-accent rotate-180" />
           {t('card.quotes', { defaultValue: 'Quotes' })} ({quotes.length})
         </h3>
 

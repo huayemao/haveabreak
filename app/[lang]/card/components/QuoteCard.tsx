@@ -106,7 +106,7 @@ export default function QuoteCard({ card, isActive, onEdit, onDelete, isFullscre
         
         <div className={`relative ${isFullscreen ? 'overflow-y-auto custom-scrollbar max-h-[50vh] sm:max-h-[55vh]' : 'line-clamp-6'}`}>
           <span  className="absolute top-0 left-0 w-8 h-8   ">
-          <Quote className="text-accent/60" />
+          <Quote className="text-accent/60 rotate-180" />
           </span>
           <p className="text-lg sm:text-xl text-fg-primary leading-relaxed font-body pl-8 sm:pl-10">
             {content}
