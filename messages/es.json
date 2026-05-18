@@ -245,6 +245,11 @@
     "sortByPageNumberDesc": "Ordenar por número de página",
     "sortByPageNote": "Las citas sin número de página se ordenarán al final por fecha de creación.",
     "sort": "Ordenar",
-    "sortOrderChanged": "Orden de clasificación actualizado!"
+    "sortOrderChanged": "Orden de clasificación actualizado!",
+    "authorSuffix": "",
+    "translatorPrefix": " / ",
+    "translatorSuffix": " trad.",
+    "pagePrefix": "PÁGINA ",
+    "pageSuffix": ""
   }
 }

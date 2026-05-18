@@ -246,6 +246,11 @@
     "sortByPageNumberDesc": "ページ番号で並べる",
     "sortByPageNote": "ページ番号のない引用は作成時間で最後に並べられます。",
     "sort": "並べ替え",
-    "sortOrderChanged": "並べ替え順序が更新されました！"
+    "sortOrderChanged": "並べ替え順序が更新されました！",
+    "authorSuffix": " 著",
+    "translatorPrefix": " / ",
+    "translatorSuffix": " 訳",
+    "pagePrefix": "第",
+    "pageSuffix": "ページ"
   }
 }

@@ -245,6 +245,11 @@
     "sortByPageNumberDesc": "Сортировать по номеру страницы",
     "sortByPageNote": "Цитаты без номера страницы будут отсортированы последними по времени создания.",
     "sort": "Сортировать",
-    "sortOrderChanged": "Порядок сортировки обновлен!"
+    "sortOrderChanged": "Порядок сортировки обновлен!",
+    "authorSuffix": "",
+    "translatorPrefix": " / ",
+    "translatorSuffix": " пер.",
+    "pagePrefix": "СТР. ",
+    "pageSuffix": ""
   }
 }

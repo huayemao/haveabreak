@@ -246,6 +246,11 @@
     "sortByPageNumberDesc": "Sort by page number",
     "sortByPageNote": "Quotes without page numbers will be sorted last by creation time.",
     "sort": "Sort",
-    "sortOrderChanged": "Sort order updated!"
+    "sortOrderChanged": "Sort order updated!",
+    "authorSuffix": "",
+    "translatorPrefix": " / ",
+    "translatorSuffix": " trans.",
+    "pagePrefix": "PAGE ",
+    "pageSuffix": ""
   }
 }

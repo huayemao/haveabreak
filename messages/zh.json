@@ -246,6 +246,11 @@
     "sortByPageNumberDesc": "按页码排序",
     "sortByPageNote": "没有页码的语录将按创建时间排在最后。",
     "sort": "排序",
-    "sortOrderChanged": "排序方式已更新！"
+    "sortOrderChanged": "排序方式已更新！",
+    "authorSuffix": " 著",
+    "translatorPrefix": " / ",
+    "translatorSuffix": " 译",
+    "pagePrefix": "第",
+    "pageSuffix": "页"
   }
 }

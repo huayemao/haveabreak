@@ -24,7 +24,7 @@ interface QuoteCardProps {
 export default function QuoteCard({ card, isActive, onEdit, onDelete, isFullscreen = false, onClick }: QuoteCardProps) {
   const { content, book, chapter, page } = card;
   const router = useRouter();
-  const t = useTranslations('common');
+  const t = useTranslations();
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -71,7 +71,7 @@ export default function QuoteCard({ card, isActive, onEdit, onDelete, isFullscre
             {book.title}
           </h3>
           <p className="text-sm text-fg-muted font-medium">
-            {book.author} {book.translator ? ` / ${book.translator} 译` : ''}
+            {book.author}{t('card.authorSuffix')}{book.translator ? `${t('card.translatorPrefix')}${book.translator}${t('card.translatorSuffix')}` : ''}
           </p>
           <div className="mt-2 flex gap-2">
             <span className="text-[10px] px-2 py-0.5 rounded-full shadow-inset-sm bg-bg-base/50 text-fg-muted uppercase tracking-wider font-bold">
@@ -98,7 +98,7 @@ export default function QuoteCard({ card, isActive, onEdit, onDelete, isFullscre
             {page && (
               <div className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-accent/30" />
-                PAGE {page}
+                {t('card.pagePrefix')}{page}{t('card.pageSuffix')}
               </div>
             )}
           </div>
@@ -135,14 +135,14 @@ export default function QuoteCard({ card, isActive, onEdit, onDelete, isFullscre
         {onEdit && (
           <ContextMenuItem onClick={handleEdit} className="gap-2">
             <Edit3 className="w-4 h-4" />
-            {t('edit')}
+            {t('common.edit')}
           </ContextMenuItem>
         )}
         <ContextMenuSeparator />
         {onDelete && (
           <ContextMenuItem onClick={handleDelete} className="gap-2 text-red-500 focus:text-red-500">
             <Trash2 className="w-4 h-4" />
-            {t('delete')}
+            {t('common.delete')}
           </ContextMenuItem>
         )}
       </ContextMenuContent>
