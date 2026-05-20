@@ -76,7 +76,7 @@ export default function CollectionsPageClient({
       
       // However, if we use the Link component or router from routing.ts, 
       // we should be able to just push the subpath if we know the structure.
-      router.push(`/frame/collections/${id}`);
+      router.push(`/frame/collections/detail?id=${id}`);
     } else {
       router.push(`/frame/collections`);
     }

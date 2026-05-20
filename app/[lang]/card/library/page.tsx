@@ -54,7 +54,7 @@ export default function LibraryPage() {
             <ContextMenu key={book.id}>
               <ContextMenuTrigger>
                 <Link
-                  href={`/card/library/${book.id}`}
+                  href={`/card/library/detail?bookId=${book.id}`}
                   className="group relative bg-bg-base rounded-[32px] p-6 shadow-extruded hover:shadow-extruded-lg transition-all duration-300 cursor-pointer flex flex-col items-center"
                 >
                   <div className="relative w-32 h-44 mb-4 rounded-xl overflow-hidden shadow-extruded-sm group-hover:scale-105 transition-transform duration-500">

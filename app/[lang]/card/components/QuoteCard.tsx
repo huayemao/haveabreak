@@ -55,7 +55,7 @@ export default function QuoteCard({ card, isActive, onEdit, onDelete, isFullscre
       <div 
         onClick={(e) => {
           e.stopPropagation();
-          router.push(`/card/library/${book.id}`);
+          router.push(`/card/library/detail?bookId=${book.id}`);
         }}
         className="relative z-10 flex gap-4 mb-8 cursor-pointer group hover:scale-[1.02] transition-transform duration-300"
       >

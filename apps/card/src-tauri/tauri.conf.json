@@ -1,0 +1,32 @@
+{
+  "productName": "haveabreak-card",
+  "version": "0.1.0",
+  "identifier": "online.haveabreak.card",
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "haveabreak - 书摘查看器",
+        "width": 800,
+        "height": 600,
+        "url": "en/card"
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self' tauri: 'unsafe-inline' https: data:; img-src 'self' https: data:; media-src 'self' https: data:;"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  },
+  "build": {
+    "frontendDist": "../../../out"
+  }
+}

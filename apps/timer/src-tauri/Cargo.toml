@@ -1,0 +1,16 @@
+[package]
+name = "haveabreak-timer"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "haveabreak_timer_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[dependencies]
+tauri = { version = "2.0.0", features = [] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[build-dependencies]
+tauri-build = "2.0.0"

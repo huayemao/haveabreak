@@ -132,7 +132,7 @@ export default function CardPageClient() {
 
   const handleQuoteClick = useCallback((quoteId: string) => {
     if (isDragging) return;
-    router.push(`/card/quotes/${quoteId}`);
+    router.push(`/card/quotes/detail?quoteId=${quoteId}`);
   }, [router, isDragging]);
 
   if (quotesWithBooks.length === 0) {

@@ -1,7 +1,7 @@
 import CardLayoutClient from './CardLayoutClient';
 import { Suspense } from 'react';
 import { Metadata } from 'next';
-import { getMessages } from 'next-intl/server';
+import { getMessages, setRequestLocale } from 'next-intl/server';
 import { Locale } from '@/i18n';
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
@@ -30,10 +30,15 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 export default async function CardLayout({
   children,
   modals,
+  params
 }: {
   children: React.ReactNode;
   modals?: React.ReactNode;
+  params: Promise<{ lang: string }>
 }) {
+  const resolvedParams = await params;
+  setRequestLocale(resolvedParams.lang);
+
   return (
     <Suspense fallback={null}>
       <CardLayoutClient modals={modals}>

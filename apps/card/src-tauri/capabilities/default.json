@@ -1,0 +1,8 @@
+{
+  "identifier": "default",
+  "description": "Default capabilities for the card application",
+  "windows": ["main"],
+  "permissions": [
+    "core:default"
+  ]
+}

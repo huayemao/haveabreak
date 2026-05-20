@@ -7,7 +7,7 @@ import '../globals.css';
 import { routing } from '@/i18n/routing';
 import { Locale } from '@/i18n';
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
+import { getMessages, setRequestLocale } from 'next-intl/server';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import Navbar from '@/components/Navbar';
 import LanguageBanner from '@/components/LanguageBanner';
@@ -90,11 +90,13 @@ export default async function RootLayout({
   const resolvedParams = await params;
   const { lang } = resolvedParams;
 
+  setRequestLocale(lang);
+
   if (!locales.includes(lang as any)) {
     notFound();
   }
 
-  const messages = await getMessages();
+  const messages = await getMessages({ locale: lang });
 
   return (
     <html lang={lang} className={`${plusJakartaSans.variable} ${dmSans.variable}`}>
@@ -103,6 +105,11 @@ export default async function RootLayout({
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/satouriko/LxgwWenKai_Webfonts@v1.101/dist/LXGWWenKai-Bold.css" />
         <link rel="preconnect" href="https://fonts.loli.net" />
         <link href="https://fonts.loli.net/css2?family=Noto+Serif+SC:wght@200..900&display=swap" rel="stylesheet" />
+        <script dangerouslySetInnerHTML={{__html: `
+          if (typeof window !== 'undefined' && (window.__TAURI_INTERNALS__ || window.__TAURI__)) {
+            document.documentElement.classList.add('is-tauri');
+          }
+        `}} />
       </head>
       <body suppressHydrationWarning className="bg-[#E0E5EC] text-slate-900 antialiased">
         <SerwistProvider swUrl="/serwist/sw.js">

@@ -4,12 +4,15 @@ import { withSerwist } from '@serwist/turbopack';
 
 const withNextIntl = createNextIntlPlugin();
 
+const isTauriBuild = process.env.TAURI_BUILD === 'true';
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   typescript: {
     ignoreBuildErrors: false,
   },
   images: {
+    unoptimized: isTauriBuild ? true : undefined,
     remotePatterns: [
       {
         protocol: 'https',
@@ -31,7 +34,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  output: 'standalone',
+  output: isTauriBuild ? 'export' : 'standalone',
+  trailingSlash: isTauriBuild ? true : undefined,
+  pageExtensions: isTauriBuild ? ['tsx', 'jsx'] : undefined,
   transpilePackages: ['motion'],
   webpack: (config, { dev }) => {
     if (dev && process.env.DISABLE_HMR === 'true') {
@@ -43,4 +48,6 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withSerwist(withNextIntl(nextConfig));
+export default isTauriBuild
+  ? withNextIntl(nextConfig)
+  : withSerwist(withNextIntl(nextConfig));
