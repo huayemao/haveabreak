@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "eslint .",
     "clean": "next clean",
-    "tauri": "tauri"
+    "tauri": "node tauri-router.js",
+    "tauri:card": "export TAURI_APP=card && cd apps/card && npx tauri",
+    "tauri:frame": "export TAURI_APP=frame && cd apps/frame && npx tauri",
+    "tauri:timer": "export TAURI_APP=timer && cd apps/timer && npx tauri"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",

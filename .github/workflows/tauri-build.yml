@@ -139,17 +139,23 @@ jobs:
       - name: Install Dependencies
         run: pnpm install
 
+      - name: Install Linux System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
       - name: Setup Java JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: "zulu"
           java-version: "17"
 
-      - name: Setup Android SDK & NDK
-        uses: android-actions/setup-android@v3
-        with:
-          # Let the action install a predictable NDK version
-          ndk-version: "26.3.11579737" 
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4
+        
+      - name: install NDK
+        run: sdkmanager "ndk;28.2.13676358"
+    
 
       - name: Setup Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -157,25 +163,26 @@ jobs:
           toolchain: stable
           targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
 
-      - name: Cache Cargo Dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            apps/card/src-tauri/target/
-            apps/frame/src-tauri/target/
-            apps/timer/src-tauri/target/
-          key: ${{ runner.os }}-cargo-android-${{ hashFiles('**/Cargo.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-android-
+      # - name: Cache Cargo Dependencies
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: |
+      #       ~/.cargo/bin/
+      #       ~/.cargo/registry/index/
+      #       ~/.cargo/registry/cache/
+      #       ~/.cargo/git/db/
+      #       apps/card/src-tauri/target/
+      #       apps/frame/src-tauri/target/
+      #       apps/timer/src-tauri/target/
+      #     key: ${{ runner.os }}-cargo-android-${{ hashFiles('**/Cargo.toml') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-cargo-android-
 
       - name: Temporarily Hide Dynamic Folders for Static Export
+        shell: pwsh
         run: |
-          mv app/api app/_api || true
-          mv app/\[lang\]/card/@modals app/\[lang\]/card/_modals || true
+          Rename-Item app/api _api
+          Rename-Item -LiteralPath "app/[lang]/card/@modals" -NewName "_modals"
 
       - name: Build Next.js Static Export
         run: pnpm run build
@@ -186,40 +193,31 @@ jobs:
       # Note: We dropped 'tauri android init' as it should already be configured in your source control.
       # If your gen/android folders are not committed, keep init but run it cleanly.
       - name: Build Card Application (Android)
+        working-directory: apps/card/src-tauri
         run: |
-          rm -rf ~/.tauri/* || true
-          rm -f /tmp/*-server-addr || true
-          cd apps/card
-          npx tauri android init || true
-          chmod +x src-tauri/gen/android/gradlew
-          npx tauri android build 
+          pnpm tauri:card android init
+          pnpm tauri:card android build
+          ./gen/android/gradlew --stop || true
         env:
-          NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/26.3.11579737
-          ANDROID_NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/26.3.11579737
+          NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/28.2.13676358
 
       - name: Build Frame Application (Android)
+        working-directory: apps/frame/src-tauri
         run: |
-          rm -rf ~/.tauri/* || true
-          rm -f /tmp/*-server-addr || true
-          cd apps/frame
-          npx tauri android init || true
-          chmod +x src-tauri/gen/android/gradlew
-          npx tauri android build 
+          pnpm tauri:frame android init
+          pnpm tauri:frame android build
+          ./gen/android/gradlew --stop || true
         env:
-          NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/26.3.11579737
-          ANDROID_NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/26.3.11579737
+          NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/28.2.13676358
 
       - name: Build Timer Application (Android)
+        working-directory: apps/timer/src-tauri
         run: |
-          rm -rf ~/.tauri/* || true
-          rm -f /tmp/*-server-addr || true
-          cd apps/timer
-          npx tauri android init || true
-          chmod +x src-tauri/gen/android/gradlew
-          npx tauri android build 
+          pnpm tauri:timer android init
+          pnpm tauri:timer android build
+          ./gen/android/gradlew --stop || true
         env:
-          NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/26.3.11579737
-          ANDROID_NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/26.3.11579737
+          NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/28.2.13676358
 
       - name: Upload Android Artifacts
         uses: actions/upload-artifact@v4
