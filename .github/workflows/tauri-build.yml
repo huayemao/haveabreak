@@ -106,8 +106,12 @@ jobs:
             apps/timer/src-tauri/target/release/bundle/nsis/*.exe
 
   build-android:
-    name: Build Android App
+    name: Build Android App (${{ matrix.app }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [card, frame, timer]
+      fail-fast: false
 
     steps:
       - name: Checkout Repository
@@ -152,31 +156,15 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4
-        
+
       - name: install NDK
         run: sdkmanager "ndk;28.2.13676358"
-    
 
       - name: Setup Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
           targets: aarch64-linux-android,armv7-linux-androideabi
-
-      # - name: Cache Cargo Dependencies
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: |
-      #       ~/.cargo/bin/
-      #       ~/.cargo/registry/index/
-      #       ~/.cargo/registry/cache/
-      #       ~/.cargo/git/db/
-      #       apps/card/src-tauri/target/
-      #       apps/frame/src-tauri/target/
-      #       apps/timer/src-tauri/target/
-      #     key: ${{ runner.os }}-cargo-android-${{ hashFiles('**/Cargo.toml') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-cargo-android-
 
       - name: Temporarily Hide Dynamic Folders for Static Export
         shell: pwsh
@@ -190,28 +178,8 @@ jobs:
           TAURI_BUILD: "true"
           NEXT_TELEMETRY_DISABLED: 1
 
-      # Note: We dropped 'tauri android init' as it should already be configured in your source control.
-      # If your gen/android folders are not committed, keep init but run it cleanly.
-      - name: Build Card Application (Android)
-        working-directory: apps/card/src-tauri
-        run: |
-          pnpm tauri android init
-          pnpm tauri android build
-          ./gen/android/gradlew --stop || true
-        env:
-          NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/28.2.13676358
-
-      - name: Build Frame Application (Android)
-        working-directory: apps/frame/src-tauri
-        run: |
-          pnpm tauri android init
-          pnpm tauri android build
-          ./gen/android/gradlew --stop || true
-        env:
-          NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/28.2.13676358
-
-      - name: Build Timer Application (Android)
-        working-directory: apps/timer/src-tauri
+      - name: Build Application (Android)
+        working-directory: apps/${{ matrix.app }}/src-tauri
         run: |
           pnpm tauri android init
           pnpm tauri android build
@@ -222,8 +190,5 @@ jobs:
       - name: Upload Android Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: android-apks
-          path: |
-            apps/card/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
-            apps/frame/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
-            apps/timer/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
+          name: android-apk-${{ matrix.app }}
+          path: apps/${{ matrix.app }}/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
