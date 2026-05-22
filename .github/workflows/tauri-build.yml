@@ -63,8 +63,8 @@ jobs:
       - name: Temporarily Hide Dynamic Folders for Static Export
         shell: pwsh
         run: |
-          Rename-Item app/api _api
-          Rename-Item -LiteralPath "app/[lang]/card/@modals" -NewName "_modals"
+          Rename-Item apps/web/app/api _api
+          Rename-Item -LiteralPath "apps/web/app/[lang]/card/@modals" -NewName "_modals"
 
       - name: Build Next.js Static Export
         run: pnpm run build
@@ -181,8 +181,8 @@ jobs:
       - name: Temporarily Hide Dynamic Folders for Static Export
         shell: pwsh
         run: |
-          Rename-Item app/api _api
-          Rename-Item -LiteralPath "app/[lang]/card/@modals" -NewName "_modals"
+          Rename-Item apps/web/app/api _api
+          Rename-Item -LiteralPath "apps/web/app/[lang]/card/@modals" -NewName "_modals"
 
       - name: Build Next.js Static Export
         run: pnpm run build

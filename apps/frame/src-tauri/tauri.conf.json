@@ -27,6 +27,6 @@
     ]
   },
   "build": {
-    "frontendDist": "../../../out"
+    "frontendDist": "../../web/out"
   }
 }

@@ -27,6 +27,12 @@
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@/apps/card/*": [
+        "../card/*"
+      ],
+      "@/apps/frame/*": [
+        "../frame/*"
       ]
     }
   },
@@ -35,7 +41,11 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
+    ".next/dev/types/**/*.ts",
+    "../card/**/*.ts",
+    "../card/**/*.tsx",
+    "../frame/**/*.ts",
+    "../frame/**/*.tsx"
   ],
   "exclude": [
     "node_modules",
