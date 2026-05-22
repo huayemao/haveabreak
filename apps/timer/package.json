@@ -1,5 +1,8 @@
 {
   "name": "@haveabreak/timer",
   "version": "0.1.0",
-  "private": true
+  "private": true,
+  "scripts": {
+    "tauri": "tauri"
+  }
 }

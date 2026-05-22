@@ -161,7 +161,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
-          targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
+          targets: aarch64-linux-android,armv7-linux-androideabi
 
       # - name: Cache Cargo Dependencies
       #   uses: actions/cache@v4
@@ -195,8 +195,8 @@ jobs:
       - name: Build Card Application (Android)
         working-directory: apps/card/src-tauri
         run: |
-          pnpm tauri:card android init
-          pnpm tauri:card android build
+          pnpm tauri android init
+          pnpm tauri android build
           ./gen/android/gradlew --stop || true
         env:
           NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/28.2.13676358
@@ -204,8 +204,8 @@ jobs:
       - name: Build Frame Application (Android)
         working-directory: apps/frame/src-tauri
         run: |
-          pnpm tauri:frame android init
-          pnpm tauri:frame android build
+          pnpm tauri android init
+          pnpm tauri android build
           ./gen/android/gradlew --stop || true
         env:
           NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/28.2.13676358
@@ -213,8 +213,8 @@ jobs:
       - name: Build Timer Application (Android)
         working-directory: apps/timer/src-tauri
         run: |
-          pnpm tauri:timer android init
-          pnpm tauri:timer android build
+          pnpm tauri android init
+          pnpm tauri android build
           ./gen/android/gradlew --stop || true
         env:
           NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/28.2.13676358
@@ -224,6 +224,6 @@ jobs:
         with:
           name: android-apks
           path: |
-            apps/card/src-tauri/gen/android/app/build/outputs/apk/release/*.apk
-            apps/frame/src-tauri/gen/android/app/build/outputs/apk/release/*.apk
-            apps/timer/src-tauri/gen/android/app/build/outputs/apk/release/*.apk
+            apps/card/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
+            apps/frame/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
+            apps/timer/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
