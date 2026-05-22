@@ -74,7 +74,7 @@ export default function HomePage() {
 
   return (
     <main className="flex-1 relative overflow-x-hidden flex flex-col">
-      <div className="flex-1 flex flex-col p-8 pt-20 sm:pt-28">
+      <div className="flex-1 flex flex-col p-8">
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

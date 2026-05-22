@@ -160,7 +160,7 @@ export default function TimerApp() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex-1 flex flex-col p-8 pt-20 sm:pt-28"
+            className="flex-1 flex flex-col p-8"
           >
             <div className="flex-1 flex flex-col items-center justify-center z-10 relative">
               <div className="w-full max-w-md mx-auto flex flex-col items-center text-center space-y-12">

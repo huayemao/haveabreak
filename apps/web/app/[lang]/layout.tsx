@@ -15,6 +15,7 @@ import { NavbarProvider } from '@/context/NavbarContext';
 import LayoutContent from '@/components/LayoutContent';
 import { notFound } from 'next/navigation';
 import { Toaster } from '@/components/ui/sonner';
+import { isTauri } from '@/lib/utils';
 
 const { locales } = routing;
 
@@ -105,7 +106,8 @@ export default async function RootLayout({
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/satouriko/LxgwWenKai_Webfonts@v1.101/dist/LXGWWenKai-Bold.css" />
         <link rel="preconnect" href="https://fonts.loli.net" />
         <link href="https://fonts.loli.net/css2?family=Noto+Serif+SC:wght@200..900&display=swap" rel="stylesheet" />
-        <script dangerouslySetInnerHTML={{__html: `
+        <script dangerouslySetInnerHTML={{
+          __html: `
           if (typeof window !== 'undefined' && (window.__TAURI_INTERNALS__ || window.__TAURI__)) {
             document.documentElement.classList.add('is-tauri');
           }
@@ -114,11 +116,15 @@ export default async function RootLayout({
       <body suppressHydrationWarning className="bg-[#E0E5EC] text-slate-900 antialiased">
         <SerwistProvider swUrl="/serwist/sw.js">
           <NextIntlClientProvider messages={messages}>
-            <ServiceWorkerUpdate />
+            {!isTauri && (
+              <ServiceWorkerUpdate />
+            )}
             <NavbarProvider>
               <LanguageBanner />
-              <Navbar />
-              <LayoutContent>
+              {!isTauri && (
+                <Navbar />
+              )}
+              <LayoutContent className={isTauri ? "flex-1" : "pt-12 sm:pt-28"}>
                 {children}
               </LayoutContent>
             </NavbarProvider>
