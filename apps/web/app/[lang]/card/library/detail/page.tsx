@@ -1,6 +1,7 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'i18n/routing';
 import BookDetail from '../../components/BookDetail';
 import { Quote as QuoteType } from '@/apps/card/types';
 import { useCardStore } from '@/apps/card/store';

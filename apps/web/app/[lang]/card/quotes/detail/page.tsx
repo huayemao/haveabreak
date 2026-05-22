@@ -1,6 +1,7 @@
 'use client';
 
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname } from 'i18n/routing';
 import { useCardStore, selectQuotesWithBooks } from '@/apps/card/store';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, ChevronUp, ChevronDown, Maximize2, Minimize2 } from 'lucide-react';
