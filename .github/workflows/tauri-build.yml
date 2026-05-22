@@ -181,14 +181,31 @@ jobs:
       - name: Build Application (Android)
         working-directory: apps/${{ matrix.app }}/src-tauri
         run: |
+          pnpm install
           pnpm tauri android init
+          git checkout .
+          pushd gen/android
+          echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" > keystore.properties
+          echo "password=${{ secrets.ANDROID_KEY_PASSWORD }}" >> keystore.properties
+          base64 -d <<< "${{ secrets.ANDROID_KEY_BASE64 }}" > $RUNNER_TEMP/keystore.jks
+          echo "storeFile=$RUNNER_TEMP/keystore.jks" >> keystore.properties
+          popd
           pnpm tauri android build
           ./gen/android/gradlew --stop || true
         env:
           NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/28.2.13676358
 
+      # - name: Sign APK
+      #   working-directory: apps/${{ matrix.app }}/src-tauri
+      #   run: |
+      #     apk_path=gen/android/app/build/outputs/apk/universal/release
+      #     apk_name=$(basename ${apk_path}/*.apk)
+      #     pnpm tauri signer sign ${apk_path}/${apk_name}
+
       - name: Upload Android Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: android-apk-${{ matrix.app }}
-          path: apps/${{ matrix.app }}/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
+          path: |
+            apps/${{ matrix.app }}/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
+            apps/${{ matrix.app }}/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.sig
