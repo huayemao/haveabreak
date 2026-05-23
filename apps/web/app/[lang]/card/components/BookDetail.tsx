@@ -20,6 +20,7 @@ import {
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
 import { Quote as QuoteType } from '@/apps/card/types';
+import QuoteMetadata from './QuoteMetadata';
 
 interface BookDetailProps {
   onAddQuote: () => void;
@@ -149,10 +150,7 @@ export default function BookDetail({ onAddQuote, onEditQuote, onDeleteQuote, onQ
                   >
                     <p className="text-fg-primary leading-relaxed mb-4 text-left text-balance group-hover:text-accent transition-colors font-body">&quot;{quote.content}&quot;</p>
                     <div className="flex items-center justify-between">
-                      <div className="flex gap-4 text-[10px] font-bold text-accent/70 uppercase tracking-widest">
-                        {quote.chapter && <span>{quote.chapter}</span>}
-                        {quote.page && <span>PAGE {quote.page}</span>}
-                      </div>
+                      <QuoteMetadata chapter={quote.chapter} page={quote.page} />
                     </div>
                   </div>
                 </ContextMenuTrigger>

@@ -11,6 +11,7 @@ import {
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
 import { Edit3, Trash2, Quote } from 'lucide-react';
+import QuoteMetadata from './QuoteMetadata';
 
 interface QuoteCardProps {
   card: QuoteWithBook;
@@ -88,19 +89,8 @@ export default function QuoteCard({ card, isActive, onEdit, onDelete, isFullscre
       >
         {/* Extended Metadata - Now at top */}
         {(chapter || page) && (
-          <div className="mb-4 flex flex-wrap gap-4 text-[10px] font-bold text-accent/70 uppercase tracking-widest font-display">
-            {chapter && (
-              <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-accent/30" />
-                {chapter}
-              </div>
-            )}
-            {page && (
-              <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-accent/30" />
-                {t('card.pagePrefix')}{page}{t('card.pageSuffix')}
-              </div>
-            )}
+          <div className="mb-4">
+            <QuoteMetadata chapter={chapter} page={page} />
           </div>
         )}
         
