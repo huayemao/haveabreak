@@ -7,9 +7,8 @@
       {
         "label": "main",
         "title": "haveabreak - 书摘查看器",
-        "width": 800,
-        "height": 600,
-        "fullscreen": true,
+        "width": 900,
+        "height": 680,
         "url": "en/card"
       }
     ],
