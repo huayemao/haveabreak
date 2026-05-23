@@ -85,7 +85,7 @@ export default function QuoteCard({ card, isActive, onEdit, onDelete, isFullscre
       {/* Quote Content */}
       <div 
         className="relative z-10 flex-1 flex flex-col overflow-hidden"
-        onPointerDown={(e) => e.stopPropagation()}
+        // onPointerDown={(e) => e.stopPropagation()}
       >
         {/* Extended Metadata - Now at top */}
         {(chapter || page) && (
