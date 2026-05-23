@@ -20,8 +20,11 @@ export default function NeumorphicBottomNav({ items }: NeumorphicBottomNavProps)
   const pathname = usePathname();
 
   const isActive = (item: NavItem) => {
+    const normalizePath = (p: string) => p.replace(/\/$/, '') || '/';
     const checkPath = item.activePath || item.href;
-    return pathname === checkPath || pathname.endsWith(checkPath);
+    const normalizedPathname = normalizePath(pathname);
+    const normalizedCheckPath = normalizePath(checkPath);
+    return normalizedPathname === normalizedCheckPath || normalizedPathname.endsWith(normalizedCheckPath);
   };
 
   return (
