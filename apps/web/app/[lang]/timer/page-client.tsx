@@ -32,7 +32,7 @@ export default function TimerApp() {
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const timerTips = t.raw('timerTips') as string[];
+  const timerTips = t.raw('timer.timerTips') as string[];
   const enabledPresetTips = timerTips.filter(tip => !settings.disabledPresetTips.includes(tip));
   const allTips = [...enabledPresetTips, ...settings.customTips];
   

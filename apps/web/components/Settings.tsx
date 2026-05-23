@@ -73,14 +73,14 @@ export default function Settings({
             className="neumorphic-button mt-4 px-6 py-3 text-base font-medium"
             onClick={() => setOpen(true)}
           >
-            {t('settingsBtn')}
+            {t('common.settingsBtn')}
           </button>
         </DialogTrigger>
         <DialogContent className="neumorphic-dialog border-none bg-transparent p-0 overflow-hidden max-w-lg md:max-w-xl lg:max-w-2xl max-h-[90vh]">
           <div className="p-6 space-y-6 overflow-y-auto max-h-[calc(90vh-2rem)]">
             <DialogHeader className="text-center pb-4">
               <DialogTitle className="text-2xl font-bold text-fg-primary">
-                {t('settingsTitle')}
+                {t('common.settingsTitle')}
               </DialogTitle>
             </DialogHeader>
 
@@ -111,7 +111,7 @@ export default function Settings({
               <div className="space-y-2">
                 <h4 className="font-semibold text-fg-muted text-sm">{t('presetTips')}</h4>
                 <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
-                  {(t.raw('timerTips') as string[]).map((tip, index) => (
+                  {(t.raw('timer.timerTips') as string[]).map((tip, index) => (
                     <div
                       key={index}
                       className={`flex items-center justify-between p-3 rounded-xl transition-all duration-300 ${

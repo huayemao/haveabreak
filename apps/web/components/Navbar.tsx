@@ -117,12 +117,12 @@ export default function Navbar() {
             <DropdownMenuTrigger >
               <button className="flex items-center gap-2 px-4 py-2 rounded-2xl text-fg-muted hover:text-fg-primary hover:scale-105 transition-all duration-300">
                 <Settings className="w-5 h-5" />
-                <span className="font-display">{t('settingsTitle', { defaultValue: 'Settings' })}</span>
+                <span className="font-display">{t('common.settingsTitle', { defaultValue: 'Settings' })}</span>
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-48 bg-bg-base rounded-[24px] shadow-[9px_9px_16px_rgb(163,177,198,0.6),-9px_-9px_16px_rgba(255,255,255,0.5)] border-none p-3">
               <DropdownMenuGroup className="space-y-1">
-                <DropdownMenuLabel className="font-display text-fg-primary px-3 py-2">{t('settingsTitle', { defaultValue: 'Settings' })}</DropdownMenuLabel>
+                <DropdownMenuLabel className="font-display text-fg-primary px-3 py-2">{t('common.settingsTitle', { defaultValue: 'Settings' })}</DropdownMenuLabel>
                 <div className="h-px bg-fg-muted opacity-20 my-1" />
                 <DropdownMenuItem className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-fg-muted hover:text-fg-primary hover:shadow-[inset_2px_2px_4px_rgb(163,177,198,0.4),inset_-2px_-2px_4px_rgba(255,255,255,0.4)] bg-bg-base transition-all duration-200">
                   <Info className="w-4 h-4" />
@@ -187,7 +187,7 @@ export default function Navbar() {
               <div className="h-px bg-fg-muted opacity-10 my-2" />
 
               <div className="flex justify-between items-center px-2">
-                <span className="text-sm font-medium text-fg-muted">{t('settingsTitle')}</span>
+                <span className="text-sm font-medium text-fg-muted">{t('common.settingsTitle')}</span>
                 <LanguageSwitcher />
               </div>
               <div className="flex justify-end items-center gap-2">
