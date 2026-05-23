@@ -30,14 +30,14 @@ export default function Settings({
       const updatedTips = [...customTips, newTip.trim()];
       onTipsChange(updatedTips);
       setNewTip('');
-      toast.success(t('tipAdded'));
+      toast.success(t('timer.tipAdded'));
     }
   };
 
   const handleDeleteCustomTip = (tip: string) => {
     const updatedTips = customTips.filter(t => t !== tip);
     onTipsChange(updatedTips);
-    toast.success(t('tipDeleted'));
+    toast.success(t('timer.tipDeleted'));
   };
 
   const togglePresetTip = (tip: string) => {
@@ -46,14 +46,14 @@ export default function Settings({
       : [...disabledPresetTips, tip];
     onDisabledPresetTipsChange(updatedDisabled);
     const isDisabled = updatedDisabled.includes(tip);
-    toast.success(isDisabled ? t('presetTipDisabled') : t('presetTipEnabled'));
+    toast.success(isDisabled ? t('timer.presetTipDisabled') : t('timer.presetTipEnabled'));
   };
 
   const handleIntervalChange = () => {
     if (localInterval >= 3 && localInterval <= 60) {
       setTipIntervalSeconds(localInterval);
-      toast.success(t('settingsApplied'), {
-        description: t('tipIntervalDescription', { seconds: localInterval }),
+      toast.success(t('timer.settingsApplied'), {
+        description: t('timer.tipIntervalDescription', { seconds: localInterval }),
       });
       setOpen(false);
     }
@@ -86,7 +86,7 @@ export default function Settings({
 
             {/* Tips Section */}
             <div className="space-y-4">
-              <h3 className="font-bold text-fg-primary text-lg">{t('tipsSection')}</h3>
+              <h3 className="font-bold text-fg-primary text-lg">{t('timer.tipsSection')}</h3>
 
               {/* Add new custom tip */}
               <div className="flex gap-3">
@@ -95,7 +95,7 @@ export default function Settings({
                   value={newTip}
                   onChange={(e) => setNewTip(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder={t('addNewTip')}
+                  placeholder={t('timer.addNewTip')}
                   maxLength={100}
                   className="neumorphic-input flex-1 text-fg-primary placeholder-fg-muted"
                 />
@@ -103,13 +103,13 @@ export default function Settings({
                   onClick={handleAddTip}
                   className="neumorphic-button-primary px-6 py-2 font-medium text-white min-w-[60px]"
                 >
-                  {t('addBtn')}
+                  {t('timer.addBtn')}
                 </button>
               </div>
 
               {/* Preset tips */}
               <div className="space-y-2">
-                <h4 className="font-semibold text-fg-muted text-sm">{t('presetTips')}</h4>
+                <h4 className="font-semibold text-fg-muted text-sm">{t('timer.presetTips')}</h4>
                 <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
                   {(t.raw('timer.timerTips') as string[]).map((tip, index) => (
                     <div
@@ -127,7 +127,7 @@ export default function Settings({
                         onClick={() => togglePresetTip(tip)}
                         className="neumorphic-button text-xs px-3 py-1"
                       >
-                        {disabledPresetTips.includes(tip) ? (t('enable') || 'Enable') : (t('disable') || 'Disable')}
+                        {disabledPresetTips.includes(tip) ? (t('common.enable') || 'Enable') : (t('common.disable') || 'Disable')}
                       </button>
                     </div>
                   ))}
@@ -137,7 +137,7 @@ export default function Settings({
               {/* Custom tips */}
               {customTips.length > 0 ? (
                 <div className="space-y-2">
-                  <h4 className="font-semibold text-fg-muted text-sm">{t('customTips')}</h4>
+                  <h4 className="font-semibold text-fg-muted text-sm">{t('timer.customTips')}</h4>
                   <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
                     {customTips.map((tip, index) => (
                       <div
@@ -161,14 +161,14 @@ export default function Settings({
                 </div>
               ) : (
                 <p className="text-fg-muted text-sm text-center py-2">
-                  {t('noCustomTips')}
+                  {t('timer.noCustomTips')}
                 </p>
               )}
             </div>
 
             {/* Tip Interval Settings */}
             <div className="border-t border-fg-muted/20 pt-4 space-y-4">
-              <h3 className="font-bold text-fg-primary text-lg">{t('tipIntervalSection')}</h3>
+              <h3 className="font-bold text-fg-primary text-lg">{t('timer.tipIntervalSection')}</h3>
               <div className="flex items-center gap-4">
                 <input
                   type="range"
@@ -189,10 +189,10 @@ export default function Settings({
                 onClick={handleIntervalChange}
                 className="neumorphic-button-primary px-6 py-2 font-medium text-white w-full"
               >
-                {t('applySettings')}
+                {t('timer.applySettings')}
               </button>
               <p className="text-xs text-fg-muted text-center">
-                {t('tipIntervalDescription', { seconds: localInterval })}
+                {t('timer.tipIntervalDescription', { seconds: localInterval })}
               </p>
             </div>
 
