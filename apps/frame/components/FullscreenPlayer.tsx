@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'i18n/routing';
 import { useSearchParams } from 'next/navigation';
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { MediaItem, FrameSettings } from '../types';
+import { getCurrentWindow } from '@tauri-apps/api/window';
 
 interface FullscreenPlayerProps {
   media: MediaItem[];
@@ -72,19 +73,33 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
   useEffect(() => {
     const enterFullscreen = async () => {
       try {
-        if (!document.fullscreenElement) {
-          await document.documentElement.requestFullscreen();
+        const appWindow = getCurrentWindow();
+        await appWindow.setFullscreen(true);
+      } catch (tauriError) {
+        console.warn('Tauri fullscreen failed, falling back to Web API:', tauriError);
+        try {
+          if (!document.fullscreenElement) {
+            await document.documentElement.requestFullscreen();
+          }
+        } catch (webError) {
+          console.warn('Web fullscreen also failed:', webError);
         }
-      } catch (error) {
-        console.warn('Fullscreen not available:', error);
       }
     };
 
     enterFullscreen();
 
-    const handleFullscreenChange = () => {
+    const handleFullscreenChange = async () => {
       if (!document.fullscreenElement) {
-        onExit();
+        try {
+          const appWindow = getCurrentWindow();
+          const isFullscreen = await appWindow.isFullscreen();
+          if (!isFullscreen) {
+            onExit();
+          }
+        } catch {
+          onExit();
+        }
       }
     };
 

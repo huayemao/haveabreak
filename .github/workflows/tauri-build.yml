@@ -184,6 +184,10 @@ jobs:
           pnpm install
           pnpm tauri android init
           git checkout .
+          if [ -d "icons/android" ]; then
+            cp -r icons/android/* gen/android/app/src/main/res/
+            echo "Custom Android icons copied successfully"
+          fi
           pushd gen/android
           echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" > keystore.properties
           echo "password=${{ secrets.ANDROID_KEY_PASSWORD }}" >> keystore.properties

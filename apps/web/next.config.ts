@@ -8,6 +8,9 @@ const isTauriBuild = process.env.TAURI_BUILD === 'true';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  env: {
+    NEXT_PUBLIC_TAURI_BUILD: isTauriBuild ? 'true' : '',
+  },
   typescript: {
     ignoreBuildErrors: false,
   },

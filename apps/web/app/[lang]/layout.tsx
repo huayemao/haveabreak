@@ -15,7 +15,7 @@ import { NavbarProvider } from '@/context/NavbarContext';
 import LayoutContent from '@/components/LayoutContent';
 import { notFound } from 'next/navigation';
 import { Toaster } from '@/components/ui/sonner';
-import { isTauri } from '@/lib/utils';
+const isTauriBuild = process.env.NEXT_PUBLIC_TAURI_BUILD === 'true';
 
 const { locales } = routing;
 
@@ -116,15 +116,15 @@ export default async function RootLayout({
       <body suppressHydrationWarning className="bg-[#E0E5EC] text-slate-900 antialiased">
         <SerwistProvider swUrl="/serwist/sw.js">
           <NextIntlClientProvider messages={messages}>
-            {!isTauri && (
+            {!isTauriBuild && (
               <ServiceWorkerUpdate />
             )}
             <NavbarProvider>
               <LanguageBanner />
-              {!isTauri && (
+              {!isTauriBuild && (
                 <Navbar />
               )}
-              <LayoutContent className={isTauri ? "flex-1" : "pt-12 sm:pt-28"}>
+              <LayoutContent safeAreaTop className={isTauriBuild ? "flex-1 justify-center" : "justify-center"}>
                 {children}
               </LayoutContent>
             </NavbarProvider>

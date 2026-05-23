@@ -73,7 +73,7 @@ export default function HomePage() {
   ];
 
   return (
-    <main className="flex-1 relative overflow-x-hidden flex flex-col">
+    <main className="relative overflow-x-hidden flex flex-col">
       <div className="flex-1 flex flex-col p-8">
         {/* Hero Section */}
         <motion.div
