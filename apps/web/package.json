@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "clean": "next clean",
-    "generate": "cross-env TAURI_BUILD=true next build"
+    "generate": "node scripts/tauri-build.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
