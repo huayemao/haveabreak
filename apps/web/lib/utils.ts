@@ -13,3 +13,5 @@ declare global {
 }
 
 export const isTauri = typeof window !== 'undefined' && (window.__TAURI_INTERNALS__ || window.__TAURI__);
+
+export const isTauriBuild = process.env.NEXT_PUBLIC_TAURI_BUILD === 'true';

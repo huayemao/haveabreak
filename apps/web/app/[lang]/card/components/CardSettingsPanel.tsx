@@ -11,6 +11,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import DataManagementSection from './settings/DataManagementSection';
 import SubscriptionSection from './settings/SubscriptionSection';
 import SortSection from './settings/SortSection';
+import { writeTextFile, BaseDirectory } from '@tauri-apps/plugin-fs';
+import { isTauriBuild } from '@/lib/utils';
 
 interface CardSettingsPanelProps {
   onClose: () => void;
@@ -37,6 +39,7 @@ export default function CardSettingsPanel({
 
   const {
     settings,
+    exportData,
     subscriptionDiff,
     isChecking,
     hasUpdate,
@@ -96,13 +99,28 @@ export default function CardSettingsPanel({
     e.target.value = '';
   };
 
-  const handleExport = () => {
+  const handleExport = async () => {
     const bookName = books.length > 0
       ? books.map(b => b.title.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '-')).join('-')
       : 'all';
     const timestamp = new Date().toISOString().slice(0, 10);
     const filename = `${bookName}-${timestamp}.json`;
-    onExport(filename);
+    const data = await exportData();
+
+    if (isTauriBuild) {
+      await writeTextFile(filename, data, { baseDir: BaseDirectory.Download });
+    } else {
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    }
+
     setSuccessMessage(t('common.exportSuccess'));
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 3000);

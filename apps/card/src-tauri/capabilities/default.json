@@ -3,6 +3,9 @@
   "description": "Default capabilities for the card application",
   "windows": ["main"],
   "permissions": [
-    "core:default"
+    "core:default",
+    "fs:default",
+    "fs:allow-download-write",
+    "fs:allow-download-read"
   ]
 }

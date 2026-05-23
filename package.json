@@ -14,8 +14,9 @@
     "tauri:timer": "export TAURI_APP=timer && cd apps/timer && npx tauri"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2.11.2",
     "@tauri-apps/api": "^2.11.0",
+    "@tauri-apps/cli": "^2.11.2",
+    "@tauri-apps/plugin-fs": "^2.5.1",
     "typescript": "5.9.3"
   }
 }

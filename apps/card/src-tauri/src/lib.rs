@@ -1,4 +1,5 @@
 use tauri::Manager;
+use tauri_plugin_fs::FsExt;
 
 const SUPPORTED_LANGUAGES: &[&str] = &["en", "zh", "de", "es", "fr", "it", "ja", "ko", "pt", "ru"];
 
@@ -16,6 +17,7 @@ fn get_language(locale: &str) -> String {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_fs::init())
         .setup(|app| {
             let locale = sys_locale::get_locale().unwrap_or_else(|| "en".to_string());
             let language = get_language(&locale);
