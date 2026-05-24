@@ -157,6 +157,17 @@ export default function CardPageClient() {
       >
         <h1 className="text-2xl font-bold text-fg-primary font-title">{t('card.pageTitle')}</h1>
         <p className="text-sm text-fg-muted mt-1">{t('card.pageSubtitle')}</p>
+        <div className="flex items-center justify-center gap-4 mt-3">
+          <span className="text-sm text-fg-muted">
+            <Library className="w-4 h-4 inline mr-1" />
+            {books.length} {t('card.books', { defaultValue: 'books' })}
+          </span>
+          <span className="text-fg-muted/30">|</span>
+          <span className="text-sm text-fg-muted">
+            <Sparkles className="w-4 h-4 inline mr-1" />
+            {quotes.length} {t('card.quotes', { defaultValue: 'quotes' })}
+          </span>
+        </div>
       </motion.div>}
 
       <motion.div

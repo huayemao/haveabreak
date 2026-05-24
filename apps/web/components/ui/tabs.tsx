@@ -4,12 +4,12 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const tabsListVariants = cva(
-  "inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground",
+  "inline-flex h-12 items-center justify-center rounded-2xl p-1.5",
   {
     variants: {
       variant: {
-        default: "bg-muted",
-        outline: "border border-input bg-background",
+        default: "",
+        outline: "",
       },
     },
     defaultVariants: {
@@ -19,13 +19,13 @@ const tabsListVariants = cva(
 )
 
 const tabsTriggerVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6C63FF] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       size: {
-        default: "h-7 px-3",
-        sm: "h-6 px-2 text-xs",
-        xs: "h-5 px-1.5 text-xs",
+        default: "h-8 px-4",
+        sm: "h-7 px-3 text-xs",
+        xs: "h-6 px-2 text-xs",
       },
     },
     defaultVariants: {
@@ -80,7 +80,14 @@ function Tabs({ defaultValue, value, onValueChange, children, className, ...prop
 
 function TabsList({ className, variant, children, ...props }: TabsListProps) {
   return (
-    <div className={cn(tabsListVariants({ variant }), className)} {...props}>
+    <div 
+      className={cn(tabsListVariants({ variant }), className)} 
+      style={{
+        background: '#E0E5EC',
+        boxShadow: '9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5)',
+      }}
+      {...props}
+    >
       {children}
     </div>
   )
@@ -95,11 +102,17 @@ function TabsTrigger({ className, size, value, children, ...props }: TabsTrigger
       type="button"
       className={cn(
         tabsTriggerVariants({ size }),
-        isActive && "data-[state=active]",
         className
       )}
       onClick={() => context.onValueChange(value)}
       data-state={isActive ? "active" : "inactive"}
+      style={{
+        background: isActive ? '#6C63FF' : 'transparent',
+        color: isActive ? '#FFFFFF' : '#3D4852',
+        boxShadow: isActive 
+          ? 'inset 3px 3px 6px rgba(163, 177, 198, 0.6), inset -3px -3px 6px rgba(255, 255, 255, 0.3)' 
+          : 'none',
+      }}
       {...props}
     >
       {children}
@@ -114,7 +127,7 @@ function TabsContent({ className, value, children, ...props }: TabsContentProps)
   if (!isActive) return null
 
   return (
-    <div className={cn("mt-2 focus:outline-none", className)} {...props}>
+    <div className={cn("mt-4", className)} {...props}>
       {children}
     </div>
   )

@@ -2,6 +2,7 @@ import { useTranslations } from 'next-intl';
 import { FrameSettings, Collection } from '../types';
 import { useScrollLock } from '../utils/useScrollLock';
 import { useState } from 'react';
+import { Slider } from '@/components/ui/slider';
 
 const fetchUrlContent = async (url: string): Promise<string> => {
   const response = await fetch(url);
@@ -211,18 +212,13 @@ export default function SettingsPanel({
         <label className="block font-medium text-fg-primary mb-3">
           {t('frame.volume')}: {Math.round(settings.volume * 100)}%
         </label>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value={Math.round(settings.volume * 100)}
-          onChange={(e) => updateSetting('volume', Number(e.target.value) / 100)}
-          className="w-full h-2 bg-muted rounded-full appearance-none cursor-pointer"
-          style={{
-            background: 'linear-gradient(to right, #6C63FF 0%, #6C63FF ' +
-              (settings.volume * 100) +
-              '%, #E0E5EC ' + (settings.volume * 100) + '%)'
-          }}
+        <Slider
+          value={[Math.round(settings.volume * 100)]}
+          onValueChange={([value]) => updateSetting('volume', value / 100)}
+          min={0}
+          max={100}
+          step={1}
+          className="w-full"
         />
         <div className="flex justify-between text-xs text-fg-muted mt-1">
           <span>0%</span>
