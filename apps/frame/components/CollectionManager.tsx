@@ -235,7 +235,7 @@ export default function CollectionManager({
                       <div className="absolute bottom-0 left-0 right-0 p-3">
                         <p className="text-white text-sm font-medium truncate">{collection.name}</p>
                         {collection.description && (
-                          <p className="text-white/70 text-xs mt-1 line-clamp-2">{collection.description}</p>
+                          <p className="text-white/80 text-xs mt-1 line-clamp-2">{collection.description}</p>
                         )}
                         <div className="flex items-center gap-2 mt-2 text-white/70 text-xs">
                           <span>{collection.mediaIds.length} {t('frame.media')}</span>

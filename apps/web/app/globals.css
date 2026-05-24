@@ -229,7 +229,3 @@ body {
   color: #FFFFFF;
 }
 
-/* Zero-flash Navbar auto-hiding for Tauri build */
-html.is-tauri nav {
-  display: none !important;
-}

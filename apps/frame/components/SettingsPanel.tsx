@@ -3,6 +3,7 @@ import { FrameSettings, Collection } from '../types';
 import { useScrollLock } from '../utils/useScrollLock';
 import { useState } from 'react';
 import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
 
 const fetchUrlContent = async (url: string): Promise<string> => {
   const response = await fetch(url);
@@ -115,16 +116,10 @@ export default function SettingsPanel({
           boxShadow: '9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5)',
         }}>
           <span className="font-medium text-fg-primary">{t('frame.autoPlay')}</span>
-          <button
-            onClick={() => toggleSetting('autoPlay')}
-            className={`w-12 h-6 rounded-full transition-all ${settings.autoPlay ? 'bg-accent' : 'bg-muted'
-              }`}
-          >
-            <div
-              className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform ${settings.autoPlay ? 'translate-x-6' : 'translate-x-0.5'
-                }`}
-            />
-          </button>
+          <Switch
+            checked={settings.autoPlay}
+            onCheckedChange={() => toggleSetting('autoPlay')}
+          />
         </div>
 
         <div className="flex items-center justify-between p-4 rounded-[32px]" style={{
@@ -132,16 +127,10 @@ export default function SettingsPanel({
           boxShadow: '9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5)',
         }}>
           <span className="font-medium text-fg-primary">{t('frame.shuffle')}</span>
-          <button
-            onClick={() => toggleSetting('shuffle')}
-            className={`w-12 h-6 rounded-full transition-all ${settings.shuffle ? 'bg-accent' : 'bg-muted'
-              }`}
-          >
-            <div
-              className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform ${settings.shuffle ? 'translate-x-6' : 'translate-x-0.5'
-                }`}
-            />
-          </button>
+          <Switch
+            checked={settings.shuffle}
+            onCheckedChange={() => toggleSetting('shuffle')}
+          />
         </div>
 
         <div className="flex items-center justify-between p-4 rounded-[32px]" style={{
@@ -149,16 +138,10 @@ export default function SettingsPanel({
           boxShadow: '9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5)',
         }}>
           <span className="font-medium text-fg-primary">{t('frame.showInfo')}</span>
-          <button
-            onClick={() => toggleSetting('showInfo')}
-            className={`w-12 h-6 rounded-full transition-all ${settings.showInfo ? 'bg-accent' : 'bg-muted'
-              }`}
-          >
-            <div
-              className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform ${settings.showInfo ? 'translate-x-6' : 'translate-x-0.5'
-                }`}
-            />
-          </button>
+          <Switch
+            checked={settings.showInfo}
+            onCheckedChange={() => toggleSetting('showInfo')}
+          />
         </div>
 
         <div className="flex items-center justify-between p-4 rounded-[32px]" style={{
@@ -166,16 +149,10 @@ export default function SettingsPanel({
           boxShadow: '9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5)',
         }}>
           <span className="font-medium text-fg-primary">{t('frame.filterOrientation')}</span>
-          <button
-            onClick={() => toggleSetting('filterByOrientation')}
-            className={`w-12 h-6 rounded-full transition-all ${settings.filterByOrientation ? 'bg-accent' : 'bg-muted'
-              }`}
-          >
-            <div
-              className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform ${settings.filterByOrientation ? 'translate-x-6' : 'translate-x-0.5'
-                }`}
-            />
-          </button>
+          <Switch
+            checked={settings.filterByOrientation}
+            onCheckedChange={() => toggleSetting('filterByOrientation')}
+          />
         </div>
       </div>
 
@@ -186,18 +163,13 @@ export default function SettingsPanel({
         <label className="block font-medium text-fg-primary mb-3">
           {t('frame.slideInterval')}: {Math.round(settings.slideInterval / 1000)}s
         </label>
-        <input
-          type="range"
-          min="3"
-          max="60"
-          value={Math.round(settings.slideInterval / 1000)}
-          onChange={(e) => updateSetting('slideInterval', Number(e.target.value) * 1000)}
-          className="w-full h-2 bg-muted rounded-full appearance-none cursor-pointer"
-          style={{
-            background: 'linear-gradient(to right, #6C63FF 0%, #6C63FF ' +
-              ((Math.round(settings.slideInterval / 1000) - 3) / 57 * 100) +
-              '%, #E0E5EC ' + ((Math.round(settings.slideInterval / 1000) - 3) / 57 * 100) + '%)'
-          }}
+        <Slider
+          value={[Math.round(settings.slideInterval / 1000)]}
+          onValueChange={([value]) => updateSetting('slideInterval', value * 1000)}
+          min={3}
+          max={60}
+          step={1}
+          className="w-full"
         />
         <div className="flex justify-between text-xs text-fg-muted mt-1">
           <span>3s</span>
@@ -232,13 +204,13 @@ export default function SettingsPanel({
         <div className="flex gap-3">
           <button
             onClick={handleExport}
-            className="flex-1 neumorphic-button"
+            className="flex-1 neumorphic-button p-4"
           >
             {t('common.export')}
           </button>
           <button
             onClick={() => setShowImportModal(true)}
-            className="flex-1 neumorphic-button"
+            className="flex-1 neumorphic-button p-4"
           >
             {t('common.import')}
           </button>
