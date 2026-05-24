@@ -378,6 +378,13 @@ jobs:
         with:
           path: artifacts
 
+      - name: Rename APK files to avoid overwriting
+        shell: bash
+        run: |
+          mv artifacts/android-apk-card/app-universal-release.apk artifacts/android-apk-card/haveabreak-card.apk
+          mv artifacts/android-apk-frame/app-universal-release.apk artifacts/android-apk-frame/haveabreak-frame.apk
+          mv artifacts/android-apk-timer/app-universal-release.apk artifacts/android-apk-timer/haveabreak-timer.apk
+
       - name: Upload Assets to Release
         uses: softprops/action-gh-release@v2
         with:
@@ -401,9 +408,9 @@ jobs:
             - [Timer (Portable)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/windows-binaries/timer/src-tauri/target/release/bundle/nsis/haveabreak-timer_0.1.0_x64-setup.exe)
             
             ### Android
-            - [Card APK](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/android-apk-card/app-universal-release.apk)
-            - [Frame APK](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/android-apk-frame/app-universal-release.apk)
-            - [Timer APK](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/android-apk-timer/app-universal-release.apk)
+            - [Card APK](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/android-apk-card/haveabreak-card.apk)
+            - [Frame APK](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/android-apk-frame/haveabreak-frame.apk)
+            - [Timer APK](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/android-apk-timer/haveabreak-timer.apk)
             
             ### iOS
             - [Card IPA](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/ios-ipa-card/arm64/haveabreak-card.ipa)
@@ -433,9 +440,9 @@ jobs:
             body += `- [Timer (Installer)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries/timer/src-tauri/target/release/bundle/msi/haveabreak-timer_0.1.0_x64_en-US.msi)\n`;
             body += `- [Timer (Portable)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries/timer/src-tauri/target/release/bundle/nsis/haveabreak-timer_0.1.0_x64-setup.exe)\n\n`;
             body += `### Android\n`;
-            body += `- [Card APK](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/android-apk-card/app-universal-release.apk)\n`;
-            body += `- [Frame APK](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/android-apk-frame/app-universal-release.apk)\n`;
-            body += `- [Timer APK](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/android-apk-timer/app-universal-release.apk)\n\n`;
+            body += `- [Card APK](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/android-apk-card/haveabreak-card.apk)\n`;
+            body += `- [Frame APK](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/android-apk-frame/haveabreak-frame.apk)\n`;
+            body += `- [Timer APK](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/android-apk-timer/haveabreak-timer.apk)\n\n`;
             body += `### iOS\n`;
             body += `- [Card IPA](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/ios-ipa-card/arm64/haveabreak-card.ipa)\n`;
             body += `- [Frame IPA](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/ios-ipa-frame/arm64/haveabreak-frame.ipa)\n`;
