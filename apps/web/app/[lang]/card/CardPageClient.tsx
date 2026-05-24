@@ -150,17 +150,18 @@ export default function CardPageClient() {
   }
 
   return (
-    <div ref={containerRef} className="relative w-full flex flex-col gap-6 items-center px-8 h-full bg-bg-base transition-colors duration-500 overflow-hidden">
+    <div ref={containerRef} className="relative w-full flex flex-col gap-4 items-center px-8 h-full bg-bg-base transition-colors duration-500 overflow-hidden">
       <InstallPrompt appId="card" />
-      {!isTauriBuild && <motion.div
+      <motion.div
         animate={{ y: showUI ? 0 : -100, opacity: showUI ? 1 : 0 }}
         className="mb-4 text-center pt-2"
       >
+        {!isTauriBuild && <>
         <h1 className="text-2xl font-bold text-fg-primary font-title">{t('card.pageTitle')}</h1>
         <p className="text-sm text-fg-muted mt-1">{t('card.pageSubtitle')}</p>
-     
-      </motion.div>}
-      <div className="flex items-center justify-center gap-4 mt-3">
+        </>
+        }
+        <div className="flex items-center justify-center gap-4 mt-3">
           <span className="text-sm text-fg-muted flex items-center">
             <Library className="w-4 h-4 inline" />
             {books.length} {t('card.books', { defaultValue: 'books' })}
@@ -170,7 +171,9 @@ export default function CardPageClient() {
             <Sparkles className="w-4 h-4 inline" />
             {quotes.length} {t('card.quotes', { defaultValue: 'quotes' })}
           </span>
-      </div>
+        </div>
+      </motion.div>
+     
       <motion.div
         animate={{ y: showUI ? 0 : -100, opacity: showUI ? 1 : 0 }}
         className="flex justify-center gap-3 p-4"
