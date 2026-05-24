@@ -166,7 +166,7 @@ export default function CardPageClient() {
 
       <motion.div
         animate={{ y: showUI ? 0 : -100, opacity: showUI ? 1 : 0 }}
-        className="flex justify-center gap-3 mb-4"
+        className="flex justify-center gap-3 p-4"
       >
         <button
           onClick={() => {

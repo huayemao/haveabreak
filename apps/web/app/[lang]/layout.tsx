@@ -15,7 +15,7 @@ import { NavbarProvider } from '@/context/NavbarContext';
 import LayoutContent from '@/components/LayoutContent';
 import { notFound } from 'next/navigation';
 import { Toaster } from '@/components/ui/sonner';
-const isTauriBuild = process.env.NEXT_PUBLIC_TAURI_BUILD === 'true';
+import { isTauriBuild } from '@/lib/utils';
 
 const { locales } = routing;
 
@@ -121,9 +121,7 @@ export default async function RootLayout({
             )}
             <NavbarProvider>
               <LanguageBanner />
-              {!isTauriBuild && (
                 <Navbar />
-              )}
               <LayoutContent safeAreaTop className={isTauriBuild ? "flex-1 justify-center" : "justify-center"}>
                 {children}
               </LayoutContent>
