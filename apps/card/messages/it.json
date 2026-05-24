@@ -15,6 +15,7 @@
   "library": "Biblioteca",
   "backToLibrary": "Torna alla biblioteca",
   "quotes": "Citazioni",
+  "books": "Libri",
   "noQuotesInBook": "Nessuna citazione per questo libro. Aggiungi la prima!",
   "confirmDeleteBook": "Sei sicuro di voler eliminare questo libro e tutte le sue citazioni?",
   "deleteBook": "Elimina libro",

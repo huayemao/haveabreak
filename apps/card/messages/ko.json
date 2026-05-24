@@ -15,6 +15,7 @@
   "library": "라이브러리",
   "backToLibrary": "라이브러리로 돌아가기",
   "quotes": "인용구",
+  "books": "책",
   "noQuotesInBook": "이 책에는 아직 인용구가 없습니다. 첫 번째를 추가하세요!",
   "confirmDeleteBook": "이 책과 모든 인용구를 삭제하시겠습니까?",
   "deleteBook": "책 삭제",

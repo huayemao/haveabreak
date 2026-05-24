@@ -15,6 +15,7 @@
   "library": "ライブラリ",
   "backToLibrary": "ライブラリに戻る",
   "quotes": "引用",
+  "books": "本",
   "noQuotesInBook": "この本にはまだ引用がありません。最初の引用を追加してください！",
   "confirmDeleteBook": "この本とそのすべての引用を削除してもよろしいですか？",
   "deleteBook": "本を削除",

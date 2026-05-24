@@ -158,19 +158,19 @@ export default function CardPageClient() {
       >
         <h1 className="text-2xl font-bold text-fg-primary font-title">{t('card.pageTitle')}</h1>
         <p className="text-sm text-fg-muted mt-1">{t('card.pageSubtitle')}</p>
-        <div className="flex items-center justify-center gap-4 mt-3">
-          <span className="text-sm text-fg-muted">
-            <Library className="w-4 h-4 inline mr-1" />
+     
+      </motion.div>}
+      <div className="flex items-center justify-center gap-4 mt-3">
+          <span className="text-sm text-fg-muted flex items-center">
+            <Library className="w-4 h-4 inline" />
             {books.length} {t('card.books', { defaultValue: 'books' })}
           </span>
           <span className="text-fg-muted/30">|</span>
-          <span className="text-sm text-fg-muted">
-            <Sparkles className="w-4 h-4 inline mr-1" />
+          <span className="text-sm text-fg-muted flex items-center">
+            <Sparkles className="w-4 h-4 inline" />
             {quotes.length} {t('card.quotes', { defaultValue: 'quotes' })}
           </span>
-        </div>
-      </motion.div>}
-
+      </div>
       <motion.div
         animate={{ y: showUI ? 0 : -100, opacity: showUI ? 1 : 0 }}
         className="flex justify-center gap-3 p-4"
