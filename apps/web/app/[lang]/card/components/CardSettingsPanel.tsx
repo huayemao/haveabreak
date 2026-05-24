@@ -11,6 +11,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import DataManagementSection from './settings/DataManagementSection';
 import SubscriptionSection from './settings/SubscriptionSection';
 import SortSection from './settings/SortSection';
+import AutoPlaySection from './settings/AutoPlaySection';
 import { writeTextFile, BaseDirectory } from '@tauri-apps/plugin-fs';
 import { isTauriBuild } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -52,6 +53,7 @@ export default function CardSettingsPanel({
     applyUpdate,
     clearUpdate,
     updateQuoteSortOrder,
+    updateSwipeInterval,
   } = useCardStore();
 
   const handleAddSubscription = () => {
@@ -136,6 +138,13 @@ export default function CardSettingsPanel({
     setTimeout(() => setShowSuccess(false), 3000);
   };
 
+  const handleSwipeIntervalChange = (interval: number) => {
+    updateSwipeInterval(interval);
+    setSuccessMessage(t('card.autoPlayIntervalChanged', { defaultValue: 'Auto play interval updated!' }));
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 3000);
+  };
+
 
   return (
     <motion.div
@@ -215,6 +224,12 @@ export default function CardSettingsPanel({
                 quoteSortOrder={settings.quoteSortOrder}
                 onSortOrderChange={handleSortOrderChange}
               />
+              <div className="mt-6">
+                <AutoPlaySection
+                  swipeInterval={settings.swipeInterval}
+                  onSwipeIntervalChange={handleSwipeIntervalChange}
+                />
+              </div>
             </TabsContent>
 
             <TabsContent value="subscription" className="mt-0">

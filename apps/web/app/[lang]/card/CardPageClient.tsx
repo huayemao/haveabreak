@@ -19,6 +19,7 @@ export default function CardPageClient() {
     books,
     quotes,
     deleteQuote,
+    settings,
   } = useCardStore();
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -74,7 +75,7 @@ export default function CardPageClient() {
 
   const { isAutoPlaying, toggleAutoPlay } = useAutoPlay({
     onNext: handleNext,
-    interval: 5000,
+    interval: settings.swipeInterval,
   });
 
   useEffect(() => {

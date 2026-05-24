@@ -15,7 +15,7 @@ function FullscreenQuoteContent() {
   const searchParams = useSearchParams();
   const quoteId = searchParams.get('quoteId') || '';
   const containerRef = useRef<HTMLDivElement>(null);
-  const { books, quotes, deleteQuote } = useCardStore();
+  const { books, quotes, deleteQuote, settings } = useCardStore();
   const pathname = usePathname();
 
   const quotesWithBooks = selectQuotesWithBooks({ books, quotes } as any);
@@ -56,7 +56,7 @@ function FullscreenQuoteContent() {
 
   const { isAutoPlaying, toggleAutoPlay } = useAutoPlay({
     onNext: handleNext,
-    interval: 5000,
+    interval: settings.swipeInterval,
   });
 
   useEffect(() => {
