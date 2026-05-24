@@ -150,7 +150,7 @@ export default function CardPageClient() {
   }
 
   return (
-    <div ref={containerRef} className="relative w-full flex flex-col gap-4 items-center px-8 h-full bg-bg-base transition-colors duration-500 overflow-hidden">
+    <div ref={containerRef} className="h-[76vh] relative w-full flex flex-col gap-4 justify-between items-center px-6 md:px-8 bg-bg-base transition-colors duration-500 overflow-hidden">
       <InstallPrompt appId="card" />
       <motion.div
         animate={{ y: showUI ? 0 : -100, opacity: showUI ? 1 : 0 }}
