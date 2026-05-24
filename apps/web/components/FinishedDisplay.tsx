@@ -28,7 +28,7 @@ export default function FinishedDisplay({ onRestart }: FinishedDisplayProps) {
         onClick={onRestart}
         className="w-full py-4 rounded-2xl font-bold bg-bg-base text-accent shadow-extruded hover:shadow-extruded-hover active:shadow-inset-sm hover:-translate-y-px active:translate-y-px transition-all duration-300 outline-none"
       >
-        {t('restartBtn')}
+        {t('timer.restartBtn')}
       </button>
     </motion.div>
   );
