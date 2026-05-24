@@ -9,7 +9,7 @@ import { useTranslations } from 'next-intl';
 import { Plus, Library, Sparkles, ChevronUp, ChevronDown, Settings, Play, Pause, Shuffle, Maximize2, Minimize2 } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { useRouter } from '@/i18n/routing';
-import { cn } from '@/lib/utils';
+import { cn, isTauriBuild } from '@/lib/utils';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import InstallPrompt from '@/components/InstallPrompt';
 
@@ -156,13 +156,13 @@ export default function CardPageClient() {
   return (
     <div ref={containerRef} className="relative w-full flex flex-col gap-6 items-center px-8 h-full bg-bg-base transition-colors duration-500 overflow-hidden">
       <InstallPrompt appId="card" />
-      <motion.div
+      {!isTauriBuild && <motion.div
         animate={{ y: showUI ? 0 : -100, opacity: showUI ? 1 : 0 }}
         className="mb-4 text-center pt-2"
       >
         <h1 className="text-2xl font-bold text-fg-primary font-title">{t('card.pageTitle')}</h1>
         <p className="text-sm text-fg-muted mt-1">{t('card.pageSubtitle')}</p>
-      </motion.div>
+      </motion.div>}
 
       <motion.div
         animate={{ y: showUI ? 0 : -100, opacity: showUI ? 1 : 0 }}
