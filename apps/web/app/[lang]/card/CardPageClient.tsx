@@ -11,6 +11,7 @@ import { Link } from '@/i18n/routing';
 import { useRouter } from '@/i18n/routing';
 import { cn, isTauriBuild } from '@/lib/utils';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
+import { useAutoPlay } from '@/hooks/useAutoPlay';
 import InstallPrompt from '@/components/InstallPrompt';
 
 export default function CardPageClient() {
@@ -23,7 +24,6 @@ export default function CardPageClient() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(false);
   const [isRandom, setIsRandom] = useState(false);
   const [showUI, setShowUI] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -72,15 +72,10 @@ export default function CardPageClient() {
     threshold: 80,
   });
 
-  useEffect(() => {
-    let interval: any;
-    if (isAutoPlaying) {
-      interval = setInterval(() => {
-        handleNext();
-      }, 5000);
-    }
-    return () => clearInterval(interval);
-  }, [isAutoPlaying, handleNext]);
+  const { isAutoPlaying, toggleAutoPlay } = useAutoPlay({
+    onNext: handleNext,
+    interval: 5000,
+  });
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -169,12 +164,7 @@ export default function CardPageClient() {
         className="flex justify-center gap-3 p-4"
       >
         <button
-          onClick={() => {
-            if (!isAutoPlaying) {
-              containerRef.current?.requestFullscreen().catch(() => { });
-            }
-            setIsAutoPlaying(!isAutoPlaying);
-          }}
+          onClick={() => toggleAutoPlay(containerRef)}
           className={cn('w-9 h-9 rounded-full neumorphic-button flex items-center justify-center transition-all', { '!text-primary shadow-inset': isAutoPlaying, 'text-fg-muted': !isAutoPlaying })}
           title={isAutoPlaying ? "Pause" : "Auto Play"}
         >

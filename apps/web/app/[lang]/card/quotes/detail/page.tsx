@@ -4,10 +4,11 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { usePathname } from 'i18n/routing';
 import { useCardStore, selectQuotesWithBooks } from '@/apps/card/store';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, ChevronUp, ChevronDown, Maximize2, Minimize2 } from 'lucide-react';
+import { X, ChevronUp, ChevronDown, Maximize2, Minimize2, Play, Pause } from 'lucide-react';
 import { useEffect, useState, useRef, useCallback, Suspense } from 'react';
 import QuoteCard from '../../components/QuoteCard';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
+import { useAutoPlay } from '@/hooks/useAutoPlay';
 
 function FullscreenQuoteContent() {
   const router = useRouter();
@@ -51,6 +52,11 @@ function FullscreenQuoteContent() {
     onNext: handleNext,
     onPrev: handlePrev,
     threshold: 80,
+  });
+
+  const { isAutoPlaying, toggleAutoPlay } = useAutoPlay({
+    onNext: handleNext,
+    interval: 5000,
   });
 
   useEffect(() => {
@@ -166,6 +172,13 @@ function FullscreenQuoteContent() {
         </div>
 
         <div className="flex gap-3">
+          <button
+            onClick={() => toggleAutoPlay(containerRef)}
+            className="w-12 h-12 rounded-full neumorphic-button flex items-center justify-center hover:scale-110 active:scale-95 transition-all"
+            title={isAutoPlaying ? "Pause" : "Auto Play"}
+          >
+            {isAutoPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+          </button>
           <button
             onClick={toggleFullscreen}
             className="w-12 h-12 rounded-full neumorphic-button flex items-center justify-center hover:scale-110 active:scale-95 transition-all"
