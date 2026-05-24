@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useScrollLock } from '@/apps/frame/utils/useScrollLock';
 import { useState } from 'react';
-import { X, Download, Database, Link2, FileText } from 'lucide-react';
+import { X, Download, Database, Settings } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Book, Subscription } from '@/apps/card/types';
 import { useCardStore } from '@/apps/card/store';
@@ -32,10 +32,8 @@ export default function CardSettingsPanel({
 }: CardSettingsPanelProps) {
   const t = useTranslations();
   useScrollLock();
-  const [showSuccess, setShowSuccess] = useState(false);
-    const [successMessage, setSuccessMessage] = useState('');
-    const [activeTab, setActiveTab] = useState('data');
-    const [showAddSubscription, setShowAddSubscription] = useState(false);
+  const [activeTab, setActiveTab] = useState('data');
+  const [showAddSubscription, setShowAddSubscription] = useState(false);
   const [newSubscriptionName, setNewSubscriptionName] = useState('');
   const [newSubscriptionUrl, setNewSubscriptionUrl] = useState('');
   const [showSubscriptionList, setShowSubscriptionList] = useState(false);
@@ -63,9 +61,7 @@ export default function CardSettingsPanel({
       setNewSubscriptionName('');
       setNewSubscriptionUrl('');
       setShowAddSubscription(false);
-      setSuccessMessage(t('common.subscriptionAdded', { defaultValue: 'Subscription added!' }));
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 3000);
+      toast.success(t('common.subscriptionAdded', { defaultValue: 'Subscription added!' }));
     }
   };
 
@@ -90,11 +86,9 @@ export default function CardSettingsPanel({
         if (content) {
           try {
             onImport(content);
-            setSuccessMessage(t('common.importSuccess'));
-            setShowSuccess(true);
-            setTimeout(() => setShowSuccess(false), 3000);
+            toast.success(t('common.importSuccess'));
           } catch {
-            alert(t('common.importFailed'));
+            toast.error(t('common.importFailed'));
           }
         }
       };
@@ -146,16 +140,12 @@ export default function CardSettingsPanel({
 
   const handleSortOrderChange = (order: 'createdAt' | 'page') => {
     updateQuoteSortOrder(order);
-    setSuccessMessage(t('card.sortOrderChanged', { defaultValue: 'Sort order updated!' }));
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
+    toast.success(t('card.sortOrderChanged', { defaultValue: 'Sort order updated!' }));
   };
 
   const handleSwipeIntervalChange = (interval: number) => {
     updateSwipeInterval(interval);
-    setSuccessMessage(t('card.autoPlayIntervalChanged', { defaultValue: 'Auto play interval updated!' }));
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
+    toast.success(t('card.autoPlayIntervalChanged', { defaultValue: 'Auto play interval updated!' }));
   };
 
 
@@ -200,13 +190,9 @@ export default function CardSettingsPanel({
                 <Database className="w-3 h-3" />
                 <span>{t('card.dataManagement', { defaultValue: 'Data' })}</span>
               </TabsTrigger>
-              <TabsTrigger value="sort" className="flex-1 gap-1" >
-                <FileText className="w-3 h-3" />
-                <span>{t('card.sort', { defaultValue: 'Sort' })}</span>
-              </TabsTrigger>
-              <TabsTrigger value="subscription" className="flex-1 gap-1" >
-                <Link2 className="w-3 h-3" />
-                <span>{t('card.subscription', { defaultValue: 'Subscription' })}</span>
+              <TabsTrigger value="basic" className="flex-1 gap-1" >
+                <Settings className="w-3 h-3" />
+                <span>{t('card.basicSettings', { defaultValue: 'Basic' })}</span>
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -215,24 +201,39 @@ export default function CardSettingsPanel({
         <div className="flex-1 overflow-y-auto p-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsContent value="data" className="mt-0">
-              {showSuccess && (
-                <div className="p-4 rounded-2xl bg-green-100 text-green-700 text-center font-medium mb-6">
-                  {successMessage}
-                </div>
-              )}
               <DataManagementSection
                 books={books}
                 onExport={handleExport}
                 onImport={handleImport}
               />
+              <div className="mt-6">
+                <SubscriptionSection
+                  subscriptions={settings.subscriptions}
+                  activeSubscriptionId={settings.activeSubscriptionId}
+                  subscriptionDiff={subscriptionDiff}
+                  isChecking={isChecking}
+                  hasUpdate={hasUpdate}
+                  checkError={checkError}
+                  showAddSubscription={showAddSubscription}
+                  showSubscriptionList={showSubscriptionList}
+                  newSubscriptionName={newSubscriptionName}
+                  newSubscriptionUrl={newSubscriptionUrl}
+                  onToggleAddSubscription={() => setShowAddSubscription(!showAddSubscription)}
+                  onNameChange={setNewSubscriptionName}
+                  onUrlChange={setNewSubscriptionUrl}
+                  onAddSubscription={handleAddSubscription}
+                  onCancelAddSubscription={() => setShowAddSubscription(false)}
+                  onToggleSubscriptionList={() => setShowSubscriptionList(!showSubscriptionList)}
+                  onSelectSubscription={handleSelectSubscription}
+                  onDeleteSubscription={handleDeleteSubscription}
+                  onCheckSubscription={() => checkSubscription()}
+                  onApplyUpdate={applyUpdate}
+                  onClearUpdate={clearUpdate}
+                />
+              </div>
             </TabsContent>
 
-            <TabsContent value="sort" className="mt-0">
-              {showSuccess && (
-                <div className="p-4 rounded-2xl bg-green-100 text-green-700 text-center font-medium mb-6">
-                  {successMessage}
-                </div>
-              )}
+            <TabsContent value="basic" className="mt-0">
               <SortSection
                 quoteSortOrder={settings.quoteSortOrder}
                 onSortOrderChange={handleSortOrderChange}
@@ -243,37 +244,6 @@ export default function CardSettingsPanel({
                   onSwipeIntervalChange={handleSwipeIntervalChange}
                 />
               </div>
-            </TabsContent>
-
-            <TabsContent value="subscription" className="mt-0">
-              {showSuccess && (
-                <div className="p-4 rounded-2xl bg-green-100 text-green-700 text-center font-medium mb-6">
-                  {successMessage}
-                </div>
-              )}
-              <SubscriptionSection
-                subscriptions={settings.subscriptions}
-                activeSubscriptionId={settings.activeSubscriptionId}
-                subscriptionDiff={subscriptionDiff}
-                isChecking={isChecking}
-                hasUpdate={hasUpdate}
-                checkError={checkError}
-                showAddSubscription={showAddSubscription}
-                showSubscriptionList={showSubscriptionList}
-                newSubscriptionName={newSubscriptionName}
-                newSubscriptionUrl={newSubscriptionUrl}
-                onToggleAddSubscription={() => setShowAddSubscription(!showAddSubscription)}
-                onNameChange={setNewSubscriptionName}
-                onUrlChange={setNewSubscriptionUrl}
-                onAddSubscription={handleAddSubscription}
-                onCancelAddSubscription={() => setShowAddSubscription(false)}
-                onToggleSubscriptionList={() => setShowSubscriptionList(!showSubscriptionList)}
-                onSelectSubscription={handleSelectSubscription}
-                onDeleteSubscription={handleDeleteSubscription}
-                onCheckSubscription={() => checkSubscription()}
-                onApplyUpdate={applyUpdate}
-                onClearUpdate={clearUpdate}
-              />
             </TabsContent>
           </Tabs>
         </div>

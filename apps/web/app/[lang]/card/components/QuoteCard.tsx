@@ -58,7 +58,7 @@ export default function QuoteCard({ card, isActive, onEdit, onDelete, isFullscre
           e.stopPropagation();
           router.push(`/card/library/detail?bookId=${book.id}`);
         }}
-        className="relative z-10 flex gap-4 mb-8 cursor-pointer group hover:scale-[1.02] transition-transform duration-300"
+        className="relative z-10 flex gap-4 mb-4 cursor-pointer group hover:scale-[1.02] transition-transform duration-300"
       >
         <div className="relative w-20 h-28 flex-shrink-0 rounded-xl overflow-hidden shadow-extruded-sm">
           <img
@@ -89,9 +89,7 @@ export default function QuoteCard({ card, isActive, onEdit, onDelete, isFullscre
       >
         {/* Extended Metadata - Now at top */}
         {(chapter || page) && (
-          <div className="mb-4">
-            <QuoteMetadata chapter={chapter} page={page} />
-          </div>
+            <QuoteMetadata chapter={chapter} page={page}  className='mb-2'/>
         )}
         
         <div className={`relative ${isFullscreen ? 'overflow-y-auto custom-scrollbar max-h-[50vh] sm:max-h-[55vh]' : 'line-clamp-6'}`}>
