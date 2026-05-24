@@ -360,7 +360,7 @@ jobs:
         with:
           name: ios-ipa-${{ matrix.app }}
           path: |
-            apps/${{ matrix.app }}/src-tauri/gen/ios/build/Release-iphoneos/*.ipa
+            apps/${{ matrix.app }}/src-tauri/gen/apple/build/*/*.ipa
 
   update-release:
     name: Update Release
