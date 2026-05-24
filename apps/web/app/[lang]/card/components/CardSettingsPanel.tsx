@@ -13,6 +13,7 @@ import SubscriptionSection from './settings/SubscriptionSection';
 import SortSection from './settings/SortSection';
 import { writeTextFile, BaseDirectory } from '@tauri-apps/plugin-fs';
 import { isTauriBuild } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface CardSettingsPanelProps {
   onClose: () => void;
@@ -100,30 +101,32 @@ export default function CardSettingsPanel({
   };
 
   const handleExport = async () => {
-    const bookName = books.length > 0
-      ? books.map(b => b.title.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '-')).join('-')
-      : 'all';
-    const timestamp = new Date().toISOString().slice(0, 10);
-    const filename = `${bookName}-${timestamp}.json`;
-    const data = await exportData();
+    try {
+      const bookName = books.length > 0
+        ? books.map(b => b.title.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '-')).join('-')
+        : 'all';
+      const timestamp = new Date().toISOString().slice(0, 10);
+      const filename = `${bookName}-${timestamp}.json`;
+      const data = await exportData();
 
-    if (isTauriBuild) {
-      await writeTextFile(filename, data, { baseDir: BaseDirectory.Download });
-    } else {
-      const blob = new Blob([data], { type: 'application/json' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      if (isTauriBuild) {
+        await writeTextFile(filename, data, { baseDir: BaseDirectory.Download });
+      } else {
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }
+
+      toast.success(t('common.exportSuccess'));
+    } catch {
+      toast.error(t('common.exportFailed', { defaultValue: 'Export failed' }));
     }
-
-    setSuccessMessage(t('common.exportSuccess'));
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
   };
 
   const handleSortOrderChange = (order: 'createdAt' | 'page') => {
