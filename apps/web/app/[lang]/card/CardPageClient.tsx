@@ -150,7 +150,7 @@ export default function CardPageClient() {
   }
 
   return (
-    <div ref={containerRef} className="h-[76vh] relative w-full flex flex-col gap-4 justify-between items-center px-6 md:px-8 bg-bg-base transition-colors duration-500 overflow-hidden">
+    <div ref={containerRef} className="h-[calc(100vh-128px)]  md:h-[75vh] pb-6 relative w-full flex flex-col gap-2 justify-between items-center px-6 md:px-8 bg-bg-base transition-colors duration-500 overflow-hidden">
       <InstallPrompt appId="card" />
       <motion.div
         animate={{ y: showUI ? 0 : -100, opacity: showUI ? 1 : 0 }}
@@ -161,7 +161,7 @@ export default function CardPageClient() {
         <p className="text-sm text-fg-muted mt-1">{t('card.pageSubtitle')}</p>
         </>
         }
-        <div className="flex items-center justify-center gap-4 mt-3">
+        <div className="flex items-center justify-center gap-2 mt-3">
           <span className="text-sm text-fg-muted flex items-center">
             <Library className="w-4 h-4 inline" />
             {books.length} {t('card.books', { defaultValue: 'books' })}
