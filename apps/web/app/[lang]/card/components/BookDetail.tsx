@@ -158,13 +158,13 @@ export default function BookDetail({ onAddQuote, onEditQuote, onDeleteQuote, onQ
                   {onEditQuote && (
                     <ContextMenuItem onClick={() => onEditQuote(quote)} className="gap-2">
                       <Edit3 className="w-4 h-4" />
-                      Edit
+                      {t('common.edit', { defaultValue: 'Edit Quote' })}
                     </ContextMenuItem>
                   )}
                   <ContextMenuSeparator />
                   <ContextMenuItem onClick={() => handleDeleteQuote(quote.id)} className="gap-2 text-red-500 focus:text-red-500">
                     <Trash2 className="w-4 h-4" />
-                    Delete
+                    {t('common.delete', { defaultValue: 'Delete Quote' })}
                   </ContextMenuItem>
                 </ContextMenuContent>
               </ContextMenu>
