@@ -17,6 +17,9 @@
     }
   },
   "bundle": {
+    "iOS": {
+      "developmentTeam": "12345ABCDE"
+    },
     "active": true,
     "icon": [
       "icons/32x32.png",

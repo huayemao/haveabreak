@@ -342,15 +342,18 @@ jobs:
         working-directory: apps/${{ matrix.app }}/src-tauri
         run: |
           pnpm install
+          export CODE_SIGN_IDENTITY=""
+          export CODE_SIGNING_REQUIRED="NO"
+          export CODE_SIGNING_ALLOWED="NO"
           pnpm tauri ios init
           git checkout .
-          export CODE_SIGN_IDENTITY=""
-          export CODE_SIGNING_REQUIRED=0
-          export CODE_SIGNING_ALLOWED=0
           pnpm tauri ios build --no-sign
         env:
           CI: true
-          APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_DEVELOPMENT_TEAM }}
+          APPLE_DEVELOPMENT_TEAM: "12345ABCDE"
+          CODE_SIGNING_ALLOWED: "NO"
+          CODE_SIGN_IDENTITY: ""
+          CODE_SIGNING_REQUIRED: "NO"
 
       - name: Upload iOS Artifacts
         uses: actions/upload-artifact@v4
