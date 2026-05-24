@@ -12,7 +12,8 @@ import DataManagementSection from './settings/DataManagementSection';
 import SubscriptionSection from './settings/SubscriptionSection';
 import SortSection from './settings/SortSection';
 import AutoPlaySection from './settings/AutoPlaySection';
-import { writeTextFile, BaseDirectory } from '@tauri-apps/plugin-fs';
+import { writeTextFile } from '@tauri-apps/plugin-fs';
+import { save } from '@tauri-apps/plugin-dialog';
 import { isTauriBuild } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -112,7 +113,20 @@ export default function CardSettingsPanel({
       const data = await exportData();
 
       if (isTauriBuild) {
-        await writeTextFile(filename, data, { baseDir: BaseDirectory.Download });
+        const filePath = await save({
+          defaultPath: filename,
+          filters: [
+            {
+              name: 'JSON',
+              extensions: ['json'],
+            },
+          ],
+        });
+
+        if (filePath) {
+          await writeTextFile(filePath, data);
+          toast.success(t('common.exportSuccess'));
+        }
       } else {
         const blob = new Blob([data], { type: 'application/json' });
         const url = window.URL.createObjectURL(blob);
@@ -123,9 +137,8 @@ export default function CardSettingsPanel({
         link.click();
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
+        toast.success(t('common.exportSuccess'));
       }
-
-      toast.success(t('common.exportSuccess'));
     } catch {
       toast.error(t('common.exportFailed', { defaultValue: 'Export failed' }));
     }

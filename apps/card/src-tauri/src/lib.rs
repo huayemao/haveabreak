@@ -18,6 +18,7 @@ fn get_language(locale: &str) -> String {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_dialog::init())
         .setup(|app| {
             let locale = sys_locale::get_locale().unwrap_or_else(|| "en".to_string());
             let language = get_language(&locale);

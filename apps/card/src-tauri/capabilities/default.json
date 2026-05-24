@@ -5,6 +5,7 @@
   "permissions": [
     "core:default",
     "fs:default",
+    "dialog:default",
     "fs:allow-download-write",
     "fs:allow-download-read"
   ]
