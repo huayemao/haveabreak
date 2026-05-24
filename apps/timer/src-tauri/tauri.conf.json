@@ -9,7 +9,7 @@
         "title": "haveabreak - 计时休息",
         "width": 800,
         "height": 600,
-         "url": "en/timer"
+        "url": "en/timer"
       }
     ],
     "security": {
@@ -24,11 +24,7 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ],
-    "ios": {
-      "signWithDevelopmentTeam": false,
-      "developmentTeam": ""
-    }
+    ]
   },
   "build": {
     "frontendDist": "../../web/out"
