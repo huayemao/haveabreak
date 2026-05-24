@@ -343,17 +343,33 @@ jobs:
         run: |
           pnpm install
           pnpm tauri ios init
-          git checkout .
-          pnpm tauri ios build
+          
+          # Disable code signing in Xcode project (must be done after git checkout)
+          PROJECT_PATH="gen/apple/${{ matrix.app }}.xcodeproj/project.pbxproj"
+          if [ -f "$PROJECT_PATH" ]; then
+            # Replace signing settings to disable code signing
+            sed -i '' 's/CODE_SIGN_IDENTITY = "Apple Development"/CODE_SIGN_IDENTITY = ""/g' "$PROJECT_PATH"
+            sed -i '' 's/CODE_SIGN_IDENTITY = "iPhone Developer"/CODE_SIGN_IDENTITY = ""/g' "$PROJECT_PATH"
+            sed -i '' 's/DEVELOPMENT_TEAM = [^;]*;/DEVELOPMENT_TEAM = "";/g' "$PROJECT_PATH"
+            sed -i '' 's/CODE_SIGN_STYLE = Automatic;/CODE_SIGN_STYLE = Manual;/g' "$PROJECT_PATH"
+            echo "Code signing disabled in Xcode project"
+          fi
+          
+          # Build using tauri with explicit signing flags
+          pnpm tauri ios build -- --CODE_SIGN_IDENTITY="" --CODE_SIGNING_REQUIRED=NO --CODE_SIGNING_ALLOWED=NO
         env:
           CI: true
+          CODE_SIGN_IDENTITY: ""
+          CODE_SIGNING_REQUIRED: "NO"
+          CODE_SIGNING_ALLOWED: "NO"
 
       - name: Upload iOS Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ios-ipa-${{ matrix.app }}
           path: |
-            apps/${{ matrix.app }}/src-tauri/gen/ios/build/Release-iphoneos/*.ipa
+            apps/${{ matrix.app }}/src-tauri/gen/apple/build/Release-iphoneos/*.ipa
+            apps/${{ matrix.app }}/src-tauri/gen/apple/build/*.ipa
 
   update-release:
     name: Update Release
