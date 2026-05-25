@@ -25,8 +25,8 @@ export async function GET(request: NextRequest) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            width: size * 0.75,
-            height: size * 0.75,
+            width: size * 0.66,
+            height: size * 0.66,
             borderRadius: '20%',
             backgroundColor: '#E0E5EC',
             boxShadow: `
@@ -40,8 +40,8 @@ export async function GET(request: NextRequest) {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: size * 0.55,
-              height: size * 0.55,
+              width: size * 0.45,
+              height: size * 0.45,
               borderRadius: '20%',
               backgroundColor: '#E0E5EC',
               color: '#6C63FF',
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
               `,
             }}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width={size * 0.4} height={size * 0.4} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-scroll-text-icon lucide-scroll-text"><path d="M15 12h-5" /><path d="M15 8h-5" /><path d="M19 17V5a2 2 0 0 0-2-2H4" /><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3" /></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width={size * 0.32} height={size * 0.32} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-scroll-text-icon lucide-scroll-text"><path d="M15 12h-5" /><path d="M15 8h-5" /><path d="M19 17V5a2 2 0 0 0-2-2H4" /><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3" /></svg>
           </div>
         </div>
       </div>
