@@ -20,8 +20,8 @@ export default function FinishedDisplay({ onRestart }: FinishedDisplayProps) {
         </div>
       </div>
       <div className="space-y-4">
-        <h2 className="font-display text-3xl font-extrabold">{t('congrats')}</h2>
-        <p className="  text-lg">{t('congratsDesc')}</p>
+        <h2 className="font-display text-3xl font-extrabold">{t('timer.congrats')}</h2>
+        <p className="  text-lg">{t('timer.congratsDesc')}</p>
       </div>
 
       <button
