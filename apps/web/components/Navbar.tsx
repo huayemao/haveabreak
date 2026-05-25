@@ -71,9 +71,10 @@ export default function Navbar() {
       className="fixed top-6 right-4 md:left-1/2 md:-translate-x-1/2 z-50 md:w-full max-w-7xl px-4 flex flex-col items-end md:items-center pointer-events-none"
     >
       {/* Desktop & Mobile Main Pill */}
-      {!isTauriBuild && (
-        <div className="flex items-center gap-2 sm:gap-6 p-1 sm:px-6 sm:py-2.5 rounded-2xl sm:rounded-full bg-bg-base shadow-extruded backdrop-blur-md bg-opacity-90 border border-white/10 relative z-50 pointer-events-auto md:mx-auto">
-          {/* Desktop Links (Hidden on mobile) */}
+
+      <div className="flex items-center gap-2 sm:gap-6 p-1 sm:px-6 sm:py-2.5 rounded-2xl sm:rounded-full bg-bg-base shadow-extruded backdrop-blur-md bg-opacity-90 border border-white/10 relative z-50 pointer-events-auto md:mx-auto">
+        {/* Desktop Links (Hidden on mobile) */}
+        {!isTauriBuild && (
           <div className="hidden md:flex items-center gap-4">
             {/* Home Link */}
             <Link
@@ -98,8 +99,8 @@ export default function Navbar() {
                   <DropdownMenuLabel className="font-display text-fg-primary px-3 py-2">{t('nav.apps', { defaultValue: 'Apps' })}</DropdownMenuLabel>
                   <div className="h-px bg-fg-muted opacity-20 my-1" />
                   {navLinks.map((link) => (
-                    <DropdownMenuItem key={link.href} className={`flex items-center gap-2 px-3 py-2.5 rounded-xl transition-all duration-200 ${link.active 
-                      ? 'shadow-[inset_3px_3px_6px_rgb(163,177,198,0.6),inset_-3px_-3px_6px_rgba(255,255,255,0.5)] bg-bg-base text-accent font-medium' 
+                    <DropdownMenuItem key={link.href} className={`flex items-center gap-2 px-3 py-2.5 rounded-xl transition-all duration-200 ${link.active
+                      ? 'shadow-[inset_3px_3px_6px_rgb(163,177,198,0.6),inset_-3px_-3px_6px_rgba(255,255,255,0.5)] bg-bg-base text-accent font-medium'
                       : 'text-fg-muted hover:text-fg-primary hover:shadow-[inset_2px_2px_4px_rgb(163,177,198,0.4),inset_-2px_-2px_4px_rgba(255,255,255,0.4)] bg-bg-base'
                       }`}>
                       <Link href={link.href} className="flex items-center gap-2 w-full">
@@ -138,27 +139,26 @@ export default function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-
-          {/* Mobile Hamburger Button (Hidden on desktop) */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden flex items-center justify-center w-10 h-10 rounded-2xl p-0 shadow-none hover:shadow-none active:shadow-inset"
-            aria-label="Toggle Menu"
-          >
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={isOpen ? 'close' : 'menu'}
-                initial={{ opacity: 0, rotate: -90 }}
-                animate={{ opacity: 1, rotate: 0 }}
-                exit={{ opacity: 0, rotate: 90 }}
-                transition={{ duration: 0.2 }}
-              >
-                {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </motion.div>
-            </AnimatePresence>
-          </button>
-        </div>
-      )}
+        )}
+        {/* Mobile Hamburger Button (Hidden on desktop) */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="md:hidden flex items-center justify-center w-10 h-10 rounded-2xl p-0 shadow-none hover:shadow-none active:shadow-inset"
+          aria-label="Toggle Menu"
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={isOpen ? 'close' : 'menu'}
+              initial={{ opacity: 0, rotate: -90 }}
+              animate={{ opacity: 1, rotate: 0 }}
+              exit={{ opacity: 0, rotate: 90 }}
+              transition={{ duration: 0.2 }}
+            >
+              {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </motion.div>
+          </AnimatePresence>
+        </button>
+      </div>
       {/* Mobile Menu Dropdown */}
       <AnimatePresence>
         {isOpen && (
@@ -172,22 +172,22 @@ export default function Navbar() {
             <div className="flex flex-col gap-4">
               {!isTauriBuild && (
                 <>
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`flex items-center gap-4 p-4 rounded-2xl transition-all ${link.active
-                      ? 'shadow-inset bg-bg-base text-accent font-bold'
-                      : 'neumorphic-button text-fg-muted border-none shadow-extruded-sm'
-                      }`}
-                  >
-                    <div className={`p-2 rounded-xl ${link.active ? 'shadow-inset' : 'shadow-extruded-sm bg-bg-base'}`}>
-                      <link.icon className="w-5 h-5" />
-                    </div>
-                    <span className="font-display text-lg">{link.label}</span>
-                  </Link>
-                ))}
-                <div className="h-px bg-fg-muted opacity-10 my-2" />
+                  {navLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`flex items-center gap-4 p-4 rounded-2xl transition-all ${link.active
+                        ? 'shadow-inset bg-bg-base text-accent font-bold'
+                        : 'neumorphic-button text-fg-muted border-none shadow-extruded-sm'
+                        }`}
+                    >
+                      <div className={`p-2 rounded-xl ${link.active ? 'shadow-inset' : 'shadow-extruded-sm bg-bg-base'}`}>
+                        <link.icon className="w-5 h-5" />
+                      </div>
+                      <span className="font-display text-lg">{link.label}</span>
+                    </Link>
+                  ))}
+                  <div className="h-px bg-fg-muted opacity-10 my-2" />
                 </>
               )}
               <div className="flex justify-between items-center px-2">
