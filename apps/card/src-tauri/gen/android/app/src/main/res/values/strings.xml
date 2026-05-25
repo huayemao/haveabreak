@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">haveabreak-card</string>
-    <string name="main_activity_title">haveabreak-card</string>
+    <string name="app_name">Book Excerpt Viewer</string>
+    <string name="main_activity_title">Book Excerpt Viewer</string>
 </resources>
