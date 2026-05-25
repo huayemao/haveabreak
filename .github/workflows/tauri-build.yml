@@ -136,13 +136,6 @@ jobs:
         env:
           TAURI_SIGNING_PRIVATE_KEY: ""
 
-      - name: Build Timer Application (Windows)
-        run: |
-          cd apps/timer
-          npx tauri build
-        env:
-          TAURI_SIGNING_PRIVATE_KEY: ""
-
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -152,8 +145,6 @@ jobs:
             apps/card/src-tauri/target/release/bundle/nsis/*.exe
             apps/frame/src-tauri/target/release/bundle/msi/*.msi
             apps/frame/src-tauri/target/release/bundle/nsis/*.exe
-            apps/timer/src-tauri/target/release/bundle/msi/*.msi
-            apps/timer/src-tauri/target/release/bundle/nsis/*.exe
 
   build-android:
     name: Build Android App (${{ matrix.app }})
@@ -161,7 +152,7 @@ jobs:
     needs: get-release
     strategy:
       matrix:
-        app: [card, frame, timer]
+        app: [card, frame]
       fail-fast: false
 
     steps:
@@ -383,7 +374,6 @@ jobs:
         run: |
           mv artifacts/android-apk-card/app-universal-release.apk artifacts/android-apk-card/haveabreak-card.apk
           mv artifacts/android-apk-frame/app-universal-release.apk artifacts/android-apk-frame/haveabreak-frame.apk
-          mv artifacts/android-apk-timer/app-universal-release.apk artifacts/android-apk-timer/haveabreak-timer.apk
 
       - name: Upload Assets to Release
         uses: softprops/action-gh-release@v2
@@ -404,18 +394,14 @@ jobs:
             - [Card (Portable)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/windows-binaries/card/src-tauri/target/release/bundle/nsis/haveabreak-card_0.1.0_x64-setup.exe)
             - [Frame (Installer)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/windows-binaries/frame/src-tauri/target/release/bundle/msi/haveabreak-frame_0.1.0_x64_en-US.msi)
             - [Frame (Portable)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/windows-binaries/frame/src-tauri/target/release/bundle/nsis/haveabreak-frame_0.1.0_x64-setup.exe)
-            - [Timer (Installer)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/windows-binaries/timer/src-tauri/target/release/bundle/msi/haveabreak-timer_0.1.0_x64_en-US.msi)
-            - [Timer (Portable)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/windows-binaries/timer/src-tauri/target/release/bundle/nsis/haveabreak-timer_0.1.0_x64-setup.exe)
             
             ### Android
             - [Card APK](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/android-apk-card/haveabreak-card.apk)
             - [Frame APK](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/android-apk-frame/haveabreak-frame.apk)
-            - [Timer APK](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/android-apk-timer/haveabreak-timer.apk)
             
             ### iOS
             - [Card IPA](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/ios-ipa-card/arm64/haveabreak-card.ipa)
             - [Frame IPA](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/ios-ipa-frame/arm64/haveabreak-frame.ipa)
-            - [Timer IPA](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/ios-ipa-timer/arm64/haveabreak-timer.ipa)
 
       - name: Update Release Body with Notes
         uses: actions/github-script@v7
@@ -436,17 +422,13 @@ jobs:
             body += `- [Card (Installer)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries/card/src-tauri/target/release/bundle/msi/haveabreak-card_0.1.0_x64_en-US.msi)\n`;
             body += `- [Card (Portable)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries/card/src-tauri/target/release/bundle/nsis/haveabreak-card_0.1.0_x64-setup.exe)\n`;
             body += `- [Frame (Installer)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries/frame/src-tauri/target/release/bundle/msi/haveabreak-frame_0.1.0_x64_en-US.msi)\n`;
-            body += `- [Frame (Portable)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries/frame/src-tauri/target/release/bundle/nsis/haveabreak-frame_0.1.0_x64-setup.exe)\n`;
-            body += `- [Timer (Installer)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries/timer/src-tauri/target/release/bundle/msi/haveabreak-timer_0.1.0_x64_en-US.msi)\n`;
-            body += `- [Timer (Portable)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries/timer/src-tauri/target/release/bundle/nsis/haveabreak-timer_0.1.0_x64-setup.exe)\n\n`;
+            body += `- [Frame (Portable)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries/frame/src-tauri/target/release/bundle/nsis/haveabreak-frame_0.1.0_x64-setup.exe)\n\n`;
             body += `### Android\n`;
             body += `- [Card APK](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/android-apk-card/haveabreak-card.apk)\n`;
-            body += `- [Frame APK](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/android-apk-frame/haveabreak-frame.apk)\n`;
-            body += `- [Timer APK](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/android-apk-timer/haveabreak-timer.apk)\n\n`;
+            body += `- [Frame APK](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/android-apk-frame/haveabreak-frame.apk)\n\n`;
             body += `### iOS\n`;
             body += `- [Card IPA](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/ios-ipa-card/arm64/haveabreak-card.ipa)\n`;
             body += `- [Frame IPA](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/ios-ipa-frame/arm64/haveabreak-frame.ipa)\n`;
-            body += `- [Timer IPA](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/ios-ipa-timer/arm64/haveabreak-timer.ipa)\n`;
             
             console.log('Release body:', body);
             
