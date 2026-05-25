@@ -122,12 +122,22 @@ jobs:
           TAURI_BUILD: "true"
           NEXT_TELEMETRY_DISABLED: 1
 
+      - name: Copy Card Index HTML to Out Directory (Windows)
+        shell: bash
+        run: |
+          sed -e 's/{{TITLE}}/QuoteLite/g' -e 's/{{ROUTE}}/card/g' scripts/tauri-index-template.html > apps/web/out/index.html
+
       - name: Build Card Application (Windows)
         run: |
           cd apps/card
           npx tauri build
         env:
           TAURI_SIGNING_PRIVATE_KEY: ""
+
+      - name: Copy Frame Index HTML to Out Directory (Windows)
+        shell: bash
+        run: |
+          sed -e 's/{{TITLE}}/HaveABreak Frame/g' -e 's/{{ROUTE}}/frame/g' scripts/tauri-index-template.html > apps/web/out/index.html
 
       - name: Build Frame Application (Windows)
         run: |
@@ -219,6 +229,19 @@ jobs:
         env:
           TAURI_BUILD: "true"
           NEXT_TELEMETRY_DISABLED: 1
+
+      - name: Copy Index HTML to Out Directory (Android)
+        shell: bash
+        run: |
+          APP_NAME="${{ matrix.app }}"
+          if [ "$APP_NAME" = "card" ]; then
+            TITLE="QuoteLite"
+            ROUTE="card"
+          else
+            TITLE="HaveABreak Frame"
+            ROUTE="frame"
+          fi
+          sed -e "s/{{TITLE}}/$TITLE/g" -e "s/{{ROUTE}}/$ROUTE/g" scripts/tauri-index-template.html > apps/web/out/index.html
 
       - name: Build Application (Android)
         working-directory: apps/${{ matrix.app }}/src-tauri
@@ -328,6 +351,22 @@ jobs:
         working-directory: apps/${{ matrix.app }}/src-tauri
         run: |
           npx tauri icon ../../web/public/${{ matrix.app }}/icon.png
+
+      - name: Copy Index HTML to Out Directory (iOS)
+        shell: bash
+        run: |
+          APP_NAME="${{ matrix.app }}"
+          if [ "$APP_NAME" = "card" ]; then
+            TITLE="QuoteLite"
+            ROUTE="card"
+          elif [ "$APP_NAME" = "frame" ]; then
+            TITLE="HaveABreak Frame"
+            ROUTE="frame"
+          else
+            TITLE="HaveABreak Timer"
+            ROUTE="timer"
+          fi
+          sed -e "s/{{TITLE}}/$TITLE/g" -e "s/{{ROUTE}}/$ROUTE/g" scripts/tauri-index-template.html > apps/web/out/index.html
 
       - name: Build Application (iOS)
         working-directory: apps/${{ matrix.app }}/src-tauri

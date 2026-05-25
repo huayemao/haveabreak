@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuoteLite</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .loading {
+      color: white;
+      text-align: center;
+    }
+    .loading svg {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 16px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="loading">
+    <svg viewBox="0 0 24 24" fill="none">
+      <circle class="path" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-dasharray="62.8319" stroke-dashoffset="15.708" opacity="0.5"></circle>
+      <circle class="path" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-dasharray="62.8319" stroke-dashoffset="62.8319" opacity="1" style="transition: stroke-dashoffset 0.3s ease"></circle>
+    </svg>
+    <div>Loading...</div>
+  </div>
+
+  <script>
+    const SUPPORTED_LANGUAGES = ['en', 'zh', 'de', 'es', 'fr', 'it', 'ja', 'ko', 'pt', 'ru'];
+
+    function getLanguage() {
+      let lang;
+      
+      if (typeof window !== 'undefined') {
+        lang = navigator.language || navigator.userLanguage;
+      } else {
+        lang = 'en';
+      }
+
+      const langCode = lang.split(['-', '_'])[0].toLowerCase();
+      
+      if (SUPPORTED_LANGUAGES.includes(langCode)) {
+        return langCode;
+      }
+      
+      return 'en';
+    }
+
+    const language = getLanguage();
+    window.location.href = `/${language}/card`;
+  </script>
+</body>
+</html>

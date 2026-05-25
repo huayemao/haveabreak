@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{TITLE}}</title>
+  <script>
+    const SUPPORTED_LANGUAGES = ['en', 'zh', 'de', 'es', 'fr', 'it', 'ja', 'ko', 'pt', 'ru'];
+    function getLanguage() {
+      let lang = navigator.language || navigator.userLanguage || 'en';
+      const langCode = lang.split(['-', '_'])[0].toLowerCase();
+      return SUPPORTED_LANGUAGES.includes(langCode) ? langCode : 'en';
+    }
+    window.location.href = `/${getLanguage()}/{{ROUTE}}`;
+  </script>
+</head>
+<body></body>
+</html>
