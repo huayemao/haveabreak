@@ -103,7 +103,7 @@ export default function Settings({
                   onClick={handleAddTip}
                   className="neumorphic-button-primary px-6 py-2 font-medium text-white min-w-[60px]"
                 >
-                  {t('timer.addBtn')}
+                  {t('common.addBtn')}
                 </button>
               </div>
 
@@ -127,7 +127,7 @@ export default function Settings({
                         onClick={() => togglePresetTip(tip)}
                         className="neumorphic-button text-xs px-3 py-1"
                       >
-                        {disabledPresetTips.includes(tip) ? (t('common.enable') || 'Enable') : (t('common.disable') || 'Disable')}
+                        {disabledPresetTips.includes(tip) ? (t('enable') || 'Enable') : (t('disable') || 'Disable')}
                       </button>
                     </div>
                   ))}
@@ -182,7 +182,7 @@ export default function Settings({
                   <span className="text-lg font-semibold text-fg-primary w-12 text-right">
                     {localInterval}
                   </span>
-                  <span className="text-sm text-fg-muted">{t('tipIntervalSeconds')}</span>
+                  <span className="text-sm text-fg-muted">{t('timer.tipIntervalSeconds')}</span>
                 </div>
               </div>
               <button
