@@ -10,15 +10,16 @@ interface LayoutContentProps {
   safeAreaTop?: boolean;
 }
 
-export default function LayoutContent({ children, className, safeAreaTop = true }: LayoutContentProps) {
+export default function LayoutContent({ children, className }: LayoutContentProps) {
   const { isHidden } = useNavbar();
 
   return (
     <div className={cn(
       "min-h-screen flex flex-col",
-      safeAreaTop && "safe-area-top-mb",
       className
-    )}>
+    )}
+      style={{ paddingTop: 'env(safe-area-inset-top)' }}
+    >
       {children}
     </div>
   );

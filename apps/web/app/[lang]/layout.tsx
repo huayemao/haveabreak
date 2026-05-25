@@ -122,7 +122,7 @@ export default async function RootLayout({
             <NavbarProvider>
               <LanguageBanner />
                 <Navbar />
-              <LayoutContent safeAreaTop className={isTauriBuild ? "flex-1 justify-center" : "justify-center"}>
+              <LayoutContent className={"flex-1 justify-center"}>
                 {children}
               </LayoutContent>
             </NavbarProvider>
