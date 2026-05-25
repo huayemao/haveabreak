@@ -1,5 +1,6 @@
 {
-  "pageTitle": "Book Excerpt Viewer",
+  "pageTitle": "QuoteLite",
+  "shortcutName": "QuoteLite",
   "pageSubtitle": "Swipe through book excerpts like short videos",
   "addTitle": "Add New Quote",
   "addBook": "Add Book",

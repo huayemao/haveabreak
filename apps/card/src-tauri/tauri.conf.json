@@ -1,12 +1,12 @@
 {
-  "productName": "haveabreak-card",
+  "productName": "QuoteLite",
   "version": "0.1.0",
-  "identifier": "online.haveabreak.card",
+  "identifier": "online.white-noise.quotelite",
   "app": {
     "windows": [
       {
         "label": "main",
-        "title": "haveabreak - 书摘查看器",
+        "title": "QuoteLite",
         "width": 900,
         "height": 680,
         "url": "en/card"
