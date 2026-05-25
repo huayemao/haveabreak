@@ -372,7 +372,7 @@ jobs:
       - name: Rename APK files to avoid overwriting
         shell: bash
         run: |
-          mv artifacts/android-apk-card/app-universal-release.apk artifacts/android-apk-card/haveabreak-card.apk
+          mv artifacts/android-apk-card/app-universal-release.apk artifacts/android-apk-card/quotelite.apk
           mv artifacts/android-apk-frame/app-universal-release.apk artifacts/android-apk-frame/haveabreak-frame.apk
 
       - name: Upload Assets to Release
@@ -390,17 +390,17 @@ jobs:
             ## Downloads
             
             ### Windows
-            - [Card (Installer)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/windows-binaries/card/src-tauri/target/release/bundle/msi/haveabreak-card_0.1.0_x64_en-US.msi)
-            - [Card (Portable)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/windows-binaries/card/src-tauri/target/release/bundle/nsis/haveabreak-card_0.1.0_x64-setup.exe)
+            - [Card (Installer)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/windows-binaries/card/src-tauri/target/release/bundle/msi/quotelite_0.1.0_x64_en-US.msi)
+            - [Card (Portable)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/windows-binaries/card/src-tauri/target/release/bundle/nsis/quotelite_0.1.0_x64-setup.exe)
             - [Frame (Installer)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/windows-binaries/frame/src-tauri/target/release/bundle/msi/haveabreak-frame_0.1.0_x64_en-US.msi)
             - [Frame (Portable)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/windows-binaries/frame/src-tauri/target/release/bundle/nsis/haveabreak-frame_0.1.0_x64-setup.exe)
             
             ### Android
-            - [Card APK](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/android-apk-card/haveabreak-card.apk)
+            - [Card APK](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/android-apk-card/quotelite.apk)
             - [Frame APK](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/android-apk-frame/haveabreak-frame.apk)
             
             ### iOS
-            - [Card IPA](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/ios-ipa-card/arm64/haveabreak-card.ipa)
+            - [Card IPA](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/ios-ipa-card/arm64/quotelite.ipa)
             - [Frame IPA](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/ios-ipa-frame/arm64/haveabreak-frame.ipa)
 
       - name: Update Release Body with Notes
@@ -419,15 +419,15 @@ jobs:
             body += `${formattedNotes}\n\n`;
             body += `## Downloads\n\n`;
             body += `### Windows\n`;
-            body += `- [Card (Installer)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries/card/src-tauri/target/release/bundle/msi/haveabreak-card_0.1.0_x64_en-US.msi)\n`;
-            body += `- [Card (Portable)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries/card/src-tauri/target/release/bundle/nsis/haveabreak-card_0.1.0_x64-setup.exe)\n`;
+            body += `- [Card (Installer)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries/card/src-tauri/target/release/bundle/msi/quotelite_0.1.0_x64_en-US.msi)\n`;
+            body += `- [Card (Portable)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries/card/src-tauri/target/release/bundle/nsis/quotelite_0.1.0_x64-setup.exe)\n`;
             body += `- [Frame (Installer)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries/frame/src-tauri/target/release/bundle/msi/haveabreak-frame_0.1.0_x64_en-US.msi)\n`;
             body += `- [Frame (Portable)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries/frame/src-tauri/target/release/bundle/nsis/haveabreak-frame_0.1.0_x64-setup.exe)\n\n`;
             body += `### Android\n`;
-            body += `- [Card APK](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/android-apk-card/haveabreak-card.apk)\n`;
+            body += `- [Card APK](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/android-apk-card/quotelite.apk)\n`;
             body += `- [Frame APK](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/android-apk-frame/haveabreak-frame.apk)\n\n`;
             body += `### iOS\n`;
-            body += `- [Card IPA](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/ios-ipa-card/arm64/haveabreak-card.ipa)\n`;
+            body += `- [Card IPA](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/ios-ipa-card/arm64/quotelite.ipa)\n`;
             body += `- [Frame IPA](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/ios-ipa-frame/arm64/haveabreak-frame.ipa)\n`;
             
             console.log('Release body:', body);

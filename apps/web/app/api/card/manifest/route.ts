@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   const cardMessages = messages.card || {};
 
   const manifest = {
-    id: 'haveabreak-card',
+    id: 'quotelite',
     name: cardMessages.pageTitle || 'Book Excerpts',
     short_name: 'Excerpts',
     description: cardMessages.pageSubtitle || 'Swipe up or down to explore beautiful passages',
