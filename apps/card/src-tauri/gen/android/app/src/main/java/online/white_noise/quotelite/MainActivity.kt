@@ -1,4 +1,4 @@
-package online.white-noise.quotelite
+package online.white_noise.quotelite
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
