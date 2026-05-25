@@ -11,8 +11,8 @@ export default function InterruptedDisplay() {
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    toastIdRef.current = toast.error(t('moveWarning'), {
-      description: isMobile ? t('moveWarningDescMobile') : t('moveWarningDesc'),
+    toastIdRef.current = toast.error(t('timer.moveWarning'), {
+      description: isMobile ? t('timer.moveWarningDescMobile') : t('timer.moveWarningDesc'),
       duration: Infinity, // Keep visible as long as component is mounted
     });
 
