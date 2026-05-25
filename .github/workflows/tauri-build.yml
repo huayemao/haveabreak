@@ -57,9 +57,13 @@ jobs:
             core.setOutput('release_note', releaseNote);
 
   build-windows:
-    name: Build Windows App
+    name: Build Windows App (${{ matrix.app }})
     runs-on: windows-latest
     needs: get-release
+    strategy:
+      matrix:
+        app: [card, frame]
+      fail-fast: false
 
     steps:
       - name: Checkout Repository
@@ -105,10 +109,11 @@ jobs:
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
+            apps/${{ matrix.app }}/src-tauri/target/
+          key: ${{ runner.os }}-cargo-windows-${{ matrix.app }}-${{ hashFiles('**/Cargo.toml') }}
           restore-keys: |
-            ${{ runner.os }}-cargo-
+            ${{ runner.os }}-cargo-windows-${{ matrix.app }}-
+            ${{ runner.os }}-cargo-windows-
 
       - name: Temporarily Hide Dynamic Folders for Static Export
         shell: pwsh
@@ -122,26 +127,22 @@ jobs:
           TAURI_BUILD: "true"
           NEXT_TELEMETRY_DISABLED: 1
 
-      - name: Copy Card Index HTML to Out Directory (Windows)
+      - name: Copy Index HTML to Out Directory (Windows)
         shell: bash
         run: |
-          sed -e 's/{{TITLE}}/QuoteLite/g' -e 's/{{ROUTE}}/card/g' scripts/tauri-index-template.html > apps/web/out/index.html
+          APP_NAME="${{ matrix.app }}"
+          if [ "$APP_NAME" = "card" ]; then
+            TITLE="QuoteLite"
+            ROUTE="card"
+          else
+            TITLE="HaveABreak Frame"
+            ROUTE="frame"
+          fi
+          sed -e "s/{{TITLE}}/$TITLE/g" -e "s/{{ROUTE}}/$ROUTE/g" scripts/tauri-index-template.html > apps/web/out/index.html
 
-      - name: Build Card Application (Windows)
+      - name: Build Application (Windows)
         run: |
-          cd apps/card
-          npx tauri build
-        env:
-          TAURI_SIGNING_PRIVATE_KEY: ""
-
-      - name: Copy Frame Index HTML to Out Directory (Windows)
-        shell: bash
-        run: |
-          sed -e 's/{{TITLE}}/HaveABreak Frame/g' -e 's/{{ROUTE}}/frame/g' scripts/tauri-index-template.html > apps/web/out/index.html
-
-      - name: Build Frame Application (Windows)
-        run: |
-          cd apps/frame
+          cd apps/${{ matrix.app }}
           npx tauri build
         env:
           TAURI_SIGNING_PRIVATE_KEY: ""
@@ -149,12 +150,10 @@ jobs:
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: windows-binaries
+          name: windows-binaries-${{ matrix.app }}
           path: |
-            apps/card/src-tauri/target/release/bundle/msi/*.msi
-            apps/card/src-tauri/target/release/bundle/nsis/*.exe
-            apps/frame/src-tauri/target/release/bundle/msi/*.msi
-            apps/frame/src-tauri/target/release/bundle/nsis/*.exe
+            apps/${{ matrix.app }}/src-tauri/target/release/bundle/msi/*.msi
+            apps/${{ matrix.app }}/src-tauri/target/release/bundle/nsis/*.exe
 
   build-android:
     name: Build Android App (${{ matrix.app }})
@@ -429,10 +428,10 @@ jobs:
             ## Downloads
             
             ### Windows
-            - [Card (Installer)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/windows-binaries/card/src-tauri/target/release/bundle/msi/quotelite_0.1.0_x64_en-US.msi)
-            - [Card (Portable)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/windows-binaries/card/src-tauri/target/release/bundle/nsis/quotelite_0.1.0_x64-setup.exe)
-            - [Frame (Installer)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/windows-binaries/frame/src-tauri/target/release/bundle/msi/haveabreak-frame_0.1.0_x64_en-US.msi)
-            - [Frame (Portable)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/windows-binaries/frame/src-tauri/target/release/bundle/nsis/haveabreak-frame_0.1.0_x64-setup.exe)
+            - [Card (Installer)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/windows-binaries-card/quotelite_0.1.0_x64_en-US.msi)
+            - [Card (Portable)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/windows-binaries-card/quotelite_0.1.0_x64-setup.exe)
+            - [Frame (Installer)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/windows-binaries-frame/haveabreak-frame_0.1.0_x64_en-US.msi)
+            - [Frame (Portable)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/windows-binaries-frame/haveabreak-frame_0.1.0_x64-setup.exe)
             
             ### Android
             - [Card APK](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/android-apk-card/quotelite.apk)
@@ -458,10 +457,10 @@ jobs:
             body += `${formattedNotes}\n\n`;
             body += `## Downloads\n\n`;
             body += `### Windows\n`;
-            body += `- [Card (Installer)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries/card/src-tauri/target/release/bundle/msi/quotelite_0.1.0_x64_en-US.msi)\n`;
-            body += `- [Card (Portable)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries/card/src-tauri/target/release/bundle/nsis/quotelite_0.1.0_x64-setup.exe)\n`;
-            body += `- [Frame (Installer)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries/frame/src-tauri/target/release/bundle/msi/haveabreak-frame_0.1.0_x64_en-US.msi)\n`;
-            body += `- [Frame (Portable)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries/frame/src-tauri/target/release/bundle/nsis/haveabreak-frame_0.1.0_x64-setup.exe)\n\n`;
+            body += `- [Card (Installer)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries-card/quotelite_0.1.0_x64_en-US.msi)\n`;
+            body += `- [Card (Portable)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries-card/quotelite_0.1.0_x64-setup.exe)\n`;
+            body += `- [Frame (Installer)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries-frame/haveabreak-frame_0.1.0_x64_en-US.msi)\n`;
+            body += `- [Frame (Portable)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries-frame/haveabreak-frame_0.1.0_x64-setup.exe)\n\n`;
             body += `### Android\n`;
             body += `- [Card APK](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/android-apk-card/quotelite.apk)\n`;
             body += `- [Frame APK](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/android-apk-frame/haveabreak-frame.apk)\n\n`;
