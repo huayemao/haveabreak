@@ -127,6 +127,20 @@ jobs:
           TAURI_BUILD: "true"
           NEXT_TELEMETRY_DISABLED: 1
 
+      - name: Clean Out Directory for Current App (Windows)
+        shell: bash
+        run: |
+          APP_NAME="${{ matrix.app }}"
+          cd apps/web/out
+          
+          find . -maxdepth 1 -type d ! -name '.' ! -name '_next' ! -name 'static' ! -name '_not-found' ! -name '404' ! -name 'en' ! -name 'zh' ! -name 'de' ! -name 'es' ! -name 'fr' ! -name 'it' ! -name 'ja' ! -name 'ko' ! -name 'pt' ! -name 'ru' -exec rm -rf {} +
+          
+          for lang in en zh de es fr it ja ko pt ru; do
+            if [ -d "$lang" ]; then
+              find "$lang" -maxdepth 1 -type d ! -name "$lang" ! -name "$APP_NAME" -exec rm -rf {} +
+            fi
+          done
+
       - name: Copy Index HTML to Out Directory (Windows)
         shell: bash
         run: |
@@ -228,6 +242,20 @@ jobs:
         env:
           TAURI_BUILD: "true"
           NEXT_TELEMETRY_DISABLED: 1
+
+      - name: Clean Out Directory for Current App (Android)
+        shell: bash
+        run: |
+          APP_NAME="${{ matrix.app }}"
+          cd apps/web/out
+          
+          find . -maxdepth 1 -type d ! -name '.' ! -name '_next' ! -name 'static' ! -name '_not-found' ! -name '404' ! -name 'en' ! -name 'zh' ! -name 'de' ! -name 'es' ! -name 'fr' ! -name 'it' ! -name 'ja' ! -name 'ko' ! -name 'pt' ! -name 'ru' -exec rm -rf {} +
+          
+          for lang in en zh de es fr it ja ko pt ru; do
+            if [ -d "$lang" ]; then
+              find "$lang" -maxdepth 1 -type d ! -name "$lang" ! -name "$APP_NAME" -exec rm -rf {} +
+            fi
+          done
 
       - name: Copy Index HTML to Out Directory (Android)
         shell: bash
@@ -350,6 +378,20 @@ jobs:
         working-directory: apps/${{ matrix.app }}/src-tauri
         run: |
           npx tauri icon ../../web/public/${{ matrix.app }}/icon.png
+
+      - name: Clean Out Directory for Current App (iOS)
+        shell: bash
+        run: |
+          APP_NAME="${{ matrix.app }}"
+          cd apps/web/out
+          
+          find . -maxdepth 1 -type d ! -name '.' ! -name '_next' ! -name 'static' ! -name '_not-found' ! -name '404' ! -name 'en' ! -name 'zh' ! -name 'de' ! -name 'es' ! -name 'fr' ! -name 'it' ! -name 'ja' ! -name 'ko' ! -name 'pt' ! -name 'ru' -exec rm -rf {} +
+          
+          for lang in en zh de es fr it ja ko pt ru; do
+            if [ -d "$lang" ]; then
+              find "$lang" -maxdepth 1 -type d ! -name "$lang" ! -name "$APP_NAME" -exec rm -rf {} +
+            fi
+          done
 
       - name: Copy Index HTML to Out Directory (iOS)
         shell: bash
