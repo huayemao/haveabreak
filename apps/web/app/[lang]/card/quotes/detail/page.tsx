@@ -149,6 +149,7 @@ function FullscreenQuoteContent() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 bg-bg-base z-[100] flex flex-col touch-none"
+      style={{paddingTop:'env(safe-area-inset-top)'}}
     >
       {/* Immersive Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">

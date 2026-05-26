@@ -89,7 +89,7 @@ export default function QuoteCard({ card, isActive, onEdit, onDelete, isFullscre
       >
         {/* Extended Metadata - Now at top */}
         {(chapter || page) && (
-            <QuoteMetadata chapter={chapter} page={page}  className='mb-2'/>
+            <QuoteMetadata chapter={chapter} page={page}  className='mb-4'/>
         )}
         
         <div className={`relative ${isFullscreen ? 'overflow-y-auto custom-scrollbar max-h-[50vh] sm:max-h-[55vh]' : 'line-clamp-6'}`}>
