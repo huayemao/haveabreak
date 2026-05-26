@@ -6,7 +6,7 @@ import { Quote } from '@/apps/card/types';
 import QuoteCard from './components/QuoteCard';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTranslations } from 'next-intl';
-import { Plus, Library, Sparkles, ChevronUp, ChevronDown, Settings, Play, Pause, Shuffle, Maximize2, Minimize2 } from 'lucide-react';
+import { Plus, Library, Sparkles, ChevronUp, ChevronDown, Settings, Play, Pause, Maximize2, Minimize2 } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { useRouter } from '@/i18n/routing';
 import { cn, isTauriBuild } from '@/lib/utils';
@@ -25,7 +25,6 @@ export default function CardPageClient() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isRandom, setIsRandom] = useState(false);
   const [showUI, setShowUI] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const uiTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -34,7 +33,7 @@ export default function CardPageClient() {
   const quotesWithBooks = useMemo(() => selectQuotesWithBooks({ books, quotes } as any), [books, quotes]);
 
   const handleNext = useCallback(() => {
-    if (isRandom && quotesWithBooks.length > 1) {
+    if (settings.isRandom && quotesWithBooks.length > 1) {
       let nextIndex = currentIndex;
       while (nextIndex === currentIndex) {
         nextIndex = Math.floor(Math.random() * quotesWithBooks.length);
@@ -48,10 +47,10 @@ export default function CardPageClient() {
     } else {
       setCurrentIndex(0);
     }
-  }, [currentIndex, quotesWithBooks.length, isRandom]);
+  }, [currentIndex, quotesWithBooks.length, settings.isRandom]);
 
   const handlePrev = useCallback(() => {
-    if (isRandom && quotesWithBooks.length > 1) {
+    if (settings.isRandom && quotesWithBooks.length > 1) {
       let prevIndex = currentIndex;
       while (prevIndex === currentIndex) {
         prevIndex = Math.floor(Math.random() * quotesWithBooks.length);
@@ -65,7 +64,7 @@ export default function CardPageClient() {
     } else {
       setCurrentIndex(quotesWithBooks.length - 1);
     }
-  }, [currentIndex, quotesWithBooks.length, isRandom]);
+  }, [currentIndex, quotesWithBooks.length, settings.isRandom]);
 
   const { isDragging, onDragStart, dragProps } = useSwipeNavigation({
     onNext: handleNext,
@@ -184,13 +183,6 @@ export default function CardPageClient() {
           title={isAutoPlaying ? "Pause" : "Auto Play"}
         >
           {isAutoPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-        </button>
-        <button
-          onClick={() => setIsRandom(!isRandom)}
-          className={`w-9 h-9 rounded-full neumorphic-button flex items-center justify-center transition-all ${isRandom ? '!text-primary shadow-inset' : 'text-fg-muted'}`}
-          title="Shuffle"
-        >
-          <Shuffle className="w-4 h-4" />
         </button>
         <button
           onClick={toggleFullscreen}

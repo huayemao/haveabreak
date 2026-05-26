@@ -53,6 +53,7 @@ export default function CardSettingsPanel({
     clearUpdate,
     updateQuoteSortOrder,
     updateSwipeInterval,
+    updateIsRandom,
   } = useCardStore();
 
   const handleAddSubscription = () => {
@@ -148,6 +149,11 @@ export default function CardSettingsPanel({
     toast.success(t('card.autoPlayIntervalChanged', { defaultValue: 'Auto play interval updated!' }));
   };
 
+  const handleIsRandomChange = (isRandom: boolean) => {
+    updateIsRandom(isRandom);
+    toast.success(t('card.randomSettingChanged', { defaultValue: 'Random setting updated!' }));
+  };
+
 
   return (
     <motion.div
@@ -237,6 +243,8 @@ export default function CardSettingsPanel({
               <SortSection
                 quoteSortOrder={settings.quoteSortOrder}
                 onSortOrderChange={handleSortOrderChange}
+                isRandom={settings.isRandom}
+                onIsRandomChange={handleIsRandomChange}
               />
               <div className="mt-6">
                 <AutoPlaySection

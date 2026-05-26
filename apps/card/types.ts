@@ -35,6 +35,7 @@ export interface CardSettings {
   activeSubscriptionId: string | null;
   lastCheckTime: number;
   lastUpdateTime: number;
+  isRandom: boolean;
 }
 
 export interface SubscriptionDiff {

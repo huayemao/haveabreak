@@ -43,6 +43,7 @@ interface CardState {
   updateSettings: (settings: CardSettings) => void;
   updateQuoteSortOrder: (order: 'createdAt' | 'page') => void;
   updateSwipeInterval: (interval: number) => void;
+  updateIsRandom: (isRandom: boolean) => void;
   exportData: () => Promise<string>;
   importData: (data: string) => void;
   
@@ -70,6 +71,7 @@ export const useCardStore = create<CardState>((set, get) => ({
     activeSubscriptionId: null,
     lastCheckTime: 0,
     lastUpdateTime: 0,
+    isRandom: true,
   },
   isLoading: true,
   subscriptionDiff: null,
@@ -182,6 +184,13 @@ export const useCardStore = create<CardState>((set, get) => ({
   updateSwipeInterval: (interval: number) => {
     const state = get();
     const newSettings = { ...state.settings, swipeInterval: interval };
+    storageSaveSettings(newSettings);
+    set({ settings: newSettings });
+  },
+
+  updateIsRandom: (isRandom: boolean) => {
+    const state = get();
+    const newSettings = { ...state.settings, isRandom };
     storageSaveSettings(newSettings);
     set({ settings: newSettings });
   },
