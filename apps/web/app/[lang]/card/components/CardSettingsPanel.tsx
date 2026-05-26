@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useScrollLock } from '@/apps/frame/utils/useScrollLock';
 import { useState } from 'react';
-import { X, Download, Database, Settings } from 'lucide-react';
+import { X, Download, Database, Settings, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Book, Subscription } from '@/apps/card/types';
 import { useCardStore } from '@/apps/card/store';
@@ -37,6 +37,7 @@ export default function CardSettingsPanel({
   const [newSubscriptionName, setNewSubscriptionName] = useState('');
   const [newSubscriptionUrl, setNewSubscriptionUrl] = useState('');
   const [showSubscriptionList, setShowSubscriptionList] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   const {
     settings,
@@ -99,6 +100,7 @@ export default function CardSettingsPanel({
   };
 
   const handleExport = async () => {
+    setIsExporting(true);
     try {
       const bookName = books.length > 0
         ? books.map(b => b.title.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '-')).join('-')
@@ -136,6 +138,8 @@ export default function CardSettingsPanel({
       }
     } catch {
       toast.error(t('common.exportFailed', { defaultValue: 'Export failed' }));
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -189,7 +193,23 @@ export default function CardSettingsPanel({
           </button>
         </div>
 
-        <div className="flex-shrink-0 px-8 pt-4 border-b border-white/10">
+        {isExporting && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 z-[90] flex items-center justify-center bg-bg-base/80 backdrop-blur-sm rounded-[32px]"
+            >
+              <div className="flex flex-col items-center gap-4">
+                <Loader2 className="w-10 h-10 text-accent animate-spin" />
+                <span className="text-fg-primary font-medium">
+                  {t('card.exporting', { defaultValue: 'Exporting...' })}
+                </span>
+              </div>
+            </motion.div>
+          )}
+
+          <div className="flex-shrink-0 px-8 pt-4 border-b border-white/10">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="w-full">
               <TabsTrigger value="data" className="flex-1 gap-1" >
