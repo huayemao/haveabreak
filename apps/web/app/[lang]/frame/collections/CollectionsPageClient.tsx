@@ -3,8 +3,9 @@ import { useFrameStore } from '@/apps/frame/store';
 import CollectionManager from '@/apps/frame/components/CollectionManager';
 import { useSearchParams } from 'next/navigation';
 import { useRouter, usePathname } from '@/i18n/routing';
-import { useCallback } from 'react';
 import { Collection, MediaItem } from '@/apps/frame/types';
+import { startSlideshow } from '@/apps/frame/utils/playerUtils';
+import { useCallback } from 'react';
 
 export default function CollectionsPageClient({ 
   selectedCollectionId = null 
@@ -27,13 +28,6 @@ export default function CollectionsPageClient({
     deleteCollection
   } = useFrameStore();
 
-  const filterMediaByOrientation = useCallback((mediaList: MediaItem[]) => {
-    if (!settings.filterByOrientation) return mediaList;
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    const targetOrientation = isMobile ? 'portrait' : 'landscape';
-    return mediaList.filter(item => item.orientation === targetOrientation || item.orientation === 'square');
-  }, [settings.filterByOrientation]);
-
   const updateUrl = useCallback((params: Record<string, string | null>) => {
     const newParams = new URLSearchParams(searchParams.toString());
     Object.entries(params).forEach(([key, value]) => {
@@ -50,19 +44,13 @@ export default function CollectionsPageClient({
 
   const handlePlayCollection = (collection: Collection, paused = false, index = 0) => {
     const collectionMedia = media.filter((m) => collection.mediaIds.includes(m.id));
-    const filtered = filterMediaByOrientation(collectionMedia);
-    const originalMedia = collectionMedia[index];
-    let finalIndex = 0;
-    if (originalMedia) {
-      const filteredIndex = filtered.findIndex(item => item.id === originalMedia.id);
-      finalIndex = filteredIndex >= 0 ? filteredIndex : 0;
-    }
-
-    updateUrl({
-      player: 'true',
-      paused: paused ? 'true' : null,
-      index: finalIndex > 0 ? finalIndex.toString() : null,
-      collection: collection.id
+    startSlideshow({
+      media: collectionMedia,
+      settings,
+      updateUrl,
+      collectionId: collection.id,
+      paused,
+      index
     });
   };
 

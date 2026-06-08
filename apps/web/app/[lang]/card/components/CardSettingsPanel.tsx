@@ -8,7 +8,7 @@ import { motion } from 'motion/react';
 import { Book, Subscription } from '@/apps/card/types';
 import { useCardStore } from '@/apps/card/store';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import DataManagementSection from './settings/DataManagementSection';
+import DataManagementSection from '@/components/DataManagementSection';
 import SubscriptionSection from './settings/SubscriptionSection';
 import SortSection from './settings/SortSection';
 import AutoPlaySection from './settings/AutoPlaySection';
@@ -228,9 +228,10 @@ export default function CardSettingsPanel({
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsContent value="data" className="mt-0">
               <DataManagementSection
-                books={books}
                 onExport={handleExport}
                 onImport={handleImport}
+                onCopyJson={exportData}
+                onPasteJson={onImport}
               />
               <div className="mt-6">
                 <SubscriptionSection

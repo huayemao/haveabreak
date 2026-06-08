@@ -4,6 +4,8 @@ import { useScrollLock } from '../utils/useScrollLock';
 import { useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
+import DataManagementSection from '../../web/components/DataManagementSection';
+import { exportData } from '../storage';
 
 const fetchUrlContent = async (url: string): Promise<string> => {
   const response = await fetch(url);
@@ -198,24 +200,12 @@ export default function SettingsPanel({
         </div>
       </div>
 
-      <div className="space-y-3">
-        <h3 className="font-bold text-fg-primary">{t('common.import')} / {t('common.export')}</h3>
-
-        <div className="flex gap-3">
-          <button
-            onClick={handleExport}
-            className="flex-1 neumorphic-button p-4"
-          >
-            {t('common.export')}
-          </button>
-          <button
-            onClick={() => setShowImportModal(true)}
-            className="flex-1 neumorphic-button p-4"
-          >
-            {t('common.import')}
-          </button>
-        </div>
-      </div>
+      <DataManagementSection
+        onExport={handleExport}
+        onImport={handleImport}
+        onCopyJson={exportData}
+        onPasteJson={onImport}
+      />
 
       {showImportModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">

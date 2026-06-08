@@ -1,7 +1,6 @@
 'use client';
 import { useTranslations } from 'next-intl';
 import { useFrameStore } from '@/apps/frame/store';
-import { MediaItem } from '@/apps/frame/types';
 import FullscreenPlayer from '@/apps/frame/components/FullscreenPlayer';
 import AddMediaModal from '@/apps/frame/components/AddMediaModal';
 import { usePathname, useRouter, Link } from 'i18n/routing';
@@ -10,6 +9,8 @@ import { useEffect, useCallback, useMemo, Suspense } from 'react';
 import { Plus, Settings } from 'lucide-react';
 import NeumorphicBottomNav from '@/components/NeumorphicBottomNav';
 import InstallPrompt from '@/components/InstallPrompt';
+import { startSlideshow, filterMediaByOrientation } from '@/apps/frame/utils/playerUtils';
+import { MediaItem } from '@/apps/frame/types';
 
 export default function FrameLayoutClient({
   children,
@@ -59,13 +60,6 @@ export default function FrameLayoutClient({
 
   const handleCloseModal = () => updateUrl({ modal: null });
 
-  const filterMediaByOrientation = useCallback((mediaList: MediaItem[]) => {
-    if (!settings.filterByOrientation) return mediaList;
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    const targetOrientation = isMobile ? 'portrait' : 'landscape';
-    return mediaList.filter(item => item.orientation === targetOrientation || item.orientation === 'square');
-  }, [settings.filterByOrientation]);
-
   const currentMedia = useMemo(() => {
     let mediaList: MediaItem[];
     if (selectedCollectionId) {
@@ -78,8 +72,8 @@ export default function FrameLayoutClient({
     } else {
       mediaList = media;
     }
-    return filterMediaByOrientation(mediaList);
-  }, [selectedCollectionId, collections, media, filterMediaByOrientation]);
+    return filterMediaByOrientation(mediaList, settings.filterByOrientation);
+  }, [selectedCollectionId, collections, media, settings.filterByOrientation]);
 
   const handleExitFullscreen = () => {
     updateUrl({
@@ -90,19 +84,13 @@ export default function FrameLayoutClient({
   };
 
   const handleStartSlideshow = (paused = false, index = 0) => {
-    const filtered = filterMediaByOrientation(media);
-    const originalMedia = media[index];
-    let finalIndex = 0;
-    if (originalMedia) {
-      const filteredIndex = filtered.findIndex(item => item.id === originalMedia.id);
-      finalIndex = filteredIndex >= 0 ? filteredIndex : 0;
-    }
-
-    updateUrl({
-      player: 'true',
-      paused: paused ? 'true' : null,
-      index: finalIndex > 0 ? finalIndex.toString() : null,
-      collection: null
+    startSlideshow({
+      media,
+      settings,
+      updateUrl,
+      collectionId: null,
+      paused,
+      index
     });
   };
 
