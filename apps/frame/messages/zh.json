@@ -57,5 +57,6 @@
   "importResult": "导入结果",
   "total": "总计",
   "autoDetected": "自动检测为",
-  "cannotDetectType": "无法识别媒体类型"
+  "cannotDetectType": "无法识别媒体类型",
+  "viewDetail": "查看详情"
 }

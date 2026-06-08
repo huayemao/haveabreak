@@ -57,5 +57,6 @@
   "importResult": "Import Result",
   "total": "Total",
   "autoDetected": "Auto detected as",
-  "cannotDetectType": "Cannot detect media type"
+  "cannotDetectType": "Cannot detect media type",
+  "viewDetail": "View Detail"
 }

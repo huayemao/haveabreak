@@ -57,5 +57,6 @@
   "importResult": "가져오기 결과",
   "total": "총계",
   "autoDetected": "자동 감지됨",
-  "cannotDetectType": "미디어 유형을 감지할 수 없습니다"
+  "cannotDetectType": "미디어 유형을 감지할 수 없습니다",
+  "viewDetail": "상세 보기"
 }

@@ -57,5 +57,6 @@
   "importResult": "インポート結果",
   "total": "合計",
   "autoDetected": "自動検出",
-  "cannotDetectType": "メディアタイプを検出できません"
+  "cannotDetectType": "メディアタイプを検出できません",
+  "viewDetail": "詳細を表示"
 }

@@ -57,5 +57,6 @@
   "importResult": "Risultato Importazione",
   "total": "Totale",
   "autoDetected": "Rilevato automaticamente come",
-  "cannotDetectType": "Impossibile rilevare il tipo di media"
+  "cannotDetectType": "Impossibile rilevare il tipo di media",
+  "viewDetail": "Visualizza Dettagli"
 }
