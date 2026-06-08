@@ -6,7 +6,7 @@ import AddMediaModal from '@/apps/frame/components/AddMediaModal';
 import { usePathname, useRouter, Link } from 'i18n/routing';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useCallback, useMemo, Suspense } from 'react';
-import { Plus, Settings } from 'lucide-react';
+import { Plus, Settings, Image as ImageIcon, Video } from 'lucide-react';
 import NeumorphicBottomNav from '@/components/NeumorphicBottomNav';
 import InstallPrompt from '@/components/InstallPrompt';
 import { startSlideshow, filterMediaByOrientation } from '@/apps/frame/utils/playerUtils';
@@ -75,6 +75,9 @@ export default function FrameLayoutClient({
     return filterMediaByOrientation(mediaList, settings.filterByOrientation);
   }, [selectedCollectionId, collections, media, settings.filterByOrientation]);
 
+  const imageMedia = useMemo(() => currentMedia.filter((m) => m.type === 'image'), [currentMedia]);
+  const videoMedia = useMemo(() => currentMedia.filter((m) => m.type === 'video'), [currentMedia]);
+
   const handleExitFullscreen = () => {
     updateUrl({
       player: null,
@@ -86,6 +89,28 @@ export default function FrameLayoutClient({
   const handleStartSlideshow = (paused = false, index = 0) => {
     startSlideshow({
       media,
+      settings,
+      updateUrl,
+      collectionId: null,
+      paused,
+      index
+    });
+  };
+
+  const handleStartImageSlideshow = (paused = false, index = 0) => {
+    startSlideshow({
+      media: imageMedia,
+      settings,
+      updateUrl,
+      collectionId: null,
+      paused,
+      index
+    });
+  };
+
+  const handleStartVideoSlideshow = (paused = false, index = 0) => {
+    startSlideshow({
+      media: videoMedia,
       settings,
       updateUrl,
       collectionId: null,
@@ -153,20 +178,43 @@ export default function FrameLayoutClient({
   return (
     <div className="bg-bg-base pb-20">
       <InstallPrompt appId="frame" />
-      <header className=" bg-bg-base/90 backdrop-blur-lg border-b border-white/10 transition-all duration-300">
+      <header className="bg-bg-base/90 backdrop-blur-lg border-b border-white/10 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            {media.length > 0 && (
-              <button
-                onClick={() => handleStartSlideshow(false)}
-                className="neumorphic-button-primary p-2 flex items-center gap-2 rounded-2xl"
-              >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-                <span className="hidden sm:inline text-sm">{t('frame.slideshow')}</span>
-              </button>
-            )}
+            <div className="flex items-center gap-2">
+              {imageMedia.length > 0 && (
+                <button
+                  onClick={() => handleStartImageSlideshow(false)}
+                  className="neumorphic-button-primary p-2 flex items-center gap-2 rounded-2xl"
+                  title={t('frame.imageSlideshow')}
+                >
+                  <ImageIcon className="w-5 h-5" />
+                  <span className="hidden sm:inline text-sm">{t('frame.imageSlideshow')}</span>
+                </button>
+              )}
+              {videoMedia.length > 0 && (
+                <button
+                  onClick={() => handleStartVideoSlideshow(false)}
+                  className="neumorphic-button-primary p-2 flex items-center gap-2 rounded-2xl"
+                  title={t('frame.videoSlideshow')}
+                >
+                  <Video className="w-5 h-5" />
+                  <span className="hidden sm:inline text-sm">{t('frame.videoSlideshow')}</span>
+                </button>
+              )}
+              {currentMedia.length > 0 && (
+                <button
+                  onClick={() => handleStartSlideshow(false)}
+                  className="neumorphic-button-primary p-2 flex items-center gap-2 rounded-2xl"
+                  title={t('frame.mixedSlideshow')}
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z" />
+                  </svg>
+                  <span className="hidden sm:inline text-sm">{t('frame.mixedSlideshow')}</span>
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </header>
