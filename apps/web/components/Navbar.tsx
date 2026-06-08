@@ -69,7 +69,7 @@ export default function Navbar() {
       }}
       transition={{ duration: 0.3, ease: 'easeInOut' }}
       style={{ marginTop: 'env(safe-area-inset-top)' }}
-      className="fixed top-6 right-4 md:left-1/2 md:-translate-x-1/2 z-50 md:w-full max-w-7xl px-4 flex flex-col items-end md:items-center pointer-events-none"
+      className="fixed top-6 right-4 md:left-1/2 md:-translate-x-1/2 z-50 px-4 flex flex-col items-end md:items-center pointer-events-none"
     >
       {/* Desktop & Mobile Main Pill */}
 

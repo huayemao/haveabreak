@@ -3,7 +3,7 @@ import { useScrollLock } from '../utils/useScrollLock';
 import { AnimatePresence, motion } from 'motion/react';
 import { useRouter, usePathname } from 'i18n/routing';
 import { useSearchParams } from 'next/navigation';
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { MediaItem, FrameSettings } from '../types';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 
@@ -22,7 +22,18 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [currentIndex, setCurrentIndex] = useState(startIndex);
+  const shuffleArray = useMemo(() => {
+    const array = media.map((_, index) => index);
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }, [media.length]);
+
+  const [shuffledOrder, setShuffledOrder] = useState<number[]>(shuffleArray);
+  const [shuffledIndex, setShuffledIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(settings.shuffle ? shuffledOrder[0] : startIndex);
   const [isPlaying, setIsPlaying] = useState(startPaused ? false : settings.autoPlay);
   const [showControls, setShowControls] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -60,15 +71,38 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
 
   const goToNext = useCallback(() => {
     if (media.length === 0) return;
-    setCurrentIndex((prev) => (prev + 1) % media.length);
+    if (settings.shuffle) {
+      const nextShuffledIndex = (shuffledIndex + 1) % media.length;
+      if (nextShuffledIndex === 0) {
+        const newOrder = media.map((_, index) => index);
+        for (let i = newOrder.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [newOrder[i], newOrder[j]] = [newOrder[j], newOrder[i]];
+        }
+        setShuffledOrder(newOrder);
+        setCurrentIndex(newOrder[0]);
+        setShuffledIndex(0);
+      } else {
+        setCurrentIndex(shuffledOrder[nextShuffledIndex]);
+        setShuffledIndex(nextShuffledIndex);
+      }
+    } else {
+      setCurrentIndex((prev) => (prev + 1) % media.length);
+    }
     setProgress(0);
-  }, [media.length]);
+  }, [media.length, settings.shuffle, shuffledOrder, shuffledIndex]);
 
   const goToPrev = useCallback(() => {
     if (media.length === 0) return;
-    setCurrentIndex((prev) => (prev - 1 + media.length) % media.length);
+    if (settings.shuffle) {
+      const prevShuffledIndex = (shuffledIndex - 1 + media.length) % media.length;
+      setShuffledIndex(prevShuffledIndex);
+      setCurrentIndex(shuffledOrder[prevShuffledIndex]);
+    } else {
+      setCurrentIndex((prev) => (prev - 1 + media.length) % media.length);
+    }
     setProgress(0);
-  }, [media.length]);
+  }, [media.length, settings.shuffle, shuffledOrder, shuffledIndex]);
 
   useEffect(() => {
     const enterFullscreen = async () => {
@@ -323,7 +357,17 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
                 {media.map((_, index) => (
                   <button
                     key={index}
-                    onClick={(e) => { e.stopPropagation(); setCurrentIndex(index); setProgress(0); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (settings.shuffle) {
+                        const targetShuffledIndex = shuffledOrder.indexOf(index);
+                        if (targetShuffledIndex >= 0) {
+                          setShuffledIndex(targetShuffledIndex);
+                        }
+                      }
+                      setCurrentIndex(index);
+                      setProgress(0);
+                    }}
                     className={`h-1.5 rounded-full transition-all duration-500 ${index === currentIndex ? 'bg-white w-8' : 'bg-white/30 w-1.5'
                       }`}
                   />
