@@ -63,7 +63,15 @@
     "lastUpdated": "Última actualización: {time}",
     "noSubscriptions": "No hay suscripciones aún.",
     "selectSubscription": "Seleccionar suscripción",
-    "add": "Añadir"
+    "add": "Añadir",
+    "copyJson": "Copiar JSON",
+    "copied": "Copiado",
+    "copyFailed": "Error al copiar",
+    "pasteJsonLabel": "Pegar datos JSON",
+    "pasteJsonPlaceholder": "Pegar datos JSON aquí...",
+    "paste": "Pegar",
+    "pasteFailed": "Error al pegar",
+    "invalidJson": "Formato JSON inválido"
   },
   "nav": {
     "home": "Inicio",

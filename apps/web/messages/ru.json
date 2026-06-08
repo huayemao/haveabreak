@@ -63,7 +63,15 @@
     "lastUpdated": "Последнее обновление: {time}",
     "noSubscriptions": "Подписки еще не добавлены.",
     "selectSubscription": "Выберите подписку",
-    "add": "Добавить"
+    "add": "Добавить",
+    "copyJson": "Копировать JSON",
+    "copied": "Скопировано",
+    "copyFailed": "Не удалось скопировать",
+    "pasteJsonLabel": "Вставить данные JSON",
+    "pasteJsonPlaceholder": "Вставьте данные JSON здесь...",
+    "paste": "Вставить",
+    "pasteFailed": "Не удалось вставить",
+    "invalidJson": "Неверный формат JSON"
   },
   "nav": {
     "home": "Главная",

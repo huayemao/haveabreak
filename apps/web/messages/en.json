@@ -63,7 +63,15 @@
     "lastUpdated": "Last updated: {time}",
     "noSubscriptions": "No subscriptions added yet.",
     "selectSubscription": "Select Subscription",
-    "add": "Add"
+    "add": "Add",
+    "copyJson": "Copy JSON",
+    "copied": "Copied",
+    "copyFailed": "Copy failed",
+    "pasteJsonLabel": "Paste JSON Data",
+    "pasteJsonPlaceholder": "Paste JSON data here...",
+    "paste": "Paste",
+    "pasteFailed": "Paste failed",
+    "invalidJson": "Invalid JSON format"
   },
   "nav": {
     "home": "Home",

@@ -63,7 +63,15 @@
     "lastUpdated": "最后更新：{time}",
     "noSubscriptions": "还没有添加订阅。",
     "selectSubscription": "选择订阅",
-    "add": "添加"
+    "add": "添加",
+    "copyJson": "复制 JSON",
+    "copied": "已复制",
+    "copyFailed": "复制失败",
+    "pasteJsonLabel": "粘贴 JSON 数据",
+    "pasteJsonPlaceholder": "在此粘贴 JSON 数据...",
+    "paste": "粘贴",
+    "pasteFailed": "粘贴失败",
+    "invalidJson": "JSON 格式无效"
   },
   "nav": {
     "home": "首页",

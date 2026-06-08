@@ -63,7 +63,15 @@
     "lastUpdated": "Última atualização: {time}",
     "noSubscriptions": "Nenhuma assinatura ainda.",
     "selectSubscription": "Selecionar assinatura",
-    "add": "Adicionar"
+    "add": "Adicionar",
+    "copyJson": "Copiar JSON",
+    "copied": "Copiado",
+    "copyFailed": "Falha ao copiar",
+    "pasteJsonLabel": "Colar dados JSON",
+    "pasteJsonPlaceholder": "Cole dados JSON aqui...",
+    "paste": "Colar",
+    "pasteFailed": "Falha ao colar",
+    "invalidJson": "Formato JSON inválido"
   },
   "nav": {
     "home": "Início",

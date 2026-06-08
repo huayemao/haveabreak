@@ -109,7 +109,7 @@ export default function DataManagementSection({
               value={pasteText}
               onChange={(e) => setPasteText(e.target.value)}
               placeholder={t('common.pasteJsonPlaceholder') || 'Paste JSON data here...'}
-              className="w-full px-4 py-3 bg-white rounded-xl border border-muted focus:outline-none focus:border-accent min-h-[120px] resize-none"
+              className="w-full px-4 py-3  rounded-xl border border-muted focus:outline-none focus:border-accent min-h-[120px] resize-none"
             />
             <div className="flex gap-2">
               <button

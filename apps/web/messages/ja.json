@@ -63,7 +63,15 @@
     "lastUpdated": "最終更新：{time}",
     "noSubscriptions": "購読がまだありません。",
     "selectSubscription": "購読を選択",
-    "add": "追加"
+    "add": "追加",
+    "copyJson": "JSON をコピー",
+    "copied": "コピー済み",
+    "copyFailed": "コピーに失敗しました",
+    "pasteJsonLabel": "JSON データを貼り付け",
+    "pasteJsonPlaceholder": "ここに JSON データを貼り付け...",
+    "paste": "貼り付け",
+    "pasteFailed": "貼り付けに失敗しました",
+    "invalidJson": "無効な JSON 形式"
   },
   "nav": {
     "home": "ホーム",
