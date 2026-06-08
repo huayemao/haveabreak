@@ -176,9 +176,9 @@ export default function FrameLayoutClient({
   ];
 
   return (
-    <div className="bg-bg-base pb-20">
+    <div className="bg-bg-base pb-20 min-h-screen">
       <InstallPrompt appId="frame" />
-      <header className="bg-bg-base/90 backdrop-blur-lg border-b border-white/10 transition-all duration-300">
+      <header className="bg-bg-base/90 backdrop-blur-lg border-b border-white/10 transition-all duration-300 mt-6">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
