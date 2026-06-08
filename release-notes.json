@@ -5,6 +5,13 @@
       "notes": [
         "Standalone Apps: You can now download and install the standalone apps for Windows, Android, and iOS"
       ]
+    },
+    "0.1.1": {
+      "date": "2026-06-08",
+      "notes": [
+        "frame: 统一导入导出组件",
+        "frame: 修复内容区域被遮挡导致导入导出功能无法使用的问题"
+      ]
     }
   }
 }
