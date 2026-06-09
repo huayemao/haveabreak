@@ -1,6 +1,6 @@
 [package]
-name = "haveabreak-frame"
-version = "0.1.0"
+name = "digital-frame"
+version = "0.1.1"
 edition = "2021"
 
 [lib]

@@ -16,10 +16,10 @@ val tauriProperties = Properties().apply {
 
 android {
     compileSdk = 36
-    namespace = "online.haveabreak.frame"
+    namespace = "online.white_noise.frame"
     defaultConfig {
         manifestPlaceholders["usesCleartextTraffic"] = "false"
-        applicationId = "online.haveabreak.frame"
+        applicationId = "online.white_noise.frame"
         minSdk = 24
         targetSdk = 36
         versionCode = tauriProperties.getProperty("tauri.android.versionCode", "1").toInt()

@@ -1,12 +1,12 @@
 {
-  "productName": "haveabreak-frame",
-  "version": "0.1.0",
-  "identifier": "online.haveabreak.frame",
+  "productName": "digital-frame",
+  "version": "0.1.1",
+  "identifier": "online.white-noise.frame",
   "app": {
     "windows": [
       {
         "label": "main",
-        "title": "haveabreak - 电子画框",
+        "title": "Digital Frame",
         "width": 800,
         "height": 600,
         "url": "en/frame"

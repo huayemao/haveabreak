@@ -1,4 +1,4 @@
-package online.haveabreak.frame
+package online.white_noise.frame
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge

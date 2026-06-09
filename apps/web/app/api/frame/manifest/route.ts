@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   const frameMessages = messages.frame || {};
 
   const manifest = {
-    id: 'haveabreak-frame',
+    id: 'digital-frame',
     name: frameMessages.appTitle || 'Digital Frame',
     short_name: 'DFrame',
     description: frameMessages.appSubtitle || 'A beautiful digital frame for your mindful rest.',
