@@ -6,7 +6,7 @@ import { Suspense } from 'react';
 
 function CollectionDetailContent() {
   const searchParams = useSearchParams();
-  const id = searchParams.get('id');
+  const id = searchParams.get('collection');
   return <CollectionsPageClient selectedCollectionId={id} />;
 }
 
