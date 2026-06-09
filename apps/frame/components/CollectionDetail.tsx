@@ -72,7 +72,6 @@ export default function CollectionDetail({
 
       <div className="flex items-center gap-6 text-sm text-fg-muted">
         <span>{collectionMedia.length} {t('frame.mediaLibrary')}</span>
-        <span>{(collection.slideInterval / 1000).toFixed(0)}s {t('frame.slideInterval')}</span>
       </div>
 
       <MediaGallery

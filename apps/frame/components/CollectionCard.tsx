@@ -79,8 +79,6 @@ export default function CollectionCard({
               )}
               <div className="flex items-center gap-2 mt-2 text-white/70 text-xs">
                 <span>{collection.mediaIds.length} {t('frame.media')}</span>
-                <span>•</span>
-                <span>{(collection.slideInterval / 1000).toFixed(0)}s</span>
               </div>
             </div>
           </div>

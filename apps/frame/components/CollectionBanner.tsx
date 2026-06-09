@@ -80,8 +80,6 @@ export default function CollectionBanner({ collections, media, onPlay }: Collect
                   )}
                   <div className="flex items-center gap-3 mt-2 text-white/70 text-xs md:text-sm">
                     <span>{collection.mediaIds.length} {t('frame.media')}</span>
-                    <span>•</span>
-                    <span>{(collection.slideInterval / 1000).toFixed(0)}s</span>
                   </div>
                 </div>
               </div>
