@@ -42,7 +42,7 @@ export default function CollectionsPageClient({
     router.push(queryString ? `${pathname}?${queryString}` : pathname, { scroll: false });
   }, [pathname, router, searchParams]);
 
-  const handlePlayCollection = (collection: Collection, paused = false, index = 0) => {
+  const handlePlayCollection = (collection: Collection, paused = false, index = 0, shuffle?: boolean) => {
     const collectionMedia = media.filter((m) => collection.mediaIds.includes(m.id));
     startSlideshow({
       media: collectionMedia,
@@ -50,7 +50,8 @@ export default function CollectionsPageClient({
       updateUrl,
       collectionId: collection.id,
       paused,
-      index
+      index,
+      shuffle
     });
   };
 

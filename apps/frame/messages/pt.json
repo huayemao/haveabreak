@@ -28,6 +28,7 @@
   "slideInterval": "Intervalo (segundos)",
   "autoPlay": "Reprodução Automática",
   "shuffle": "Aleatório",
+  "sequential": "Sequencial",
   "showInfo": "Mostrar Info",
   "filterOrientation": "Filtrar por Orientação",
   "backgroundMusic": "Música de Fundo",

@@ -15,7 +15,7 @@ interface MediaGalleryProps {
   onDelete: (id: string) => void;
   onAdd: (url: string, type: MediaType, title?: string) => void;
   onAddUrlList: (urls: string[], type: MediaType) => void;
-  onPlay?: (paused: boolean, startIndex?: number) => void;
+  onPlay?: (paused: boolean, startIndex?: number, shuffle?: boolean) => void;
   showAddButton?: boolean;
 }
 

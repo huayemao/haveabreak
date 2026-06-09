@@ -28,6 +28,7 @@
   "slideInterval": "Интервал (секунды)",
   "autoPlay": "Автозапуск",
   "shuffle": "Случайный порядок",
+  "sequential": "Последовательно",
   "showInfo": "Показать информацию",
   "filterOrientation": "Фильтр по ориентации",
   "backgroundMusic": "Фоновая музыка",

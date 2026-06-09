@@ -35,6 +35,7 @@ export interface StartSlideshowOptions {
   paused?: boolean;
   index?: number;
   collectionMedia?: MediaItem[];
+  shuffle?: boolean;
 }
 
 export const startSlideshow = ({
@@ -44,12 +45,14 @@ export const startSlideshow = ({
   collectionId = null,
   paused = false,
   index = 0,
-  collectionMedia
+  collectionMedia,
+  shuffle,
 }: StartSlideshowOptions) => {
   const targetMedia = collectionMedia || media;
   let filtered = filterMediaByOrientation(targetMedia, settings.filterByOrientation);
   
-  if (settings.shuffle) {
+  const useShuffle = shuffle !== undefined ? shuffle : settings.shuffle;
+  if (useShuffle) {
     filtered = shuffleArray(filtered);
   }
   

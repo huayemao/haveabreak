@@ -9,13 +9,13 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
-import { Play, Trash2, Share2, Edit3, Eye } from 'lucide-react';
+import { Play, Trash2, Share2, Edit3, Eye, Shuffle, ListOrdered } from 'lucide-react';
 
 interface CollectionCardProps {
   collection: Collection;
   media: MediaItem[];
   selectedCollectionId: string | null;
-  onPlay: (collection: Collection, paused?: boolean, startIndex?: number) => void;
+  onPlay: (collection: Collection, paused?: boolean, startIndex?: number, shuffle?: boolean) => void;
   onSelect: (id: string) => void;
   onEdit: (collection: Collection) => void;
   onShare: (collection: Collection) => void;
@@ -88,12 +88,20 @@ export default function CollectionCard({
       </ContextMenuTrigger>
       <ContextMenuContent className="w-48">
         <ContextMenuItem
-          onClick={() => onPlay(collection, false, 0)}
+          onClick={() => onPlay(collection, false, 0, false)}
           className="gap-2"
         >
-          <Play className="w-4 h-4" />
-          {t('frame.play')}
+          <ListOrdered className="w-4 h-4" />
+          {t('frame.sequential')}
         </ContextMenuItem>
+        <ContextMenuItem
+          onClick={() => onPlay(collection, false, 0, true)}
+          className="gap-2"
+        >
+          <Shuffle className="w-4 h-4" />
+          {t('frame.shuffle')}
+        </ContextMenuItem>
+        <ContextMenuSeparator />
         <ContextMenuItem
           onClick={() => onSelect(collection.id)}
           className="gap-2"

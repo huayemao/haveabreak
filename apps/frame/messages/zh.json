@@ -28,6 +28,7 @@
   "slideInterval": "切换间隔（秒）",
   "autoPlay": "自动播放",
   "shuffle": "随机播放",
+  "sequential": "顺序播放",
   "showInfo": "显示信息",
   "filterOrientation": "按方向过滤",
   "backgroundMusic": "背景音乐",

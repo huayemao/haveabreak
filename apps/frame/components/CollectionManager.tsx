@@ -21,7 +21,7 @@ interface CollectionManagerProps {
   onUpdate: (id: string, updates: Partial<Collection>) => void;
   onDelete: (id: string) => void;
   onShare: (collection: Collection) => void;
-  onPlay: (collection: Collection, paused?: boolean, startIndex?: number) => void;
+  onPlay: (collection: Collection, paused?: boolean, startIndex?: number, shuffle?: boolean) => void;
   onMediaAdd: (url: string, type: MediaType, title?: string) => void;
   onMediaAddUrlList: (urls: string[], type: MediaType) => void;
   onMediaDelete: (id: string) => void;

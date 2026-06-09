@@ -9,7 +9,7 @@ interface CollectionDetailProps {
   onBack: () => void;
   onUpdate: (id: string, updates: Partial<Collection>) => void;
   onDelete: (id: string) => void;
-  onPlay: (collection: Collection, paused?: boolean, startIndex?: number) => void;
+  onPlay: (collection: Collection, paused?: boolean, startIndex?: number, shuffle?: boolean) => void;
   onShare: (collection: Collection) => void;
   onMediaAdd: (url: string, type: MediaType, title?: string) => void;
   onMediaAddUrlList: (urls: string[], type: MediaType) => void;
@@ -80,9 +80,9 @@ export default function CollectionDetail({
         onDelete={onMediaDelete}
         onAdd={onMediaAdd}
         onAddUrlList={onMediaAddUrlList}
-        onPlay={(paused, startIndex) => onPlay(collection, paused, startIndex)}
+        onPlay={(paused, startIndex, shuffle) => onPlay(collection, paused, startIndex, shuffle)}
         showAddButton={true}
       />
     </div>
   );
-}
+}

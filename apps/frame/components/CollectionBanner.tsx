@@ -8,7 +8,7 @@ import useEmblaCarousel from 'embla-carousel-react';
 interface CollectionBannerProps {
   collections: Collection[];
   media: MediaItem[];
-  onPlay: (collection: Collection, paused?: boolean, startIndex?: number) => void;
+  onPlay: (collection: Collection, paused?: boolean, startIndex?: number, shuffle?: boolean) => void;
 }
 
 export default function CollectionBanner({ collections, media, onPlay }: CollectionBannerProps) {

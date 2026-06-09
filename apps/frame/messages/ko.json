@@ -28,6 +28,7 @@
   "slideInterval": "전환 간격 (초)",
   "autoPlay": "자동 재생",
   "shuffle": "랜덤",
+  "sequential": "순차",
   "showInfo": "정보 표시",
   "filterOrientation": "방향으로 필터",
   "backgroundMusic": "배경 음악",

@@ -28,6 +28,7 @@
   "slideInterval": "切り替え間隔（秒）",
   "autoPlay": "自動再生",
   "shuffle": "ランダム",
+  "sequential": "順番",
   "showInfo": "情報表示",
   "filterOrientation": "向きでフィルタ",
   "backgroundMusic": "背景音楽",
