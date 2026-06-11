@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>猫记</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #E0E5EC;
+    }
+    .loading {
+      color: #3D4852;
+      text-align: center;
+    }
+    .loading svg {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 16px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="loading">
+    <svg viewBox="0 0 24 24" fill="none">
+      <circle class="path" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-dasharray="62.8319" stroke-dashoffset="15.708" opacity="0.5"></circle>
+      <circle class="path" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-dasharray="62.8319" stroke-dashoffset="62.8319" opacity="1" style="transition: stroke-dashoffset 0.3s ease"></circle>
+    </svg>
+    <div>正在载入...</div>
+  </div>
+
+  <script>
+    // 强制跳转到中文版本的猫记界面
+    window.location.href = `/zh/maoji`;
+  </script>
+</body>
+</html>

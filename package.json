@@ -11,7 +11,8 @@
     "tauri": "node tauri-router.js",
     "tauri:card": "export TAURI_APP=card && cd apps/card && npx tauri",
     "tauri:frame": "export TAURI_APP=frame && cd apps/frame && npx tauri",
-    "tauri:timer": "export TAURI_APP=timer && cd apps/timer && npx tauri"
+    "tauri:timer": "export TAURI_APP=timer && cd apps/timer && npx tauri",
+    "tauri:maoji": "export TAURI_APP=maoji && cd apps/maoji && npx tauri"
   },
   "devDependencies": {
     "@tauri-apps/api": "^2.11.0",

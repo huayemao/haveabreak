@@ -33,6 +33,9 @@
       ],
       "@/apps/frame/*": [
         "../frame/*"
+      ],
+      "@/apps/maoji/*": [
+        "../maoji/*"
       ]
     }
   },
@@ -40,12 +43,15 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
+    "**/*.json",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "../card/**/*.ts",
     "../card/**/*.tsx",
     "../frame/**/*.ts",
-    "../frame/**/*.tsx"
+    "../frame/**/*.tsx",
+    "../maoji/**/*.ts",
+    "../maoji/**/*.tsx"
   ],
   "exclude": [
     "node_modules",

@@ -1,0 +1,11 @@
+{
+  "name": "@haveabreak/maoji",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "zustand": "^5.0.12"
+  },
+  "scripts": {
+    "tauri": "tauri"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "identifier": "default",
+  "description": "Default capabilities for the maoji application",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "fs:default",
+    "dialog:default",
+    "fs:allow-download-write",
+    "fs:allow-download-read",
+    "nfc:allow-enable_nfc",
+    "nfc:allow-disable_nfc",
+    "nfc:allow-write_image"
+  ]
+}
