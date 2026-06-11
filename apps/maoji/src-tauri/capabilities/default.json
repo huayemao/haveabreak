@@ -8,8 +8,6 @@
     "dialog:default",
     "fs:allow-download-write",
     "fs:allow-download-read",
-    "nfc:allow-enable_nfc",
-    "nfc:allow-disable_nfc",
-    "nfc:allow-write_image"
+    "nfc:default"
   ]
 }

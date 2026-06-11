@@ -1,5 +1,3 @@
-use tauri::Manager;
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -10,7 +8,7 @@ pub fn run() {
             {
                 app.handle()
                     .plugin(
-                        tauri::plugin::Builder::new("nfc")
+                        tauri::plugin::Builder::<_, ()>::new("nfc")
                             .build(),
                     )
                     .expect("failed to register nfc plugin");

@@ -1,3 +1,4 @@
+'use client';
 import { Design, MaojiSettings, EpdColorMode } from './types';
 
 const DESIGNS_KEY = 'maoji_designs';
@@ -24,7 +25,7 @@ export function saveSettings(s: MaojiSettings): void {
 }
 
 function defaultSettings(): MaojiSettings {
-  return { lastEpdInch: 290, lastEpdColor: 2, useDithering: true };
+  return { lastEpdInch: 213, lastEpdColor: 2, useDithering: true };
 }
 
 // ─── Designs ─────────────────────────────────────────────────────────────────
