@@ -1,4 +1,5 @@
 'use client';
+import { isTauriBuild } from '@/lib/utils';
 /**
  * nfcService.ts
  * Bridges web calls to the Tauri/Kotlin NFC plugin.
@@ -14,11 +15,10 @@ declare global {
   }
 }
 
-const isTauri = typeof window !== 'undefined' &&
-  (window.__TAURI_INTERNALS__ || window.__TAURI__);
+
 
 async function invoke<T>(cmd: string, args?: Record<string, unknown>): Promise<T> {
-  if (!isTauri) throw new Error('Not running in Tauri');
+  if (!isTauriBuild) throw new Error('Not running in Tauri');
   const { invoke: tauriInvoke } = await import('@tauri-apps/api/core');
   return tauriInvoke<T>(cmd, args);
 }
@@ -27,7 +27,7 @@ async function listen(
   event: string,
   cb: (payload: Record<string, unknown>) => void
 ): Promise<() => void> {
-  if (!isTauri) return () => {};
+  if (!isTauriBuild) return () => {};
   const { addPluginListener } = await import('@tauri-apps/api/core');
   const unlisten = await addPluginListener('nfc', event, (e: { payload: Record<string, unknown> }) => cb(e.payload));
   return () => unlisten.unregister();
@@ -36,12 +36,12 @@ async function listen(
 // ─── Public API ──────────────────────────────────────────────────────────────
 
 export async function enableNfc() {
-  if (!isTauri) return { supported: false, enabled: false };
+  if (!isTauriBuild) return { supported: false, enabled: false };
   return invoke<{ supported: boolean; enabled: boolean }>('plugin:nfc|enable_nfc');
 }
 
 export async function disableNfc() {
-  if (!isTauri) return;
+  if (!isTauriBuild) return;
   await invoke('plugin:nfc|disable_nfc');
 }
 
@@ -55,7 +55,7 @@ export interface WriteImageArgs {
 }
 
 export async function prepareWrite(args: WriteImageArgs) {
-  if (!isTauri) return { ready: true, message: '模拟模式：可以开始写入（实际设备无操作）' };
+  if (!isTauriBuild) return { ready: true, message: '模拟模式：可以开始写入（实际设备无操作）' };
   return invoke<{ ready: boolean; message: string }>('plugin:nfc|write_image', args as unknown as Record<string, unknown>);
 }
 
