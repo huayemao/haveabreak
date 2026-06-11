@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useMemo } from 'react';
-import { useRouter, usePathname } from 'i18n/routing';
+import { useRouter, usePathname } from '../../web/i18n/routing';
 import { useSearchParams } from 'next/navigation';
 import { Collection, MediaItem, MediaType } from '../types';
 import { useTranslations } from 'next-intl';

@@ -5,7 +5,7 @@
  * When running in a browser (non-Tauri) context it falls back to simulation mode.
  */
 
-import type { EpdColorMode } from '@/apps/maoji/types';
+import type { EpdColorMode } from './types';
 
 declare global {
   interface Window {
@@ -30,7 +30,7 @@ async function listen(
   if (!isTauri) return () => {};
   const { addPluginListener } = await import('@tauri-apps/api/core');
   const unlisten = await addPluginListener('nfc', event, (e: { payload: Record<string, unknown> }) => cb(e.payload));
-  return () => unlisten.removeListener();
+  return () => unlisten.unregister();
 }
 
 // ─── Public API ──────────────────────────────────────────────────────────────
