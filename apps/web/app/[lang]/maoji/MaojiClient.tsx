@@ -7,6 +7,7 @@ import { renderCanvasToEpdBytes } from '@/apps/maoji/utils/dither';
 import {
   enableNfc, prepareWrite, onWriteProgress, onWriteSuccess, onWriteError
 } from '@/apps/maoji/nfcService';
+import { toast } from 'sonner';
 import ScreenSelector from './components/ScreenSelector';
 import TemplatePanel from './components/TemplatePanel';
 import CanvasEditor from './components/CanvasEditor';
@@ -35,15 +36,28 @@ export default function MaojiClient() {
   }, [currentDesign, newDesign, settings]);
 
   const handleStartWrite = useCallback(async () => {
-    if (!currentDesign || !canvasRef.current) return;
+    if (!currentDesign) {
+      toast.error('请先创建一个设计');
+      return;
+    }
+    if (!canvasRef.current) {
+      toast.error('画布未准备好，请刷新页面重试');
+      return;
+    }
+
     const spec = getEpdSpec(currentDesign.epdInch);
-    if (!spec) return;
+    if (!spec) {
+      toast.error('未找到对应的墨水屏规格');
+      return;
+    }
 
     const cmds = spec.colorCodes[currentDesign.epdColor];
     if (!cmds?.initCmd1) {
-      alert('当前墨水屏规格不支持所选颜色模式');
+      toast.error('当前墨水屏规格不支持所选颜色模式');
       return;
     }
+
+    toast.info('正在渲染画面…');
 
     // Render canvas → EPD byte arrays
     const { bwData, rwData } = renderCanvasToEpdBytes(
@@ -53,34 +67,44 @@ export default function MaojiClient() {
       spec.height
     );
 
+    toast.info('正在初始化 NFC…');
+
     setNfc({ status: 'ready', progress: 0, message: '正在准备数据…' });
     setShowNfcDialog(true);
 
-    // Register NFC event listeners
-    const unProgress = await onWriteProgress((progress, message) => {
-      setNfc({ status: 'writing', progress, message });
-    });
-    const unSuccess = await onWriteSuccess((message) => {
-      setNfc({ status: 'success', progress: 100, message });
-      unProgress(); unSuccess(); unError();
-    });
-    const unError = await onWriteError((message) => {
-      setNfc({ status: 'error', progress: 0, message });
-      unProgress(); unSuccess(); unError();
-    });
+    try {
+      // Register NFC event listeners
+      const unProgress = await onWriteProgress((progress, message) => {
+        setNfc({ status: 'writing', progress, message });
+      });
+      const unSuccess = await onWriteSuccess((message) => {
+        setNfc({ status: 'success', progress: 100, message });
+        toast.success('写入成功！');
+        unProgress(); unSuccess(); unError();
+      });
+      const unError = await onWriteError((message) => {
+        setNfc({ status: 'error', progress: 0, message });
+        toast.error(`写入失败：${message}`);
+        unProgress(); unSuccess(); unError();
+      });
 
-    // Enable NFC & push data to plugin
-    await enableNfc();
-    await prepareWrite({
-      epdColor: currentDesign.epdColor,
-      epdInch: currentDesign.epdInch,
-      initCmd1: cmds.initCmd1,
-      initCmd2: cmds.initCmd2,
-      bwData,
-      rwData,
-    });
+      // Enable NFC & push data to plugin
+      await enableNfc();
+      toast.info('NFC 已启用，正在发送数据…');
 
-    setNfc({ status: 'ready', progress: 0, message: '请将手机贴近墨水屏背面线圈处…' });
+      await prepareWrite({
+        epdColor: currentDesign.epdColor,
+        epdInch: currentDesign.epdInch,
+        initCmd1: cmds.initCmd1,
+        initCmd2: cmds.initCmd2,
+        bwData,
+        rwData,
+      });
+
+      setNfc({ status: 'ready', progress: 0, message: '请将手机贴近墨水屏背面线圈处…' });
+    } catch (err: any) {
+      toast.error(`写入过程出错：${err?.message || '未知错误'}`);
+    }
   }, [currentDesign, setNfc]);
 
   return (
