@@ -175,7 +175,7 @@ jobs:
     needs: get-release
     strategy:
       matrix:
-        app: [card, frame]
+        app: [card, frame, maoji]
       fail-fast: false
 
     steps:
@@ -264,9 +264,12 @@ jobs:
           if [ "$APP_NAME" = "card" ]; then
             TITLE="QuoteLite"
             ROUTE="card"
-          else
+          elif [ "$APP_NAME" = "frame" ]; then
             TITLE="HaveABreak Frame"
             ROUTE="frame"
+          else
+            TITLE="猫记"
+            ROUTE="maoji"
           fi
           sed -e "s/{{TITLE}}/$TITLE/g" -e "s/{{ROUTE}}/$ROUTE/g" scripts/tauri-index-template.html > apps/web/out/index.html
 
@@ -454,6 +457,7 @@ jobs:
         run: |
           mv artifacts/android-apk-card/app-universal-release.apk artifacts/android-apk-card/quotelite.apk
           mv artifacts/android-apk-frame/app-universal-release.apk artifacts/android-apk-frame/digital-frame.apk
+          mv artifacts/android-apk-maoji/app-universal-release.apk artifacts/android-apk-maoji/maoji.apk
 
       - name: Upload Assets to Release
         uses: softprops/action-gh-release@v2
@@ -478,6 +482,7 @@ jobs:
             ### Android
             - [Card APK](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/android-apk-card/quotelite.apk)
             - [Frame APK](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/android-apk-frame/digital-frame.apk)
+            - [Maoji APK](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/android-apk-maoji/maoji.apk)
             
             ### iOS
             - [Card IPA](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/ios-ipa-card/arm64/quotelite.ipa)
@@ -505,7 +510,8 @@ jobs:
             body += `- [Frame (Portable)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries-frame/digital-frame_0.1.0_x64-setup.exe)\n\n`;
             body += `### Android\n`;
             body += `- [Card APK](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/android-apk-card/quotelite.apk)\n`;
-            body += `- [Frame APK](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/android-apk-frame/digital-frame.apk)\n\n`;
+            body += `- [Frame APK](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/android-apk-frame/digital-frame.apk)\n`;
+            body += `- [Maoji APK](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/android-apk-maoji/maoji.apk)\n\n`;
             body += `### iOS\n`;
             body += `- [Card IPA](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/ios-ipa-card/arm64/quotelite.ipa)\n`;
             body += `- [Frame IPA](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/ios-ipa-frame/arm64/digital-frame.ipa)\n`;
