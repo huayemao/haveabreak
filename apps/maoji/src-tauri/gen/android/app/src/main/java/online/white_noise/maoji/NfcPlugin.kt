@@ -1,4 +1,4 @@
-package online.white_noise.maoji
+ package online.white_noise.maoji
 
 import android.app.Activity
 import android.app.PendingIntent
@@ -42,21 +42,36 @@ class NfcPlugin(private val activity: Activity) : Plugin(activity) {
 
     @Command
     fun enableNfc(invoke: Invoke) {
-        nfcAdapter = NfcAdapter.getDefaultAdapter(activity)
-        val result = JSObject()
-        if (nfcAdapter == null) {
-            result.put("supported", false)
-            result.put("enabled", false)
-            invoke.resolve(result)
-            return
-        }
-        result.put("supported", true)
-        result.put("enabled", nfcAdapter!!.isEnabled)
+        try {
+            nfcAdapter = NfcAdapter.getDefaultAdapter(activity)
+            val result = JSObject()
+            if (nfcAdapter == null) {
+                result.put("supported", false)
+                result.put("enabled", false)
+                invoke.resolve(result)
+                return
+            }
+            result.put("supported", true)
+            result.put("enabled", nfcAdapter!!.isEnabled)
 
-        if (nfcAdapter!!.isEnabled) {
-            enableForegroundDispatch()
+            if (nfcAdapter!!.isEnabled) {
+                try {
+                    enableForegroundDispatch()
+                } catch (e: Exception) {
+                    // 前台分发注册失败不影响 NFC 检测，但记录错误信息
+                    result.put("dispatchError", e.javaClass.simpleName + ": " + e.message)
+                }
+            }
+            invoke.resolve(result)
+        } catch (e: Exception) {
+            // 整个 enableNfc 崩溃时，将详细错误返回给 JS
+            val error = JSObject()
+            error.put("supported", false)
+            error.put("enabled", false)
+            error.put("error", e.javaClass.simpleName + ": " + e.message)
+            error.put("stackTrace", android.util.Log.getStackTraceString(e))
+            invoke.resolve(error)
         }
-        invoke.resolve(result)
     }
 
     @Command

@@ -1,5 +1,4 @@
 package online.white_noise.maoji
-
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 

@@ -1,5 +1,5 @@
 'use client';
-import { isTauriBuild } from '@/lib/utils';
+import { isTauriBuild } from '../web/lib/utils';
 /**
  * nfcService.ts
  * Bridges web calls to the Tauri/Kotlin NFC plugin.
@@ -37,12 +37,18 @@ async function listen(
 
 export async function enableNfc() {
   if (!isTauriBuild) return { supported: false, enabled: false };
-  return invoke<{ supported: boolean; enabled: boolean }>('plugin:nfc|enable_nfc');
+  return invoke<{
+    supported: boolean;
+    enabled: boolean;
+    error?: string;
+    stackTrace?: string;
+    dispatchError?: string;
+  }>('plugin:nfc|enableNfc');
 }
 
 export async function disableNfc() {
   if (!isTauriBuild) return;
-  await invoke('plugin:nfc|disable_nfc');
+  await invoke('plugin:nfc|disableNfc');
 }
 
 export interface WriteImageArgs {
@@ -56,7 +62,7 @@ export interface WriteImageArgs {
 
 export async function prepareWrite(args: WriteImageArgs) {
   if (!isTauriBuild) return { ready: true, message: '模拟模式：可以开始写入（实际设备无操作）' };
-  return invoke<{ ready: boolean; message: string }>('plugin:nfc|write_image', args as unknown as Record<string, unknown>);
+  return invoke<{ ready: boolean; message: string }>('plugin:nfc|writeImage', args as unknown as Record<string, unknown>);
 }
 
 export type ProgressHandler = (progress: number, message: string) => void;

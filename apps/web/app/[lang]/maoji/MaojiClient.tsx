@@ -25,6 +25,7 @@ export default function MaojiClient() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [tab, setTab] = useState<Tab>('editor');
   const [showNfcDialog, setShowNfcDialog] = useState(false);
+  const [nfcDetected, setNfcDetected] = useState(false);
 
   useEffect(() => { loadData(); }, [loadData]);
 
@@ -34,6 +35,32 @@ export default function MaojiClient() {
       newDesign(settings.lastEpdInch, settings.lastEpdColor);
     }
   }, [currentDesign, newDesign, settings]);
+
+  const handleDetectNfc = useCallback(async () => {
+    try {
+      toast.info('正在检测 NFC…');
+      const result = await enableNfc();
+      if (result?.error) {
+        // Android 端捕获了完整异常，返回详细错误信息
+        toast.error(`NFC 检测失败：${result.error}`);
+        console.error('NFC enableNfc error details:', result.stackTrace);
+        return;
+      }
+      if (result?.dispatchError) {
+        // enableForegroundDispatch 失败，但不影响继续
+        console.warn('NFC foreground dispatch 注册失败:', result.dispatchError);
+      }
+      if (result?.supported) {
+        setNfcDetected(true);
+        toast.success('NFC 已检测到！');
+      } else {
+        toast.warning('NFC 不可用，但仍可尝试写入');
+        setNfcDetected(true); // Allow proceeding even if not supported (simulation mode)
+      }
+    } catch (err: any) {
+      toast.error(`NFC 检测失败：${err?.message || '未知错误'}`);
+    }
+  }, [setNfcDetected]);
 
   const handleStartWrite = useCallback(async () => {
     if (!currentDesign) {
@@ -88,8 +115,7 @@ export default function MaojiClient() {
         unProgress(); unSuccess(); unError();
       });
 
-      // Enable NFC & push data to plugin
-      await enableNfc();
+      // NFC already enabled during detection, just push data to plugin
       toast.info('NFC 已启用，正在发送数据…');
 
       await prepareWrite({
@@ -132,16 +158,18 @@ export default function MaojiClient() {
 
         {/* Write button */}
         <button
-          onClick={handleStartWrite}
+          onClick={nfcDetected ? handleStartWrite : handleDetectNfc}
           disabled={!currentDesign}
           className="flex items-center gap-1.5 px-4 py-2 rounded-2xl text-white text-sm font-semibold disabled:opacity-40 transition-all duration-300 active:scale-95"
           style={{
-            background: 'linear-gradient(135deg, #6C63FF, #8B84FF)',
+            background: nfcDetected
+              ? 'linear-gradient(135deg, #6C63FF, #8B84FF)'
+              : 'linear-gradient(135deg, #10B981, #34D399)',
             boxShadow: '5px 5px 10px rgba(163,177,198,0.6), -5px -5px 10px rgba(255,255,255,0.5)',
           }}
         >
           <Wifi className="w-4 h-4" />
-          写入
+          {nfcDetected ? '写入' : '检测'}
         </button>
       </header>
 
@@ -189,7 +217,7 @@ export default function MaojiClient() {
             </div>
             {/* Canvas editor */}
             <div className="flex-1 overflow-hidden px-4 pb-4">
-              <CanvasEditor canvasRef={canvasRef} />
+              <CanvasEditor ref={canvasRef} />
             </div>
           </div>
         )}

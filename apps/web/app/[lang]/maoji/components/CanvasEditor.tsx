@@ -1,16 +1,12 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { forwardRef, useEffect, useRef, useState, useCallback } from 'react';
 import { useMaojiStore } from '@/apps/maoji/store';
 import { getEpdSpec } from '@/apps/maoji/epdSpecs';
 import { DesignElement, TextElement, TodoElement, QrCodeElement, CalendarElement, ClockElement, ImageElement } from '@/apps/maoji/types';
 import { Trash2, Move, Image as ImageIcon, X } from 'lucide-react';
 
-interface CanvasEditorProps {
-  canvasRef: React.RefObject<HTMLCanvasElement | null>;
-}
-
-export default function CanvasEditor({ canvasRef }: CanvasEditorProps) {
+const CanvasEditor = forwardRef<HTMLCanvasElement>((_props, ref) => {
   const { currentDesign, selectedElementId, selectElement, removeElement, updateElement } = useMaojiStore();
   const previewCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const [editingTextId, setEditingTextId] = useState<string | null>(null);
@@ -57,16 +53,7 @@ export default function CanvasEditor({ canvasRef }: CanvasEditorProps) {
       drawElement(ctx, el);
     });
 
-    // Copy to the output canvas ref
-    if (canvasRef.current) {
-      canvasRef.current.width = spec.width;
-      canvasRef.current.height = spec.height;
-      const outCtx = canvasRef.current.getContext('2d');
-      if (outCtx) {
-        outCtx.drawImage(canvas, 0, 0);
-      }
-    }
-  }, [currentDesign, spec, canvasRef]);
+  }, [currentDesign, spec]);
 
   const drawElement = (ctx: CanvasRenderingContext2D, el: DesignElement) => {
     switch (el.type) {
@@ -370,7 +357,12 @@ export default function CanvasEditor({ canvasRef }: CanvasEditorProps) {
 
           {/* The actual preview canvas */}
           <canvas
-            ref={previewCanvasRef}
+            ref={(el) => {
+              previewCanvasRef.current = el;
+              if (ref) {
+                (ref as React.MutableRefObject<HTMLCanvasElement | null>).current = el;
+              }
+            }}
             className="relative cursor-pointer"
             style={{
               imageRendering: 'pixelated',
@@ -640,4 +632,8 @@ export default function CanvasEditor({ canvasRef }: CanvasEditorProps) {
       )}
     </div>
   );
-}
+});
+
+CanvasEditor.displayName = 'CanvasEditor';
+
+export default CanvasEditor;
