@@ -27,6 +27,10 @@ class NfcPlugin(private val activity: Activity) : Plugin(activity) {
     private var pendingWriteData: WriteData? = null
     private var isWriting = false
 
+    // NFC state tracking
+    private var isNfcEnabledByUser = false
+    private var isActivityResumed = false
+
     data class WriteData(
         val epdColor: Int,        // 2=BW, 3=BWR, 4=4G
         val epdInch: Int,         // e.g. 213, 290, 266…
@@ -44,6 +48,8 @@ class NfcPlugin(private val activity: Activity) : Plugin(activity) {
     fun enableNfc(invoke: Invoke) {
         try {
             nfcAdapter = NfcAdapter.getDefaultAdapter(activity)
+            isNfcEnabledByUser = true
+
             val result = JSObject()
             if (nfcAdapter == null) {
                 result.put("supported", false)
@@ -54,17 +60,16 @@ class NfcPlugin(private val activity: Activity) : Plugin(activity) {
             result.put("supported", true)
             result.put("enabled", nfcAdapter!!.isEnabled)
 
-            if (nfcAdapter!!.isEnabled) {
+            // If activity is already resumed, enable foreground dispatch now
+            if (isActivityResumed && nfcAdapter!!.isEnabled) {
                 try {
                     enableForegroundDispatch()
                 } catch (e: Exception) {
-                    // 前台分发注册失败不影响 NFC 检测，但记录错误信息
                     result.put("dispatchError", e.javaClass.simpleName + ": " + e.message)
                 }
             }
             invoke.resolve(result)
         } catch (e: Exception) {
-            // 整个 enableNfc 崩溃时，将详细错误返回给 JS
             val error = JSObject()
             error.put("supported", false)
             error.put("enabled", false)
@@ -76,6 +81,7 @@ class NfcPlugin(private val activity: Activity) : Plugin(activity) {
 
     @Command
     fun disableNfc(invoke: Invoke) {
+        isNfcEnabledByUser = false
         disableForegroundDispatch()
         invoke.resolve(JSObject().apply { put("ok", true) })
     }
@@ -118,6 +124,30 @@ class NfcPlugin(private val activity: Activity) : Plugin(activity) {
     // ────────────────────────────────────────────────────────────────────────
     //  NFC lifecycle
     // ────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Called by MainActivity.onResume() — automatically re-enables foreground dispatch
+     * if the user previously enabled NFC.
+     */
+    fun onActivityResume() {
+        isActivityResumed = true
+        if (isNfcEnabledByUser && nfcAdapter?.isEnabled == true) {
+            try {
+                enableForegroundDispatch()
+            } catch (_: Exception) {
+                // 前台分发注册失败不影响后续操作
+            }
+        }
+    }
+
+    /**
+     * Called by MainActivity.onPause() — always disables foreground dispatch
+     * when the activity leaves the foreground.
+     */
+    fun onActivityPause() {
+        isActivityResumed = false
+        disableForegroundDispatch()
+    }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
