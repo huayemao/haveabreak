@@ -1,0 +1,20 @@
+"$schema" = "schemas/schema.json"
+
+[default]
+description = "Default permissions for NFC plugin"
+permissions = ["allow-enable-nfc", "allow-disable-nfc", "allow-write-image"]
+
+[[permission]]
+identifier = "allow-enable-nfc"
+description = "Allow enabling NFC foreground dispatch"
+commands.allow = ["enable_nfc"]
+
+[[permission]]
+identifier = "allow-disable-nfc"
+description = "Allow disabling NFC foreground dispatch"
+commands.allow = ["disable_nfc"]
+
+[[permission]]
+identifier = "allow-write-image"
+description = "Allow writing image data to NFC tag"
+commands.allow = ["write_image"]

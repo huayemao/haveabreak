@@ -49,7 +49,7 @@ export default function MaojiClient() {
       if (result?.error) {
         const errorMsg = `NFC 启用失败：${result.error}`;
         pushNfcError({
-          layer: result.stackTrace ? 'tauri' : 'kotlin',
+          layer: (result as any).layer || 'kotlin',
           code: 'NFC_ENABLE_FAILED',
           message: errorMsg,
           detail: result.stackTrace,
@@ -124,11 +124,11 @@ export default function MaojiClient() {
       pushNfcError({
         layer: 'js',
         code: 'RENDER_FAILED',
-        message: `画面渲染失败：${err?.message || '未知错误'}`,
+        message: `画面渲染失败：${err?.message || (typeof err === 'object' ? JSON.stringify(err) : String(err)) || '未知错误'}`,
         detail: err?.stack,
         phase: 'renderCanvasToEpdBytes',
       });
-      toast.error(`画面渲染失败：${err?.message || '未知错误'}`);
+      toast.error(`画面渲染失败：${err?.message || (typeof err === 'object' ? JSON.stringify(err) : String(err)) || '未知错误'}`);
       return;
     }
 
@@ -177,11 +177,11 @@ export default function MaojiClient() {
       pushNfcError({
         layer: 'tauri',
         code: 'PREPARE_WRITE_FAILED',
-        message: `写入过程出错：${err?.message || '未知错误'}`,
+        message: `写入过程出错：${(typeof err === 'object' ? JSON.stringify(err) : String(err)) || '未知错误'}`,
         detail: err?.stack,
         phase: 'prepareWrite',
       });
-      toast.error(`写入过程出错：${err?.message || '未知错误'}`);
+      toast.error(`写入过程出错：${(typeof err === 'object' ? JSON.stringify(err) : String(err)) || '未知错误'}`);
     }
   }, [currentDesign, setNfc, pushNfcError]);
 

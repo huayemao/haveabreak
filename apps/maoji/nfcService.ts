@@ -38,28 +38,34 @@ async function listen(
 export async function enableNfc() {
   if (!isTauriBuild) return { supported: false, enabled: false, dispatchError: undefined };
   try {
-    return await invoke<{
+    const result = await invoke<{
       supported: boolean;
       enabled: boolean;
       error?: string;
       stackTrace?: string;
       dispatchError?: string;
-    }>('plugin:nfc|enableNfc');
+    }>('plugin:nfc|enable_nfc');
+    // Kotlin 层返回的业务错误，明确标记 layer
+    if (result.error) {
+      return { ...result, layer: 'kotlin' as const };
+    }
+    return result;
   } catch (err: any) {
-    // 将调用异常转换为业务错误格式，上层统一处理
+    // Tauri 调用本身抛出异常（插件未注册、通信失败等）
     return {
       supported: false,
       enabled: false,
-      error: err?.message || 'NFC 启用失败',
+      error: err?.message || (typeof err === 'object' ? JSON.stringify(err) : String(err)),
       stackTrace: err?.stack,
       dispatchError: undefined,
+      layer: 'tauri' as const,
     };
   }
 }
 
 export async function disableNfc() {
   if (!isTauriBuild) return;
-  await invoke('plugin:nfc|disableNfc');
+  await invoke('plugin:nfc|disable_nfc');
 }
 
 export interface WriteImageArgs {
@@ -73,7 +79,7 @@ export interface WriteImageArgs {
 
 export async function prepareWrite(args: WriteImageArgs) {
   if (!isTauriBuild) return { ready: true, message: '模拟模式：可以开始写入（实际设备无操作）' };
-  return invoke<{ ready: boolean; message: string }>('plugin:nfc|writeImage', args as unknown as Record<string, unknown>);
+  return invoke<{ ready: boolean; message: string }>('plugin:nfc|write_image', args as unknown as Record<string, unknown>);
 }
 
 export type ProgressHandler = (progress: number, message: string) => void;

@@ -1,4 +1,4 @@
- package online.white_noise.maoji
+package online.white_noise.nfc
 
 import android.app.Activity
 import android.app.PendingIntent
@@ -7,14 +7,23 @@ import android.content.IntentFilter
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
-import android.os.Handler
-import android.os.Looper
 import app.tauri.annotation.Command
+import app.tauri.annotation.InvokeArg
 import app.tauri.annotation.TauriPlugin
 import app.tauri.plugin.Invoke
 import app.tauri.plugin.JSObject
 import app.tauri.plugin.Plugin
 import java.io.IOException
+
+@InvokeArg
+class WriteImageArgs {
+    var epdColor: Int = 0
+    var epdInch: Int = 0
+    var initCmd1: String = ""
+    var initCmd2: String = ""
+    var bwData: List<Int>? = null
+    var rwData: List<Int>? = null
+}
 
 @TauriPlugin
 class NfcPlugin(private val activity: Activity) : Plugin(activity) {
@@ -32,12 +41,12 @@ class NfcPlugin(private val activity: Activity) : Plugin(activity) {
     private var isActivityResumed = false
 
     data class WriteData(
-        val epdColor: Int,        // 2=BW, 3=BWR, 4=4G
-        val epdInch: Int,         // e.g. 213, 290, 266…
-        val initCmd1: String,     // hex string
-        val initCmd2: String,     // hex string
-        val bwData: ByteArray,    // Black/White channel data
-        val rwData: ByteArray?    // Red/White channel data (3-color) or null
+        val epdColor: Int,
+        val epdInch: Int,
+        val initCmd1: String,
+        val initCmd2: String,
+        val bwData: ByteArray,
+        val rwData: ByteArray?
     )
 
     // ────────────────────────────────────────────────────────────────────────
@@ -45,7 +54,7 @@ class NfcPlugin(private val activity: Activity) : Plugin(activity) {
     // ────────────────────────────────────────────────────────────────────────
 
     @Command
-    fun enableNfc(invoke: Invoke) {
+    fun enable_nfc(invoke: Invoke) {
         try {
             nfcAdapter = NfcAdapter.getDefaultAdapter(activity)
             isNfcEnabledByUser = true
@@ -60,7 +69,6 @@ class NfcPlugin(private val activity: Activity) : Plugin(activity) {
             result.put("supported", true)
             result.put("enabled", nfcAdapter!!.isEnabled)
 
-            // If activity is already resumed, enable foreground dispatch now
             if (isActivityResumed && nfcAdapter!!.isEnabled) {
                 try {
                     enableForegroundDispatch()
@@ -73,47 +81,31 @@ class NfcPlugin(private val activity: Activity) : Plugin(activity) {
             val error = JSObject()
             error.put("supported", false)
             error.put("enabled", false)
-            error.put("error", e.javaClass.simpleName + ": " + e.message)
+            error.put("error", "Kotlin异常 [${e.javaClass.simpleName}]: ${e.message}")
             error.put("stackTrace", android.util.Log.getStackTraceString(e))
             invoke.resolve(error)
         }
     }
 
     @Command
-    fun disableNfc(invoke: Invoke) {
+    fun disable_nfc(invoke: Invoke) {
         isNfcEnabledByUser = false
         disableForegroundDispatch()
         invoke.resolve(JSObject().apply { put("ok", true) })
     }
 
-    /**
-     * JS should call this BEFORE tapping the NFC tag.
-     * Expects invoke.args:
-     *   epdColor: number
-     *   epdInch:  number
-     *   initCmd1: string  (hex)
-     *   initCmd2: string  (hex)
-     *   bwData:   number[] (byte values 0-255)
-     *   rwData:   number[] | null
-     */
     @Command
-    fun writeImage(invoke: Invoke) {
-        val args = invoke.parseArgs(JSObject::class.java)
+    fun write_image(invoke: Invoke) {
+        val args = invoke.parseArgs(WriteImageArgs::class.java)
 
-        val epdColor = args.getInt("epdColor")
-        val epdInch  = args.getInt("epdInch")
-        val initCmd1 = args.getString("initCmd1") ?: ""
-        val initCmd2 = args.getString("initCmd2") ?: ""
+        val bwList = args.bwData ?: emptyList()
+        val bwData = ByteArray(bwList.size) { bwList[it].toByte() }
 
-        val bwArray  = args.getJSONArray("bwData")
-        val bwData   = ByteArray(bwArray.length()) { bwArray.getInt(it).toByte() }
+        val rwData: ByteArray? = args.rwData?.let { rwList ->
+            ByteArray(rwList.size) { rwList[it].toByte() }
+        }
 
-        val rwData: ByteArray? = if (args.has("rwData") && !args.isNull("rwData")) {
-            val rwArray = args.getJSONArray("rwData")
-            ByteArray(rwArray.length()) { rwArray.getInt(it).toByte() }
-        } else null
-
-        pendingWriteData = WriteData(epdColor, epdInch, initCmd1, initCmd2, bwData, rwData)
+        pendingWriteData = WriteData(args.epdColor, args.epdInch, args.initCmd1, args.initCmd2, bwData, rwData)
 
         val res = JSObject()
         res.put("ready", true)
@@ -122,31 +114,23 @@ class NfcPlugin(private val activity: Activity) : Plugin(activity) {
     }
 
     // ────────────────────────────────────────────────────────────────────────
-    //  NFC lifecycle
+    //  NFC lifecycle (Tauri v2 Plugin lifecycle hooks)
     // ────────────────────────────────────────────────────────────────────────
 
-    /**
-     * Called by MainActivity.onResume() — automatically re-enables foreground dispatch
-     * if the user previously enabled NFC.
-     */
-    fun onActivityResume() {
+    override fun onResume() {
+        super.onResume()
         isActivityResumed = true
         if (isNfcEnabledByUser && nfcAdapter?.isEnabled == true) {
             try {
                 enableForegroundDispatch()
-            } catch (_: Exception) {
-                // 前台分发注册失败不影响后续操作
-            }
+            } catch (_: Exception) {}
         }
     }
 
-    /**
-     * Called by MainActivity.onPause() — always disables foreground dispatch
-     * when the activity leaves the foreground.
-     */
-    fun onActivityPause() {
+    override fun onPause() {
         isActivityResumed = false
         disableForegroundDispatch()
+        super.onPause()
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -170,7 +154,7 @@ class NfcPlugin(private val activity: Activity) : Plugin(activity) {
     }
 
     // ────────────────────────────────────────────────────────────────────────
-    //  Core NFC write logic (ported from activity_imageview.java)
+    //  Core NFC write logic
     // ────────────────────────────────────────────────────────────────────────
 
     private fun doWrite(tag: Tag, data: WriteData) {
@@ -226,10 +210,7 @@ class NfcPlugin(private val activity: Activity) : Plugin(activity) {
             var sentBytes = 0
 
             try {
-                // BW channel
                 sentBytes += sendChannel(isodep, data.bwData, 0x00, sentBytes, totalBytesAll)
-
-                // RW channel (3-color or special 2-color cases)
                 if (data.rwData != null) {
                     sentBytes += sendChannel(isodep, data.rwData, 0x01, sentBytes, totalBytesAll)
                 }
@@ -290,7 +271,6 @@ class NfcPlugin(private val activity: Activity) : Plugin(activity) {
             val pct = ((alreadySent + (i + 1) * chunkSize).toFloat() / total * 100).toInt().coerceAtMost(99)
             emitProgress(pct, "正在写入数据 $pct%…")
         }
-        // tail
         val remainder = channelData.size % chunkSize
         if (remainder > 0) {
             val cmd = ByteArray(chunkSize + 5)
@@ -300,7 +280,6 @@ class NfcPlugin(private val activity: Activity) : Plugin(activity) {
             cmd[3] = chunks.toByte()
             cmd[4] = 0xFA.toByte()
             System.arraycopy(channelData, chunks * chunkSize, cmd, 5, remainder)
-            // pad rest with 0xFF
             for (j in remainder until chunkSize) cmd[5 + j] = 0xFF.toByte()
             isodep.transceive(cmd)
         }
