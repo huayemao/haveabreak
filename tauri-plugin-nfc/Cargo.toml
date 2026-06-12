@@ -1,0 +1,30 @@
+[package]
+name = "tauri-plugin-nfc"
+version = "0.1.0"
+edition = "2021"
+description = "A Tauri v2 plugin for Android NFC functionality"
+license = "MIT"
+include = [
+    "src/**/*.rs",
+    "permissions/*.toml",
+    "android/src/**/*.kt",
+    "android/build.gradle.kts",
+    "Cargo.toml",
+    "LICENSE",
+]
+
+[package.metadata.tauri]
+name = "nfc"
+
+[package.metadata.tauri.android]
+kotlin_package = "online.white_noise.nfc"
+project_path = "android"
+
+[dependencies]
+tauri = { version = "2.11.0" }
+serde = "1.0"
+serde_json = "1.0"
+thiserror = "1"
+
+[target.'cfg(target_os = "android")'.dependencies]
+jni = "0.21"

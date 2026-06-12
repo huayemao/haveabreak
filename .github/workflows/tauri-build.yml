@@ -308,7 +308,7 @@ jobs:
     needs: get-release
     strategy:
       matrix:
-        app: [card, frame, timer]
+        app: [card, frame]
       fail-fast: false
 
     steps:

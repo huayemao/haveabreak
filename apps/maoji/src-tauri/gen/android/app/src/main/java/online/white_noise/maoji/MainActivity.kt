@@ -7,22 +7,4 @@ class MainActivity : TauriActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
     }
-
-    override fun onResume() {
-        super.onResume()
-        getNfcPlugin()?.onActivityResume()
-    }
-
-    override fun onPause() {
-        getNfcPlugin()?.onActivityPause()
-        super.onPause()
-    }
-
-    private fun getNfcPlugin(): NfcPlugin? {
-        return try {
-            bridge?.getPlugin("nfc") as? NfcPlugin
-        } catch (_: Exception) {
-            null
-        }
-    }
 }

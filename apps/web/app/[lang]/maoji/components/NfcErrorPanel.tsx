@@ -111,7 +111,7 @@ function ErrorDetailRow({ entry }: { entry: NfcErrorEntry }) {
           <button
             onClick={() => {
               const text = [
-                `[${layerLabels[entry.layer]}] ${entry.code || 'NO_CODE'}`,
+                `[${layerLabels[entry.layer] || entry.layer}] ${entry.code || 'NO_CODE'}`,
                 `Phase: ${entry.phase || 'N/A'}`,
                 `Time: ${formatTime(entry.timestamp)}`,
                 `Message: ${entry.message}`,
