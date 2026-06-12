@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
@@ -35,65 +36,69 @@ export default function ScreenSelector() {
           boxShadow: '9px 9px 16px rgba(163,177,198,0.6), -9px -9px 16px rgba(255,255,255,0.5)',
         }}
       >
-        <DropdownMenuLabel className="text-[10px] text-[#6B7280] px-2 py-1 font-medium">
-          墨水屏尺寸
-        </DropdownMenuLabel>
-        {EPD_SPECS.map(spec => (
-          <DropdownMenuItem
-            key={spec.inch}
-            onClick={() => {
-              updateSettings({ lastEpdInch: spec.inch });
-              if (currentDesign && currentDesign.epdInch !== spec.inch) {
-                newDesign(spec.inch, settings.lastEpdColor);
-              }
-            }}
-            className="rounded-xl text-xs px-3 py-2 transition-all duration-200"
-            style={{
-              color: currentDesign?.epdInch === spec.inch ? '#6C63FF' : '#3D4852',
-              boxShadow: currentDesign?.epdInch === spec.inch
-                ? 'inset 3px 3px 6px rgba(163,177,198,0.6), inset -3px -3px 6px rgba(255,255,255,0.5)'
-                : 'none',
-            }}
-          >
-            {currentDesign?.epdInch === spec.inch && (
-              <Check className="mr-2 h-3 w-3" />
-            )}
-            {spec.label} ({spec.width}×{spec.height})
-          </DropdownMenuItem>
-        ))}
-
-        <DropdownMenuSeparator className="bg-[#A3B1C6]/20 my-1" />
-        <DropdownMenuLabel className="text-[10px] text-[#6B7280] px-2 py-1 font-medium">
-          颜色模式
-        </DropdownMenuLabel>
-        {([2, 3, 4] as const).map(mode => {
-          const label = mode === 2 ? '黑白' : mode === 3 ? '黑白红' : '四色';
-          const supported = currentSpec?.supportedColors.includes(mode);
-          return (
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="text-[10px] text-[#6B7280] px-2 py-1 font-medium">
+            墨水屏尺寸
+          </DropdownMenuLabel>
+          {EPD_SPECS.map(spec => (
             <DropdownMenuItem
-              key={mode}
-              disabled={!supported}
+              key={spec.inch}
               onClick={() => {
-                updateSettings({ lastEpdColor: mode });
-                if (currentDesign && currentDesign.epdColor !== mode) {
-                  newDesign(currentDesign.epdInch, mode);
+                updateSettings({ lastEpdInch: spec.inch });
+                if (currentDesign && currentDesign.epdInch !== spec.inch) {
+                  newDesign(spec.inch, settings.lastEpdColor);
                 }
               }}
-              className="rounded-xl text-xs px-3 py-2 transition-all duration-200 disabled:opacity-30"
+              className="rounded-xl text-xs px-3 py-2 transition-all duration-200"
               style={{
-                color: currentDesign?.epdColor === mode ? '#6C63FF' : '#3D4852',
-                boxShadow: currentDesign?.epdColor === mode
+                color: currentDesign?.epdInch === spec.inch ? '#6C63FF' : '#3D4852',
+                boxShadow: currentDesign?.epdInch === spec.inch
                   ? 'inset 3px 3px 6px rgba(163,177,198,0.6), inset -3px -3px 6px rgba(255,255,255,0.5)'
                   : 'none',
               }}
             >
-              {currentDesign?.epdColor === mode && (
+              {currentDesign?.epdInch === spec.inch && (
                 <Check className="mr-2 h-3 w-3" />
               )}
-              {label} {supported ? '' : '(不支持)'}
+              {spec.label} ({spec.width}×{spec.height})
             </DropdownMenuItem>
-          );
-        })}
+          ))}
+        </DropdownMenuGroup>
+
+        <DropdownMenuSeparator className="bg-[#A3B1C6]/20 my-1" />
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="text-[10px] text-[#6B7280] px-2 py-1 font-medium">
+            颜色模式
+          </DropdownMenuLabel>
+          {([2, 3, 4] as const).map(mode => {
+            const label = mode === 2 ? '黑白' : mode === 3 ? '黑白红' : '四色';
+            const supported = currentSpec?.supportedColors.includes(mode);
+            return (
+              <DropdownMenuItem
+                key={mode}
+                disabled={!supported}
+                onClick={() => {
+                  updateSettings({ lastEpdColor: mode });
+                  if (currentDesign && currentDesign.epdColor !== mode) {
+                    newDesign(currentDesign.epdInch, mode);
+                  }
+                }}
+                className="rounded-xl text-xs px-3 py-2 transition-all duration-200 disabled:opacity-30"
+                style={{
+                  color: currentDesign?.epdColor === mode ? '#6C63FF' : '#3D4852',
+                  boxShadow: currentDesign?.epdColor === mode
+                    ? 'inset 3px 3px 6px rgba(163,177,198,0.6), inset -3px -3px 6px rgba(255,255,255,0.5)'
+                    : 'none',
+                }}
+              >
+                {currentDesign?.epdColor === mode && (
+                  <Check className="mr-2 h-3 w-3" />
+                )}
+                {label} {supported ? '' : '(不支持)'}
+              </DropdownMenuItem>
+            );
+          })}
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );
