@@ -5,27 +5,29 @@ import { useMaojiStore } from '@/apps/maoji/store';
 import { EPD_SPECS, getEpdSpec } from '@/apps/maoji/epdSpecs';
 import { renderCanvasToEpdBytes } from '@/apps/maoji/utils/dither';
 import {
-  enableNfc, prepareWrite, onWriteProgress, onWriteSuccess, onWriteError
+  enableNfc, prepareWrite, onWriteProgress, onWriteSuccess, onWriteError, NfcStructuredError
 } from '@/apps/maoji/nfcService';
 import { toast } from 'sonner';
 import ScreenSelector from './components/ScreenSelector';
 import TemplatePanel from './components/TemplatePanel';
 import CanvasEditor from './components/CanvasEditor';
 import NfcWriteDialog from './components/NfcWriteDialog';
+import NfcErrorPanel from './components/NfcErrorPanel';
 import DesignHistory from './components/DesignHistory';
-import { Monitor, History, PlusCircle, Wifi } from 'lucide-react';
+import { Monitor, History, PlusCircle, Wifi, Bug } from 'lucide-react';
 
 type Tab = 'editor' | 'history';
 
 export default function MaojiClient() {
   const {
-    loadData, currentDesign, newDesign, settings, nfc, setNfc, resetNfc,
+    loadData, currentDesign, newDesign, settings, nfc, setNfc, resetNfc, pushNfcError, clearNfcErrors,
   } = useMaojiStore();
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [tab, setTab] = useState<Tab>('editor');
   const [showNfcDialog, setShowNfcDialog] = useState(false);
   const [nfcDetected, setNfcDetected] = useState(false);
+  const [showErrorPanel, setShowErrorPanel] = useState(false);
 
   useEffect(() => { loadData(); }, [loadData]);
 
@@ -41,58 +43,100 @@ export default function MaojiClient() {
       toast.info('正在检测 NFC…');
       const result = await enableNfc();
       if (result?.error) {
-        // Android 端捕获了完整异常，返回详细错误信息
+        pushNfcError({
+          layer: 'kotlin',
+          code: 'NFC_ENABLE_FAILED',
+          message: `NFC 检测失败：${result.error}`,
+          detail: result.stackTrace,
+          phase: 'enableNfc',
+        });
         toast.error(`NFC 检测失败：${result.error}`);
-        console.error('NFC enableNfc error details:', result.stackTrace);
         return;
       }
       if (result?.dispatchError) {
-        // enableForegroundDispatch 失败，但不影响继续
+        pushNfcError({
+          layer: 'kotlin',
+          code: 'FOREGROUND_DISPATCH_FAILED',
+          message: `NFC 前台分发注册失败：${result.dispatchError}`,
+          phase: 'enableForegroundDispatch',
+        });
         console.warn('NFC foreground dispatch 注册失败:', result.dispatchError);
       }
       if (result?.supported) {
         setNfcDetected(true);
         toast.success('NFC 已检测到！');
       } else {
+        pushNfcError({
+          layer: 'hardware',
+          code: 'NFC_NOT_SUPPORTED',
+          message: '设备不支持 NFC',
+          phase: 'enableNfc',
+        });
         toast.warning('NFC 不可用，但仍可尝试写入');
         setNfcDetected(true); // Allow proceeding even if not supported (simulation mode)
       }
     } catch (err: any) {
+      pushNfcError({
+        layer: 'js',
+        code: 'DETECT_NFC_EXCEPTION',
+        message: `NFC 检测失败：${err?.message || '未知错误'}`,
+        detail: err?.stack,
+        phase: 'handleDetectNfc',
+      });
       toast.error(`NFC 检测失败：${err?.message || '未知错误'}`);
     }
-  }, [setNfcDetected]);
+  }, [setNfcDetected, pushNfcError]);
 
   const handleStartWrite = useCallback(async () => {
     if (!currentDesign) {
+      pushNfcError({ layer: 'js', code: 'NO_DESIGN', message: '请先创建一个设计', phase: 'handleStartWrite' });
       toast.error('请先创建一个设计');
       return;
     }
     if (!canvasRef.current) {
+      pushNfcError({ layer: 'js', code: 'CANVAS_NOT_READY', message: '画布未准备好，请刷新页面重试', phase: 'handleStartWrite' });
       toast.error('画布未准备好，请刷新页面重试');
       return;
     }
 
     const spec = getEpdSpec(currentDesign.epdInch);
     if (!spec) {
+      pushNfcError({ layer: 'js', code: 'EPD_SPEC_NOT_FOUND', message: `未找到 ${currentDesign.epdInch} 寸墨水屏规格`, phase: 'getEpdSpec' });
       toast.error('未找到对应的墨水屏规格');
       return;
     }
 
     const cmds = spec.colorCodes[currentDesign.epdColor];
     if (!cmds?.initCmd1) {
+      pushNfcError({ layer: 'js', code: 'COLOR_MODE_NOT_SUPPORTED', message: `${currentDesign.epdInch} 寸屏不支持 ${currentDesign.epdColor} 色模式`, phase: 'colorCodeCheck' });
       toast.error('当前墨水屏规格不支持所选颜色模式');
       return;
     }
 
     toast.info('正在渲染画面…');
 
-    // Render canvas → EPD byte arrays
-    const { bwData, rwData } = renderCanvasToEpdBytes(
-      canvasRef.current,
-      currentDesign.epdColor,
-      spec.width,
-      spec.height
-    );
+    let bwData: number[];
+    let rwData: number[] | null;
+    try {
+      const rendered = renderCanvasToEpdBytes(
+        canvasRef.current,
+        currentDesign.epdColor,
+        spec.width,
+        spec.height
+      );
+      bwData = rendered.bwData;
+      rwData = rendered.rwData;
+    } catch (err: any) {
+      pushNfcError({
+        layer: 'js',
+        code: 'RENDER_FAILED',
+        message: `画面渲染失败：${err?.message || '未知错误'}`,
+        detail: err?.stack,
+        phase: 'renderCanvasToEpdBytes',
+      });
+      toast.error(`画面渲染失败：${err?.message || '未知错误'}`);
+      return;
+    }
 
     toast.info('正在初始化 NFC…');
 
@@ -109,9 +153,16 @@ export default function MaojiClient() {
         toast.success('写入成功！');
         unProgress(); unSuccess(); unError();
       });
-      const unError = await onWriteError((message) => {
-        setNfc({ status: 'error', progress: 0, message });
-        toast.error(`写入失败：${message}`);
+      const unError = await onWriteError((error: NfcStructuredError) => {
+        pushNfcError({
+          layer: error.layer || 'kotlin',
+          code: error.code,
+          message: `写入失败：${error.message}`,
+          detail: error.detail,
+          phase: error.phase || 'onWriteError',
+        });
+        setNfc({ status: 'error', progress: 0, message: error.message });
+        toast.error(`写入失败：${error.message}`);
         unProgress(); unSuccess(); unError();
       });
 
@@ -129,9 +180,16 @@ export default function MaojiClient() {
 
       setNfc({ status: 'ready', progress: 0, message: '请将手机贴近墨水屏背面线圈处…' });
     } catch (err: any) {
+      pushNfcError({
+        layer: 'tauri',
+        code: 'PREPARE_WRITE_FAILED',
+        message: `写入过程出错：${err?.message || '未知错误'}`,
+        detail: err?.stack,
+        phase: 'prepareWrite',
+      });
       toast.error(`写入过程出错：${err?.message || '未知错误'}`);
     }
-  }, [currentDesign, setNfc]);
+  }, [currentDesign, setNfc, pushNfcError]);
 
   return (
     <div className="flex flex-col h-screen bg-[#E0E5EC] overflow-hidden select-none">
@@ -171,6 +229,22 @@ export default function MaojiClient() {
           <Wifi className="w-4 h-4" />
           {nfcDetected ? '写入' : '检测'}
         </button>
+
+        {/* Debug panel toggle */}
+        {nfc.errors.length > 0 && (
+          <button
+            onClick={() => setShowErrorPanel(!showErrorPanel)}
+            className="relative p-2 rounded-2xl transition-all duration-300 active:scale-95"
+            style={{
+              boxShadow: '5px 5px 10px rgba(163,177,198,0.6), -5px -5px 10px rgba(255,255,255,0.5)',
+            }}
+          >
+            <Bug className="w-4 h-4 text-red-500" />
+            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[8px] flex items-center justify-center font-bold">
+              {nfc.errors.length}
+            </span>
+          </button>
+        )}
       </header>
 
       {/* ── Tab Bar ────────────────────────────────────────────────── */}
@@ -234,6 +308,39 @@ export default function MaojiClient() {
           nfc={nfc}
           onClose={() => { setShowNfcDialog(false); resetNfc(); }}
         />
+      )}
+
+      {/* ── NFC Error Debug Panel ──────────────────────────────────── */}
+      {showErrorPanel && (
+        <div className="fixed inset-0 bg-black/30 flex items-end z-50" onClick={() => setShowErrorPanel(false)}>
+          <div
+            className="w-full max-h-[70vh] rounded-t-3xl p-4 overflow-hidden"
+            style={{
+              background: '#E0E5EC',
+              boxShadow: '0 -4px 20px rgba(163,177,198,0.6)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Panel header */}
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-bold text-[#3D4852]">NFC 调试面板</h3>
+              <button
+                onClick={() => setShowErrorPanel(false)}
+                className="p-1 rounded-full hover:bg-[#CBD5E1] transition-colors"
+              >
+                <Bug className="w-4 h-4 text-[#6B7280]" />
+              </button>
+            </div>
+
+            <div className="overflow-y-auto max-h-[calc(70vh-3rem)]">
+              <NfcErrorPanel
+                errors={nfc.errors}
+                onClear={clearNfcErrors}
+                onClose={() => setShowErrorPanel(false)}
+              />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

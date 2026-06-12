@@ -1,7 +1,7 @@
 'use client';
 import { create } from 'zustand';
 import {
-  Design, DesignElement, EpdColorMode, MaojiSettings, NfcState
+  Design, DesignElement, EpdColorMode, MaojiSettings, NfcState, NfcErrorEntry
 } from './types';
 import {
   getDesigns, saveDesign, createDesign, deleteDesign,
@@ -39,9 +39,11 @@ interface MaojiStore {
   // ── NFC ───────────────────────────────────────────────────────────────────
   setNfc: (patch: Partial<NfcState>) => void;
   resetNfc: () => void;
+  pushNfcError: (entry: Omit<NfcErrorEntry, 'id' | 'timestamp'>) => void;
+  clearNfcErrors: () => void;
 }
 
-const idleNfc: NfcState = { status: 'idle', progress: 0, message: '' };
+const idleNfc: NfcState = { status: 'idle', progress: 0, message: '', errors: [] };
 
 export const useMaojiStore = create<MaojiStore>((set, get) => ({
   designs: [],
@@ -162,5 +164,25 @@ export const useMaojiStore = create<MaojiStore>((set, get) => ({
 
   resetNfc() {
     set({ nfc: idleNfc });
+  },
+
+  pushNfcError(entry) {
+    const newEntry: NfcErrorEntry = {
+      ...entry,
+      id: `err_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      timestamp: Date.now(),
+    };
+    set(s => ({
+      nfc: {
+        ...s.nfc,
+        errors: [...s.nfc.errors, newEntry],
+      },
+    }));
+  },
+
+  clearNfcErrors() {
+    set(s => ({
+      nfc: { ...s.nfc, errors: [] },
+    }));
   },
 }));

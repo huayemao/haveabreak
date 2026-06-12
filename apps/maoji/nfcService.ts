@@ -67,7 +67,15 @@ export async function prepareWrite(args: WriteImageArgs) {
 
 export type ProgressHandler = (progress: number, message: string) => void;
 export type SuccessHandler = (message: string) => void;
-export type ErrorHandler = (message: string) => void;
+export type ErrorHandler = (error: NfcStructuredError) => void;
+
+export interface NfcStructuredError {
+  message: string;
+  code?: string;
+  layer?: 'js' | 'tauri' | 'kotlin' | 'hardware';
+  phase?: string;
+  detail?: string;
+}
 
 export async function onWriteProgress(cb: ProgressHandler): Promise<() => void> {
   return listen('write-progress', (p) => {
@@ -83,6 +91,36 @@ export async function onWriteSuccess(cb: SuccessHandler): Promise<() => void> {
 
 export async function onWriteError(cb: ErrorHandler): Promise<() => void> {
   return listen('write-error', (p) => {
-    cb(p['message'] as string);
+    cb({
+      message: (p['message'] as string) || '未知错误',
+      code: p['code'] as string | undefined,
+      layer: (p['layer'] as any) || 'kotlin',
+      phase: p['phase'] as string | undefined,
+      detail: p['detail'] as string | undefined,
+    });
   });
+}
+
+/**
+ * Wraps an NFC invoke call with automatic error tracking.
+ * Catches Tauri invoke errors and returns structured error info.
+ */
+export async function safeInvoke<T>(
+  cmd: string,
+  args?: Record<string, unknown>,
+  phase?: string
+): Promise<{ data?: T; error?: NfcStructuredError }> {
+  try {
+    const data = await invoke<T>(cmd, args);
+    return { data };
+  } catch (err: any) {
+    const error: NfcStructuredError = {
+      message: err?.message || 'Tauri 调用失败',
+      code: err?.code || 'TAURI_INVOKE_FAILED',
+      layer: 'tauri',
+      phase,
+      detail: err?.stack || String(err),
+    };
+    return { error };
+  }
 }

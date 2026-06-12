@@ -115,8 +115,21 @@ export type NfcStatus =
   | 'success'
   | 'error';
 
+export type NfcErrorLayer = 'js' | 'tauri' | 'kotlin' | 'hardware';
+
+export interface NfcErrorEntry {
+  id: string;
+  timestamp: number;
+  layer: NfcErrorLayer;
+  code?: string;       // e.g. 'NFC_NOT_SUPPORTED', 'ISO_DEP_TIMEOUT'
+  message: string;
+  detail?: string;     // raw error / stack trace
+  phase?: string;      // e.g. 'enableNfc', 'prepareWrite', 'doWrite'
+}
+
 export interface NfcState {
   status: NfcStatus;
   progress: number;   // 0-100
   message: string;
+  errors: NfcErrorEntry[];  // error history for debugging
 }

@@ -146,7 +146,7 @@ class NfcPlugin(private val activity: Activity) : Plugin(activity) {
     private fun doWrite(tag: Tag, data: WriteData) {
         val tech = tag.techList
         if (!tech.contains("android.nfc.tech.IsoDep")) {
-            emitError("标签类型不兼容（需要 IsoDep）")
+            emitError("标签类型不兼容（需要 IsoDep）", "HARDWARE_INCOMPATIBLE", "kotlin", "tagCheck")
             return
         }
 
@@ -158,19 +158,36 @@ class NfcPlugin(private val activity: Activity) : Plugin(activity) {
             emitProgress(0, "NFC 已连接，正在初始化屏幕…")
 
             // 1. IC DIY command
-            isodep.transceive(hexToBytes("F0DB020000"))
+            try {
+                isodep.transceive(hexToBytes("F0DB020000"))
+            } catch (e: IOException) {
+                emitError("IC DIY 指令发送失败: ${e.message}", "ISO_DEP_IO", "kotlin", "icDiyCommand")
+                return
+            }
             delay(10)
 
             // 2. EPD init cmd 1
-            isodep.transceive(hexToBytes(data.initCmd1))
+            try {
+                isodep.transceive(hexToBytes(data.initCmd1))
+            } catch (e: IOException) {
+                emitError("屏幕初始化指令1发送失败: ${e.message}", "ISO_DEP_IO", "kotlin", "initCmd1")
+                return
+            }
             delay(10)
 
             // 3. EPD screen switch cmd 2
-            val resp2 = isodep.transceive(hexToBytes(data.initCmd2))
+            val resp2: ByteArray
+            try {
+                resp2 = isodep.transceive(hexToBytes(data.initCmd2))
+            } catch (e: IOException) {
+                emitError("屏幕切换指令发送失败: ${e.message}", "ISO_DEP_IO", "kotlin", "initCmd2")
+                return
+            }
             delay(10)
 
             if (resp2.isEmpty() || resp2[0] != 0x90.toByte()) {
-                emitError("屏幕初始化失败")
+                val respHex = resp2.joinToString("") { "%02X".format(it) }
+                emitError("屏幕初始化失败，响应: $respHex", "INVALID_RESPONSE", "kotlin", "initCmd2Response")
                 return
             }
 
@@ -178,12 +195,17 @@ class NfcPlugin(private val activity: Activity) : Plugin(activity) {
             val totalBytesAll = data.bwData.size + (data.rwData?.size ?: 0)
             var sentBytes = 0
 
-            // BW channel
-            sentBytes += sendChannel(isodep, data.bwData, 0x00, sentBytes, totalBytesAll)
+            try {
+                // BW channel
+                sentBytes += sendChannel(isodep, data.bwData, 0x00, sentBytes, totalBytesAll)
 
-            // RW channel (3-color or special 2-color cases)
-            if (data.rwData != null) {
-                sentBytes += sendChannel(isodep, data.rwData, 0x01, sentBytes, totalBytesAll)
+                // RW channel (3-color or special 2-color cases)
+                if (data.rwData != null) {
+                    sentBytes += sendChannel(isodep, data.rwData, 0x01, sentBytes, totalBytesAll)
+                }
+            } catch (e: IOException) {
+                emitError("数据传输中断: ${e.message}", "DATA_TRANSFER_IO", "kotlin", "dataTransfer")
+                return
             }
 
             emitProgress(100, "数据传输完成，屏幕刷新中…")
@@ -191,17 +213,26 @@ class NfcPlugin(private val activity: Activity) : Plugin(activity) {
             // 5. Refresh command
             val refreshByte: Byte = if (data.epdColor == 4) 0x85.toByte() else 0x05.toByte()
             val refreshCmd = byteArrayOf(0xF0.toByte(), 0xD4.toByte(), refreshByte, 0x80.toByte(), 0x00.toByte())
-            val refreshResp = isodep.transceive(refreshCmd)
+            val refreshResp: ByteArray
+            try {
+                refreshResp = isodep.transceive(refreshCmd)
+            } catch (e: IOException) {
+                emitError("刷新指令发送失败: ${e.message}", "REFRESH_IO", "kotlin", "refreshCommand")
+                return
+            }
 
             if (refreshResp.isNotEmpty() && refreshResp[0] == 0x90.toByte()) {
                 val waitSecs = when (data.epdColor) { 3 -> 16; 4 -> 20; else -> 2 }
                 emitSuccess("屏幕正在刷新，预计需要 ${waitSecs} 秒")
             } else {
-                emitError("刷新指令响应错误")
+                val respHex = refreshResp.joinToString("") { "%02X".format(it) }
+                emitError("刷新指令响应错误: $respHex", "INVALID_REFRESH_RESPONSE", "kotlin", "refreshResponse")
             }
 
         } catch (e: IOException) {
-            emitError("NFC 通信断开: ${e.message}")
+            emitError("NFC 通信断开: ${e.message}", "NFC_CONNECTION_LOST", "kotlin", "doWrite")
+        } catch (e: Exception) {
+            emitError("未知错误: ${e.message}", "UNKNOWN_EXCEPTION", "kotlin", "doWrite", android.util.Log.getStackTraceString(e))
         } finally {
             try { isodep.close() } catch (_: IOException) {}
         }
@@ -264,9 +295,13 @@ class NfcPlugin(private val activity: Activity) : Plugin(activity) {
         pendingWriteData = null
     }
 
-    private fun emitError(msg: String) {
+    private fun emitError(msg: String, code: String? = null, layer: String = "kotlin", phase: String? = null, detail: String? = null) {
         val obj = JSObject()
         obj.put("message", msg)
+        if (code != null) obj.put("code", code)
+        obj.put("layer", layer)
+        if (phase != null) obj.put("phase", phase)
+        if (detail != null) obj.put("detail", detail)
         trigger("write-error", obj)
     }
 
