@@ -36,14 +36,25 @@ async function listen(
 // ─── Public API ──────────────────────────────────────────────────────────────
 
 export async function enableNfc() {
-  if (!isTauriBuild) return { supported: false, enabled: false };
-  return invoke<{
-    supported: boolean;
-    enabled: boolean;
-    error?: string;
-    stackTrace?: string;
-    dispatchError?: string;
-  }>('plugin:nfc|enableNfc');
+  if (!isTauriBuild) return { supported: false, enabled: false, dispatchError: undefined };
+  try {
+    return await invoke<{
+      supported: boolean;
+      enabled: boolean;
+      error?: string;
+      stackTrace?: string;
+      dispatchError?: string;
+    }>('plugin:nfc|enableNfc');
+  } catch (err: any) {
+    // 将调用异常转换为业务错误格式，上层统一处理
+    return {
+      supported: false,
+      enabled: false,
+      error: err?.message || 'NFC 启用失败',
+      stackTrace: err?.stack,
+      dispatchError: undefined,
+    };
+  }
 }
 
 export async function disableNfc() {

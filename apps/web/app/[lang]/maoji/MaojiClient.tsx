@@ -28,6 +28,7 @@ export default function MaojiClient() {
   const [showNfcDialog, setShowNfcDialog] = useState(false);
   const [nfcDetected, setNfcDetected] = useState(false);
   const [showErrorPanel, setShowErrorPanel] = useState(false);
+  const [nfcDetecting, setNfcDetecting] = useState(false);
 
   useEffect(() => { loadData(); }, [loadData]);
 
@@ -38,54 +39,47 @@ export default function MaojiClient() {
     }
   }, [currentDesign, newDesign, settings]);
 
-  const handleDetectNfc = useCallback(async () => {
-    try {
-      toast.info('正在检测 NFC…');
+  // Auto-detect NFC on mount
+  useEffect(() => {
+    const autoDetect = async () => {
+      setNfcDetecting(true);
       const result = await enableNfc();
+      
+      // 处理 Kotlin 层或调用异常返回的业务错误
       if (result?.error) {
+        const errorMsg = `NFC 启用失败：${result.error}`;
         pushNfcError({
-          layer: 'kotlin',
+          layer: result.stackTrace ? 'tauri' : 'kotlin',
           code: 'NFC_ENABLE_FAILED',
-          message: `NFC 检测失败：${result.error}`,
+          message: errorMsg,
           detail: result.stackTrace,
           phase: 'enableNfc',
         });
-        toast.error(`NFC 检测失败：${result.error}`);
-        return;
+        toast.error(errorMsg);
       }
       if (result?.dispatchError) {
+        const errorMsg = `NFC 前台分发注册失败：${result.dispatchError}`;
         pushNfcError({
           layer: 'kotlin',
           code: 'FOREGROUND_DISPATCH_FAILED',
-          message: `NFC 前台分发注册失败：${result.dispatchError}`,
+          message: errorMsg,
           phase: 'enableForegroundDispatch',
         });
-        console.warn('NFC foreground dispatch 注册失败:', result.dispatchError);
+        toast.warning(errorMsg);
       }
+      
+      // 无论结果如何都允许继续
+      setNfcDetected(true);
       if (result?.supported) {
-        setNfcDetected(true);
-        toast.success('NFC 已检测到！');
-      } else {
-        pushNfcError({
-          layer: 'hardware',
-          code: 'NFC_NOT_SUPPORTED',
-          message: '设备不支持 NFC',
-          phase: 'enableNfc',
-        });
-        toast.warning('NFC 不可用，但仍可尝试写入');
-        setNfcDetected(true); // Allow proceeding even if not supported (simulation mode)
+        toast.success('NFC 已就绪！');
+      } else if (!result?.error) {
+        toast.info('NFC 未检测到，仍可尝试写入');
       }
-    } catch (err: any) {
-      pushNfcError({
-        layer: 'js',
-        code: 'DETECT_NFC_EXCEPTION',
-        message: `NFC 检测失败：${err?.message || '未知错误'}`,
-        detail: err?.stack,
-        phase: 'handleDetectNfc',
-      });
-      toast.error(`NFC 检测失败：${err?.message || '未知错误'}`);
-    }
-  }, [setNfcDetected, pushNfcError]);
+      
+      setNfcDetecting(false);
+    };
+    autoDetect();
+  }, [pushNfcError]);
 
   const handleStartWrite = useCallback(async () => {
     if (!currentDesign) {
@@ -216,18 +210,16 @@ export default function MaojiClient() {
 
         {/* Write button */}
         <button
-          onClick={nfcDetected ? handleStartWrite : handleDetectNfc}
-          disabled={!currentDesign}
+          onClick={handleStartWrite}
+          disabled={!currentDesign || nfcDetecting}
           className="flex items-center gap-1.5 px-4 py-2 rounded-2xl text-white text-sm font-semibold disabled:opacity-40 transition-all duration-300 active:scale-95"
           style={{
-            background: nfcDetected
-              ? 'linear-gradient(135deg, #6C63FF, #8B84FF)'
-              : 'linear-gradient(135deg, #10B981, #34D399)',
+            background: 'linear-gradient(135deg, #6C63FF, #8B84FF)',
             boxShadow: '5px 5px 10px rgba(163,177,198,0.6), -5px -5px 10px rgba(255,255,255,0.5)',
           }}
         >
           <Wifi className="w-4 h-4" />
-          {nfcDetected ? '写入' : '检测'}
+          {nfcDetecting ? '检测中...' : '写入'}
         </button>
 
         {/* Debug panel toggle */}
