@@ -37,10 +37,15 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
   const [isPlaying, setIsPlaying] = useState(startPaused ? false : settings.autoPlay);
   const [showControls, setShowControls] = useState(true);
   const [progress, setProgress] = useState(0);
+  const [direction, setDirection] = useState<'next' | 'prev'>('next');
+  
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const controlsTimeoutRef = useRef<number | null>(null);
   const slideIntervalRef = useRef<number | null>(null);
+  
+  const dragStartRef = useRef<{ x: number; y: number } | null>(null);
+  const lastSwitchTimeRef = useRef<number>(0);
 
   // Lock body scroll when player is open
   useScrollLock();
@@ -71,6 +76,7 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
 
   const goToNext = useCallback(() => {
     if (media.length === 0) return;
+    setDirection('next');
     if (settings.shuffle) {
       const nextShuffledIndex = (shuffledIndex + 1) % media.length;
       if (nextShuffledIndex === 0) {
@@ -94,6 +100,7 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
 
   const goToPrev = useCallback(() => {
     if (media.length === 0) return;
+    setDirection('prev');
     if (settings.shuffle) {
       const prevShuffledIndex = (shuffledIndex - 1 + media.length) % media.length;
       setShuffledIndex(prevShuffledIndex);
@@ -103,6 +110,47 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
     }
     setProgress(0);
   }, [media.length, settings.shuffle, shuffledOrder, shuffledIndex]);
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (!settings.swipeSwitching) return;
+    if ((e.target as HTMLElement).closest('.player-controls')) return;
+    dragStartRef.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (!settings.swipeSwitching || !dragStartRef.current) return;
+    const deltaY = e.clientY - dragStartRef.current.y;
+    const deltaX = e.clientX - dragStartRef.current.x;
+    dragStartRef.current = null;
+
+    const swipeThreshold = 55;
+    if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > swipeThreshold) {
+      const now = Date.now();
+      if (now - lastSwitchTimeRef.current < 450) return;
+      lastSwitchTimeRef.current = now;
+
+      if (deltaY < 0) {
+        goToNext();
+      } else {
+        goToPrev();
+      }
+    }
+  };
+
+  const handleWheel = (e: React.WheelEvent) => {
+    if (!settings.swipeSwitching) return;
+    const now = Date.now();
+    if (now - lastSwitchTimeRef.current < 650) return;
+
+    if (Math.abs(e.deltaY) > 30) {
+      lastSwitchTimeRef.current = now;
+      if (e.deltaY > 0) {
+        goToNext();
+      } else {
+        goToPrev();
+      }
+    }
+  };
 
   useEffect(() => {
     const enterFullscreen = async () => {
@@ -239,20 +287,56 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
     );
   }
 
+  const variants = {
+    initial: (dir: 'next' | 'prev') => {
+      if (settings.swipeSwitching) {
+        return {
+          y: dir === 'next' ? '100%' : '-100%',
+          opacity: 1,
+          scale: 1,
+        };
+      }
+      return { opacity: 0, scale: 1.02, y: 0 };
+    },
+    animate: {
+      y: 0,
+      scale: 1,
+      opacity: 1,
+    },
+    exit: (dir: 'next' | 'prev') => {
+      if (settings.swipeSwitching) {
+        return {
+          y: dir === 'next' ? '-100%' : '100%',
+          opacity: 1,
+          scale: 1,
+        };
+      }
+      return { opacity: 0, scale: 0.98, y: 0 };
+    },
+  };
+
   return (
     <div
-      className="fixed inset-0 bg-black z-[100] overflow-hidden cursor-none"
+      className="fixed inset-0 bg-black z-[100] overflow-hidden cursor-none touch-none"
       style={{ cursor: showControls ? 'default' : 'none' }}
       onClick={handleContainerClick}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onWheel={handleWheel}
     >
       <div className="absolute inset-0">
-        <AnimatePresence mode="popLayout">
+        <AnimatePresence custom={direction} mode="popLayout">
           <motion.div
             key={currentMedia.url}
-            initial={{ opacity: 0, scale: 1.02 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
+            custom={direction}
+            variants={variants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={settings.swipeSwitching
+              ? { duration: 0.45, ease: [0.25, 1, 0.5, 1] }
+              : { duration: 0.5, ease: "easeInOut" }
+            }
             className="w-full h-full"
           >
             {currentMedia.type === 'image' ? (

@@ -17,12 +17,14 @@ import {
 interface FrameState {
   media: MediaItem[];
   collections: Collection[];
+  feedMedia: MediaItem[];
   settings: FrameSettings;
   isLoading: boolean;
   isImporting: boolean;
 
   // Actions
   loadData: () => Promise<void>;
+  generateFeedMedia: () => void;
   addMedia: (url: string, type: MediaType, title?: string, collectionId?: string) => Promise<MediaItem | void>;
   deleteMedia: (id: string) => Promise<void>;
   createCollection: (name: string, description?: string, mediaIds?: string[]) => Promise<void>;
@@ -36,6 +38,7 @@ interface FrameState {
 export const useFrameStore = create<FrameState>((set, get) => ({
   media: [],
   collections: [],
+  feedMedia: [],
   settings: {
     autoPlay: true,
     slideInterval: 5000,
@@ -44,6 +47,7 @@ export const useFrameStore = create<FrameState>((set, get) => ({
     filterByOrientation: true,
     backgroundMusicEnabled: false,
     volume: 0.3,
+    swipeSwitching: false,
   },
   isLoading: true,
   isImporting: false,
@@ -56,7 +60,27 @@ export const useFrameStore = create<FrameState>((set, get) => ({
         getCollections(),
         getSettings(),
       ]);
-      set({ media, collections, settings });
+      const mergedSettings = {
+        // @ts-ignore
+        autoPlay: true,
+        // @ts-ignore
+        slideInterval: 5000,
+        // @ts-ignore
+        showInfo: false,
+        // @ts-ignore
+        shuffle: false,
+        // @ts-ignore
+        filterByOrientation: true,
+        // @ts-ignore
+        backgroundMusicEnabled: false,
+        // @ts-ignore
+        volume: 0.3,
+        // @ts-ignore
+        swipeSwitching: false,
+        ...settings,
+      };
+      set({ media, collections, settings: mergedSettings });
+      get().generateFeedMedia();
     } catch (error) {
       console.error('Failed to load frame data:', error);
     } finally {
@@ -64,10 +88,23 @@ export const useFrameStore = create<FrameState>((set, get) => ({
     }
   },
 
+  generateFeedMedia: () => {
+    const { media } = get();
+    const shuffled = [...media];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    set({ feedMedia: shuffled });
+  },
+
   addMedia: async (url, type, title, collectionId) => {
     try {
       const newItem = await storageAddMedia(url, type, title);
-      set((state) => ({ media: [...state.media, newItem] }));
+      set((state) => ({ 
+        media: [...state.media, newItem],
+        feedMedia: [...state.feedMedia, newItem],
+      }));
       if (collectionId) {
         const collection = get().collections.find(c => c.id === collectionId);
         if (collection && !collection.mediaIds.includes(newItem.id)) {
@@ -87,6 +124,7 @@ export const useFrameStore = create<FrameState>((set, get) => ({
       await storageDeleteMedia(id);
       set((state) => ({
         media: state.media.filter((m) => m.id !== id),
+        feedMedia: state.feedMedia.filter((m) => m.id !== id),
         collections: state.collections.map((col) => ({
           ...col,
           mediaIds: col.mediaIds.filter((mid) => mid !== id),
@@ -144,7 +182,10 @@ export const useFrameStore = create<FrameState>((set, get) => ({
     set({ isImporting: true });
     try {
       const newItems = await storageImportUrlList(urls, type);
-      set((state) => ({ media: [...state.media, ...newItems] }));
+      set((state) => ({ 
+        media: [...state.media, ...newItems],
+        feedMedia: [...state.feedMedia, ...newItems],
+      }));
       
       if (collectionId) {
         const collection = get().collections.find(c => c.id === collectionId);

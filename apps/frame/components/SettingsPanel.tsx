@@ -156,6 +156,17 @@ export default function SettingsPanel({
             onCheckedChange={() => toggleSetting('filterByOrientation')}
           />
         </div>
+
+        <div className="flex items-center justify-between p-4 rounded-[32px]" style={{
+          background: '#E0E5EC',
+          boxShadow: '9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5)',
+        }}>
+          <span className="font-medium text-fg-primary">{t('frame.swipeSwitching')}</span>
+          <Switch
+            checked={settings.swipeSwitching}
+            onCheckedChange={() => toggleSetting('swipeSwitching')}
+          />
+        </div>
       </div>
 
       <div className="p-4 rounded-[32px]" style={{

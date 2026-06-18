@@ -62,5 +62,9 @@
   "total": "총계",
   "autoDetected": "자동 감지됨",
   "cannotDetectType": "미디어 유형을 감지할 수 없습니다",
-  "viewDetail": "상세 보기"
+  "viewDetail": "상세 보기",
+  "feed": "피드",
+  "swipeSwitching": "스와이프 전환",
+  "refresh": "새로 고침",
+  "recommendedForYou": "당신을 위한 추천"
 }

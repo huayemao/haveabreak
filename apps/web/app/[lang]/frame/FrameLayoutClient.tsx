@@ -25,6 +25,7 @@ export default function FrameLayoutClient({
   const {
     media,
     collections,
+    feedMedia,
     settings,
     isLoading,
     isImporting,
@@ -69,11 +70,13 @@ export default function FrameLayoutClient({
       } else {
         mediaList = media;
       }
+    } else if (searchParams.get('feed') === 'true') {
+      mediaList = feedMedia.length > 0 ? feedMedia : media;
     } else {
       mediaList = media;
     }
     return filterMediaByOrientation(mediaList, settings.filterByOrientation);
-  }, [selectedCollectionId, collections, media, settings.filterByOrientation]);
+  }, [selectedCollectionId, collections, media, feedMedia, settings.filterByOrientation, searchParams]);
 
   const imageMedia = useMemo(() => currentMedia.filter((m) => m.type === 'image'), [currentMedia]);
   const videoMedia = useMemo(() => currentMedia.filter((m) => m.type === 'video'), [currentMedia]);
@@ -82,7 +85,8 @@ export default function FrameLayoutClient({
     updateUrl({
       player: null,
       paused: null,
-      index: null
+      index: null,
+      shuffle: null,
     });
   };
 
@@ -132,11 +136,20 @@ export default function FrameLayoutClient({
 
   const baseRoute = `/frame`;
   const isGallery = pathname === `${baseRoute}/gallery`;
-  const isCollections = pathname.startsWith(`${baseRoute}/collections`) || pathname === baseRoute;
-  const isDownload = pathname === `${baseRoute}/download`;
+  const isCollections = pathname.startsWith(`${baseRoute}/collections`);
   const isSettings = pathname === `${baseRoute}/settings`;
 
   const navItems = [
+    {
+      href: `${baseRoute}`,
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 4a2 2 0 00-2-2h-3m-6 3h3m1.2-3a3.3 3.3 0 00-6.6 0H12v2.2M12 20h8a2 2 0 002-2V9a2 2 0 00-2-2h-3" />
+        </svg>
+      ),
+      label: t('frame.feed') || 'Feed',
+      activePath: `${baseRoute}`,
+    },
     {
       href: `${baseRoute}/collections`,
       icon: (
@@ -158,22 +171,16 @@ export default function FrameLayoutClient({
       activePath: `${baseRoute}/gallery`,
     },
     {
-      href: `${baseRoute}/download`,
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-        </svg>
-      ),
-      label: t('frame.download'),
-      activePath: `${baseRoute}/download`,
-    },
-    {
       href: `${baseRoute}/settings`,
       icon: <Settings className="w-5 h-5" />,
       label: t('frame.settings'),
       variant: 'action' as const,
     },
   ];
+
+  const isFeed = searchParams.get('feed') === 'true';
+  const urlShuffle = searchParams.get('shuffle');
+  const playShuffle = isFeed ? false : (urlShuffle !== null ? urlShuffle === 'true' : settings.shuffle);
 
   return (
     <div className="bg-bg-base pb-20 min-h-screen">
@@ -230,14 +237,16 @@ export default function FrameLayoutClient({
       {showFullscreen && (
         <FullscreenPlayer
           media={currentMedia}
-          settings={settings}
+          settings={{
+            ...settings,
+            shuffle: playShuffle,
+          }}
           onExit={handleExitFullscreen}
           onDelete={deleteMedia}
           startPaused={startPaused}
           startIndex={startIndex}
         />
       )}
-
       <AddMediaModal
         isOpen={showAddModal}
         onClose={handleCloseModal}

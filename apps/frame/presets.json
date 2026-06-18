@@ -111,6 +111,7 @@
     "shuffle": false,
     "filterByOrientation": true,
     "backgroundMusicEnabled": false,
-    "volume": 0.3
+    "volume": 0.3,
+    "swipeSwitching": false
   }
 }

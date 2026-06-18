@@ -6,9 +6,10 @@ interface MediaThumbnailProps {
   item: MediaItem;
   className?: string;
   showPlayIcon?: boolean;
+  aspectRatio?: string;
 }
 
-export default function MediaThumbnail({ item, className = '', showPlayIcon = true }: MediaThumbnailProps) {
+export default function MediaThumbnail({ item, className = '', showPlayIcon = true, aspectRatio = 'aspect-square' }: MediaThumbnailProps) {
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const [error, setError] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -100,17 +101,21 @@ export default function MediaThumbnail({ item, className = '', showPlayIcon = tr
     };
   }, [item.url]);
 
+  const computedAspectRatio = aspectRatio === 'aspect-auto'
+    ? (item.orientation === 'portrait' ? 'aspect-[3/4]' : item.orientation === 'landscape' ? 'aspect-[16/10]' : 'aspect-square')
+    : aspectRatio;
+
   return (
-    <div className={`aspect-square ${className}`}>
+    <div className={`${computedAspectRatio} ${className}`}>
       {item.type === 'image' ? (
         <img
           src={item.url}
           alt={item.title || ''}
-          className="w-full h-full object-cover"
+          className={aspectRatio === 'aspect-auto' ? 'w-full h-auto' : 'w-full h-full object-cover'}
           loading="lazy"
         />
       ) : (
-        <div className="w-full h-full relative bg-muted">
+        <div className={`w-full relative bg-muted ${aspectRatio === 'aspect-auto' ? 'h-auto' : 'h-full'} ${computedAspectRatio}`}>
           {item.thumbnailUrl ? (
             <img
               src={item.thumbnailUrl}

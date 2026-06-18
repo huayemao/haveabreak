@@ -62,5 +62,9 @@
   "total": "Всего",
   "autoDetected": "Автоматически определено как",
   "cannotDetectType": "Не удалось определить тип медиа",
-  "viewDetail": "Просмотреть детали"
+  "viewDetail": "Просмотреть детали",
+  "feed": "Лента",
+  "swipeSwitching": "Переключение свайпом",
+  "refresh": "Обновить",
+  "recommendedForYou": "Рекомендуем для вас"
 }

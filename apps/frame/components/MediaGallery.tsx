@@ -83,6 +83,23 @@ export default function MediaGallery({
     setSelectedId(null);
   };
 
+  const handleDownload = async (item: MediaItem) => {
+    try {
+      const response = await fetch(item.url);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = item.title || `media-${item.id}.${item.type === 'image' ? 'jpg' : 'mp4'}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Download failed:', error);
+    }
+  };
+
   const openAddModal = () => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('modal', 'add');
@@ -139,6 +156,7 @@ export default function MediaGallery({
               onSelect={handleMediaClick}
               onDelete={handleDelete}
               onPlay={onPlay}
+              onDownload={handleDownload}
             />
           ))}
         </div>

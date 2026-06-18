@@ -62,5 +62,9 @@
   "total": "合計",
   "autoDetected": "自動検出",
   "cannotDetectType": "メディアタイプを検出できません",
-  "viewDetail": "詳細を表示"
+  "viewDetail": "詳細を表示",
+  "feed": "フィード",
+  "swipeSwitching": "スワイプ切り替え",
+  "refresh": "更新",
+  "recommendedForYou": "あなたへのおすすめ"
 }

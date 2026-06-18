@@ -8,7 +8,7 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
-import { Trash2, Play } from 'lucide-react';
+import { Trash2, Play, Download } from 'lucide-react';
 import MediaThumbnail from './MediaThumbnail';
 
 interface MediaCardProps {
@@ -18,6 +18,7 @@ interface MediaCardProps {
   onSelect: (item: MediaItem, index: number) => void;
   onDelete: (id: string) => void;
   onPlay?: (paused: boolean, startIndex?: number) => void;
+  onDownload?: (item: MediaItem) => void;
 }
 
 export default function MediaCard({
@@ -27,6 +28,7 @@ export default function MediaCard({
   onSelect,
   onDelete,
   onPlay,
+  onDownload,
 }: MediaCardProps) {
   const t = useTranslations();
   const getOrientationLabel = (orientation: string) => {
@@ -90,6 +92,13 @@ export default function MediaCard({
             {t('frame.slideshow')}
           </ContextMenuItem>
         )}
+        <ContextMenuItem
+          onClick={() => onDownload?.(item)}
+          className="gap-2"
+        >
+          <Download className="w-4 h-4" />
+          {t('frame.download') || 'Download'}
+        </ContextMenuItem>
         <ContextMenuSeparator />
         <ContextMenuItem
           onClick={() => onDelete(item.id)}

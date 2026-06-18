@@ -62,5 +62,9 @@
   "total": "Total",
   "autoDetected": "Detectado automaticamente como",
   "cannotDetectType": "Não é possível detectar o tipo de mídia",
-  "viewDetail": "Ver Detalhes"
+  "viewDetail": "Ver Detalhes",
+  "feed": "Feed",
+  "swipeSwitching": "Alternar Deslize",
+  "refresh": "Atualizar",
+  "recommendedForYou": "Recomendado para você"
 }

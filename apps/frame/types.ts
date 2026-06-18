@@ -35,6 +35,7 @@ export interface FrameSettings {
   filterByOrientation: boolean;
   backgroundMusicEnabled: boolean;
   volume: number;
+  swipeSwitching: boolean;
 }
 
 export const DEFAULT_SLIDE_INTERVAL = 5000;

@@ -62,5 +62,9 @@
   "total": "Gesamt",
   "autoDetected": "Automatisch erkannt als",
   "cannotDetectType": "Medientyp kann nicht erkannt werden",
-  "viewDetail": "Details Anzeigen"
+  "viewDetail": "Details Anzeigen",
+  "feed": "Feed",
+  "swipeSwitching": "Swipe Switching",
+  "refresh": "Aktualisieren",
+  "recommendedForYou": "Empfohlen für dich"
 }

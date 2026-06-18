@@ -62,5 +62,9 @@
   "total": "Total",
   "autoDetected": "Auto detected as",
   "cannotDetectType": "Cannot detect media type",
-  "viewDetail": "View Detail"
+  "viewDetail": "View Detail",
+  "feed": "Feed",
+  "swipeSwitching": "Swipe Switching",
+  "refresh": "Refresh",
+  "recommendedForYou": "Recommended for you"
 }

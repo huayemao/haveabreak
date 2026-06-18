@@ -62,5 +62,9 @@
   "total": "总计",
   "autoDetected": "自动检测为",
   "cannotDetectType": "无法识别媒体类型",
-  "viewDetail": "查看详情"
+  "viewDetail": "查看详情",
+  "feed": "动态",
+  "swipeSwitching": "滑动切换",
+  "refresh": "刷新",
+  "recommendedForYou": "为你推荐"
 }
