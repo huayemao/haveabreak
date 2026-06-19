@@ -1,16 +1,19 @@
-'use client';
-import { useTranslations } from 'next-intl';
-import { useFrameStore } from '@/apps/frame/store';
-import FullscreenPlayer from '@/apps/frame/components/FullscreenPlayer';
-import AddMediaModal from '@/apps/frame/components/AddMediaModal';
-import { usePathname, useRouter, Link } from 'i18n/routing';
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useCallback, useMemo, Suspense } from 'react';
-import { Plus, Settings, Image as ImageIcon, Video } from 'lucide-react';
-import NeumorphicBottomNav from '@/components/NeumorphicBottomNav';
-import InstallPrompt from '@/components/InstallPrompt';
-import { startSlideshow, filterMediaByOrientation } from '@/apps/frame/utils/playerUtils';
-import { MediaItem } from '@/apps/frame/types';
+"use client";
+import { useTranslations } from "next-intl";
+import { useFrameStore } from "@/apps/frame/store";
+import FullscreenPlayer from "@/apps/frame/components/FullscreenPlayer";
+import AddMediaModal from "@/apps/frame/components/AddMediaModal";
+import { usePathname, useRouter, Link } from "i18n/routing";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useCallback, useMemo, Suspense } from "react";
+import { Plus, Settings, Image as ImageIcon, Video, Home } from "lucide-react";
+import NeumorphicBottomNav from "@/components/NeumorphicBottomNav";
+import InstallPrompt from "@/components/InstallPrompt";
+import {
+  startSlideshow,
+  filterMediaByOrientation,
+} from "@/apps/frame/utils/playerUtils";
+import { MediaItem } from "@/apps/frame/types";
 
 export default function FrameLayoutClient({
   children,
@@ -32,7 +35,7 @@ export default function FrameLayoutClient({
     loadData,
     addMedia,
     deleteMedia,
-    importUrlList
+    importUrlList,
   } = useFrameStore();
 
   useEffect(() => {
@@ -40,46 +43,66 @@ export default function FrameLayoutClient({
   }, [loadData]);
 
   // Global UI states (Query Params)
-  const showFullscreen = searchParams.get('player') === 'true';
-  const showAddModal = searchParams.get('modal') === 'add';
-  const startIndex = parseInt(searchParams.get('index') || '0', 10);
-  const startPaused = searchParams.get('paused') === 'true';
-  const selectedCollectionId = searchParams.get('collection');
+  const showFullscreen = searchParams.get("player") === "true";
+  const showAddModal = searchParams.get("modal") === "add";
+  const startIndex = parseInt(searchParams.get("index") || "0", 10);
+  const startPaused = searchParams.get("paused") === "true";
+  const selectedCollectionId = searchParams.get("collection");
 
-  const updateUrl = useCallback((params: Record<string, string | null>) => {
-    const newParams = new URLSearchParams(searchParams.toString());
-    Object.entries(params).forEach(([key, value]) => {
-      if (value === null) {
-        newParams.delete(key);
-      } else {
-        newParams.set(key, value);
-      }
-    });
-    const queryString = newParams.toString();
-    router.push(queryString ? `${pathname}?${queryString}` : pathname, { scroll: false });
-  }, [pathname, router, searchParams]);
+  const updateUrl = useCallback(
+    (params: Record<string, string | null>) => {
+      const newParams = new URLSearchParams(searchParams.toString());
+      Object.entries(params).forEach(([key, value]) => {
+        if (value === null) {
+          newParams.delete(key);
+        } else {
+          newParams.set(key, value);
+        }
+      });
+      const queryString = newParams.toString();
+      router.push(queryString ? `${pathname}?${queryString}` : pathname, {
+        scroll: false,
+      });
+    },
+    [pathname, router, searchParams],
+  );
 
   const handleCloseModal = () => updateUrl({ modal: null });
 
   const currentMedia = useMemo(() => {
     let mediaList: MediaItem[];
     if (selectedCollectionId) {
-      const collection = collections.find((col) => col.id === selectedCollectionId);
+      const collection = collections.find(
+        (col) => col.id === selectedCollectionId,
+      );
       if (collection) {
         mediaList = media.filter((m) => collection.mediaIds.includes(m.id));
       } else {
         mediaList = media;
       }
-    } else if (searchParams.get('feed') === 'true') {
+    } else if (searchParams.get("feed") === "true") {
       mediaList = feedMedia.length > 0 ? feedMedia : media;
     } else {
       mediaList = media;
     }
     return filterMediaByOrientation(mediaList, settings.filterByOrientation);
-  }, [selectedCollectionId, collections, media, feedMedia, settings.filterByOrientation, searchParams]);
+  }, [
+    selectedCollectionId,
+    collections,
+    media,
+    feedMedia,
+    settings.filterByOrientation,
+    searchParams,
+  ]);
 
-  const imageMedia = useMemo(() => currentMedia.filter((m) => m.type === 'image'), [currentMedia]);
-  const videoMedia = useMemo(() => currentMedia.filter((m) => m.type === 'video'), [currentMedia]);
+  const imageMedia = useMemo(
+    () => currentMedia.filter((m) => m.type === "image"),
+    [currentMedia],
+  );
+  const videoMedia = useMemo(
+    () => currentMedia.filter((m) => m.type === "video"),
+    [currentMedia],
+  );
 
   const handleExitFullscreen = () => {
     updateUrl({
@@ -87,52 +110,45 @@ export default function FrameLayoutClient({
       paused: null,
       index: null,
       shuffle: null,
+      mediaType: null,
     });
   };
 
   const handleStartSlideshow = (paused = false, index = 0) => {
     startSlideshow({
-      media,
+      media: currentMedia,
       settings,
       updateUrl,
-      collectionId: null,
+      collectionId: selectedCollectionId || null,
       paused,
-      index
+      index,
+      mediaType: "mixed",
     });
   };
 
   const handleStartImageSlideshow = (paused = false, index = 0) => {
     startSlideshow({
-      media: imageMedia,
+      media: currentMedia,
       settings,
       updateUrl,
-      collectionId: null,
+      collectionId: selectedCollectionId || null,
       paused,
-      index
+      index,
+      mediaType: "image",
     });
   };
 
   const handleStartVideoSlideshow = (paused = false, index = 0) => {
     startSlideshow({
-      media: videoMedia,
+      media: currentMedia,
       settings,
       updateUrl,
-      collectionId: null,
+      collectionId: selectedCollectionId || null,
       paused,
-      index
+      index,
+      mediaType: "video",
     });
   };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-bg-base flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-fg-muted">{t('loading')}</p>
-        </div>
-      </div>
-    );
-  }
 
   const baseRoute = `/frame`;
   const isGallery = pathname === `${baseRoute}/gallery`;
@@ -142,45 +158,87 @@ export default function FrameLayoutClient({
   const navItems = [
     {
       href: `${baseRoute}`,
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 4a2 2 0 00-2-2h-3m-6 3h3m1.2-3a3.3 3.3 0 00-6.6 0H12v2.2M12 20h8a2 2 0 002-2V9a2 2 0 00-2-2h-3" />
-        </svg>
-      ),
-      label: t('frame.feed') || 'Feed',
+      icon: <Home className="w-5 h-5" />,
+      label: t("frame.feed") || "Feed",
       activePath: `${baseRoute}`,
     },
     {
       href: `${baseRoute}/collections`,
       icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+          />
         </svg>
       ),
-      label: t('frame.collections'),
+      label: t("frame.collections"),
       activePath: `${baseRoute}/collections`,
     },
     {
       href: `${baseRoute}/gallery`,
       icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+          />
         </svg>
       ),
-      label: t('frame.mediaLibrary'),
+      label: t("frame.mediaLibrary"),
       activePath: `${baseRoute}/gallery`,
     },
     {
       href: `${baseRoute}/settings`,
       icon: <Settings className="w-5 h-5" />,
-      label: t('frame.settings'),
-      variant: 'action' as const,
+      label: t("frame.settings"),
+      variant: "action" as const,
     },
   ];
 
-  const isFeed = searchParams.get('feed') === 'true';
-  const urlShuffle = searchParams.get('shuffle');
-  const playShuffle = isFeed ? false : (urlShuffle !== null ? urlShuffle === 'true' : settings.shuffle);
+  const isFeed = searchParams.get("feed") === "true";
+  const urlShuffle = searchParams.get("shuffle");
+  const urlMediaType = searchParams.get("mediaType");
+  const playShuffle = isFeed
+    ? false
+    : urlShuffle !== null
+      ? urlShuffle === "true"
+      : settings.shuffle;
+
+  const playMedia = useMemo(() => {
+    if (urlMediaType === "image") {
+      return currentMedia.filter((m) => m.type === "image");
+    }
+    if (urlMediaType === "video") {
+      return currentMedia.filter((m) => m.type === "video");
+    }
+    return currentMedia;
+  }, [currentMedia, urlMediaType]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-bg-base flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-fg-muted">{t("loading")}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-bg-base pb-20 min-h-screen">
@@ -193,32 +251,42 @@ export default function FrameLayoutClient({
                 <button
                   onClick={() => handleStartImageSlideshow(false)}
                   className="neumorphic-button-primary p-2 flex items-center gap-2 rounded-2xl"
-                  title={t('frame.imageSlideshow')}
+                  title={t("frame.imageSlideshow")}
                 >
                   <ImageIcon className="w-5 h-5" />
-                  <span className="hidden sm:inline text-sm">{t('frame.imageSlideshow')}</span>
+                  <span className="hidden sm:inline text-sm">
+                    {t("frame.imageSlideshow")}
+                  </span>
                 </button>
               )}
               {videoMedia.length > 0 && (
                 <button
                   onClick={() => handleStartVideoSlideshow(false)}
                   className="neumorphic-button-primary p-2 flex items-center gap-2 rounded-2xl"
-                  title={t('frame.videoSlideshow')}
+                  title={t("frame.videoSlideshow")}
                 >
                   <Video className="w-5 h-5" />
-                  <span className="hidden sm:inline text-sm">{t('frame.videoSlideshow')}</span>
+                  <span className="hidden sm:inline text-sm">
+                    {t("frame.videoSlideshow")}
+                  </span>
                 </button>
               )}
               {currentMedia.length > 0 && (
                 <button
                   onClick={() => handleStartSlideshow(false)}
                   className="neumorphic-button-primary p-2 flex items-center gap-2 rounded-2xl"
-                  title={t('frame.mixedSlideshow')}
+                  title={t("frame.mixedSlideshow")}
                 >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z" />
                   </svg>
-                  <span className="hidden sm:inline text-sm">{t('frame.mixedSlideshow')}</span>
+                  <span className="hidden sm:inline text-sm">
+                    {t("frame.mixedSlideshow")}
+                  </span>
                 </button>
               )}
             </div>
@@ -227,16 +295,14 @@ export default function FrameLayoutClient({
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-6">
-        <Suspense fallback={null}>
-          {children}
-        </Suspense>
+        <Suspense fallback={null}>{children}</Suspense>
       </main>
 
       <NeumorphicBottomNav items={navItems} />
 
       {showFullscreen && (
         <FullscreenPlayer
-          media={currentMedia}
+          media={playMedia}
           settings={{
             ...settings,
             shuffle: playShuffle,

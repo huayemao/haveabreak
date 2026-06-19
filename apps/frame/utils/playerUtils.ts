@@ -27,6 +27,8 @@ export const getFinalIndex = (
   return filteredIndex >= 0 ? filteredIndex : 0;
 };
 
+export type MediaTypeFilter = 'image' | 'video' | 'mixed';
+
 export interface StartSlideshowOptions {
   media: MediaItem[];
   settings: FrameSettings;
@@ -36,6 +38,7 @@ export interface StartSlideshowOptions {
   index?: number;
   collectionMedia?: MediaItem[];
   shuffle?: boolean;
+  mediaType?: MediaTypeFilter;
 }
 
 export const startSlideshow = ({
@@ -47,21 +50,29 @@ export const startSlideshow = ({
   index = 0,
   collectionMedia,
   shuffle,
+  mediaType = 'mixed',
 }: StartSlideshowOptions) => {
-  const targetMedia = collectionMedia || media;
+  let targetMedia = collectionMedia || media;
+  if (mediaType === 'image') {
+    targetMedia = targetMedia.filter((m) => m.type === 'image');
+  } else if (mediaType === 'video') {
+    targetMedia = targetMedia.filter((m) => m.type === 'video');
+  }
+
   let filtered = filterMediaByOrientation(targetMedia, settings.filterByOrientation);
-  
+
   const useShuffle = shuffle !== undefined ? shuffle : settings.shuffle;
   if (useShuffle) {
     filtered = shuffleArray(filtered);
   }
-  
+
   const finalIndex = getFinalIndex(targetMedia, filtered, index);
 
   updateUrl({
     player: 'true',
     paused: paused ? 'true' : null,
     index: finalIndex > 0 ? finalIndex.toString() : null,
-    collection: collectionId
+    collection: collectionId,
+    mediaType: mediaType !== 'mixed' ? mediaType : null,
   });
 };

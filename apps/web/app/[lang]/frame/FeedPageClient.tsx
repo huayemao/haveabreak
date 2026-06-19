@@ -3,7 +3,7 @@ import { useFrameStore } from '@/apps/frame/store';
 import { useSearchParams } from 'next/navigation';
 import { useRouter, usePathname } from '@/i18n/routing';
 import { startSlideshow, filterMediaByOrientation } from '@/apps/frame/utils/playerUtils';
-import { useEffect, useCallback, useMemo } from 'react';
+import { useEffect, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import MediaThumbnail from '@/apps/frame/components/MediaThumbnail';
 import { RefreshCw, Play, Trash2, Download } from 'lucide-react';
@@ -16,6 +16,10 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
+
+const MOBILE_BREAKPOINT = 768;
+const PULL_THRESHOLD = 80;
+const PULL_MAX = 160;
 
 export default function FeedPageClient() {
   const t = useTranslations();
@@ -31,11 +35,84 @@ export default function FeedPageClient() {
     deleteMedia,
   } = useFrameStore();
 
+  const touchStartYRef = useRef<number | null>(null);
+  const pullDistanceRef = useRef(0);
+  const [pullDistance, setPullDistance] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const refreshingRef = useRef(false);
+
   useEffect(() => {
     if (feedMedia.length === 0 && media.length > 0) {
       generateFeedMedia();
     }
   }, [media, feedMedia.length, generateFeedMedia]);
+
+  const handleRefreshWithPull = useCallback(async () => {
+    if (refreshingRef.current) return;
+    refreshingRef.current = true;
+    setIsRefreshing(true);
+    try {
+      await generateFeedMedia();
+    } finally {
+      setTimeout(() => {
+        setIsRefreshing(false);
+        refreshingRef.current = false;
+      }, 400);
+    }
+  }, [generateFeedMedia]);
+
+  useEffect(() => {
+    const onTouchStart = (e: TouchEvent) => {
+      if (refreshingRef.current) return;
+      if (window.scrollY > 0) {
+        touchStartYRef.current = null;
+        return;
+      }
+      const touch = e.touches[0];
+      touchStartYRef.current = touch.clientY;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (touchStartYRef.current === null) return;
+      if (refreshingRef.current) return;
+      const touch = e.touches[0];
+      const delta = touch.clientY - touchStartYRef.current;
+      if (delta <= 0) {
+        pullDistanceRef.current = 0;
+        setPullDistance(0);
+        return;
+      }
+      const damped = Math.min(PULL_MAX, delta * 0.5);
+      pullDistanceRef.current = damped;
+      setPullDistance(damped);
+      if (window.scrollY <= 0) {
+        e.preventDefault();
+      }
+    };
+
+    const onTouchEnd = () => {
+      if (touchStartYRef.current === null) return;
+      touchStartYRef.current = null;
+      const current = pullDistanceRef.current;
+      pullDistanceRef.current = 0;
+      setPullDistance(0);
+      if (current >= PULL_THRESHOLD) {
+        handleRefreshWithPull();
+      }
+    };
+
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend', onTouchEnd, { passive: true });
+    window.addEventListener('touchcancel', onTouchEnd, { passive: true });
+
+    return () => {
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
+      window.removeEventListener('touchcancel', onTouchEnd);
+    };
+  }, [handleRefreshWithPull]);
 
   const updateUrl = useCallback((params: Record<string, string | null>) => {
     const newParams = new URLSearchParams(searchParams.toString());
@@ -90,10 +167,6 @@ export default function FeedPageClient() {
 
   const handleDelete = (id: string) => {
     deleteMedia(id);
-  };
-
-  const handleRefresh = () => {
-    generateFeedMedia();
   };
 
   const FeedCard = ({ data: item, index }: { data: MediaItem; index: number }) => {
@@ -159,6 +232,32 @@ export default function FeedPageClient() {
     );
   };
 
+  const [windowWidth, setWindowWidth] = useState<number>(
+    typeof window !== 'undefined' ? window.innerWidth : 1024
+  );
+
+  useEffect(() => {
+    let raf = 0;
+    const onResize = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => setWindowWidth(window.innerWidth));
+    };
+    window.addEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('resize', onResize);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  const feedCardGutter = 16;
+  const isMobile = windowWidth < MOBILE_BREAKPOINT;
+  const feedCardColumnCount = isMobile ? 2 : undefined;
+  const feedCardColumnWidth = isMobile
+    ? Math.max(120, Math.floor((windowWidth - feedCardGutter * 3) / 2))
+    : 220;
+
+  const headerHeight = 80;
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -169,26 +268,61 @@ export default function FeedPageClient() {
           </p>
         </div>
         <button
-          onClick={handleRefresh}
-          className="neumorphic-button px-4 py-2 text-sm flex items-center gap-2"
+          onClick={handleRefreshWithPull}
+          disabled={isRefreshing}
+          className="neumorphic-button px-4 py-2 text-sm flex items-center gap-2 disabled:opacity-60"
         >
-          <RefreshCw className="w-4 h-4" />
+          <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
           {t('frame.refresh') || 'Refresh'}
         </button>
       </div>
 
-      {displayedMedia.length === 0 ? (
-        <div className="text-center py-16 bg-muted/50 rounded-3xl">
-          <p className="text-fg-muted">{t('frame.noMedia')}</p>
+      <div className="relative">
+        <div
+          className="flex flex-col items-center justify-center text-xs text-fg-muted overflow-hidden"
+          style={{
+            height: isRefreshing
+              ? `${headerHeight}px`
+              : `${Math.min(pullDistance, headerHeight)}px`,
+            transition: pullDistance > 0 || isRefreshing ? 'none' : 'height 250ms ease',
+            opacity: pullDistance > 0 || isRefreshing ? 1 : 0,
+            marginTop: pullDistance > 0 ? `${pullDistance - headerHeight}px` : 0,
+          }}
+        >
+          {isRefreshing ? (
+            <>
+              <RefreshCw className="w-5 h-5 animate-spin text-accent mb-1" />
+              <span>{t('common.loading') || 'Loading...'}</span>
+            </>
+          ) : (
+            <>
+              <RefreshCw
+                className={`w-5 h-5 mb-1 transition-transform ${pullDistance >= PULL_THRESHOLD ? 'text-accent rotate-180' : ''}`}
+              />
+              <span>
+                {pullDistance >= PULL_THRESHOLD
+                  ? t('frame.releaseToRefresh') || 'Release to refresh'
+                  : t('frame.pullToRefresh') || 'Pull down to refresh'}
+              </span>
+            </>
+          )}
         </div>
-      ) : (
-        <Masonry
-          items={displayedMedia}
-          columnGutter={16}
-          columnWidth={220}
-          render={FeedCard}
-        />
-      )}
+
+        {displayedMedia.length === 0 ? (
+          <div className="text-center py-16 bg-muted/50 rounded-3xl">
+            <p className="text-fg-muted">{t('frame.noMedia')}</p>
+          </div>
+        ) : (
+          <Masonry
+            items={displayedMedia}
+            columnGutter={feedCardGutter}
+            columnWidth={feedCardColumnWidth}
+            columnCount={feedCardColumnCount}
+            render={FeedCard}
+            overscanBy={2}
+          />
+        )}
+      </div>
     </div>
   );
 }
