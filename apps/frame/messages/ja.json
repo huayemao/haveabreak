@@ -66,5 +66,7 @@
   "feed": "フィード",
   "swipeSwitching": "スワイプ切り替え",
   "refresh": "更新",
-  "recommendedForYou": "あなたへのおすすめ"
+  "recommendedForYou": "あなたへのおすすめ",
+  "pullToRefresh": "下に引いて更新",
+  "releaseToRefresh": "離して更新"
 }

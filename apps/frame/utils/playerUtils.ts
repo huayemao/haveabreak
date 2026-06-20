@@ -62,11 +62,27 @@ export const startSlideshow = ({
   let filtered = filterMediaByOrientation(targetMedia, settings.filterByOrientation);
 
   const useShuffle = shuffle !== undefined ? shuffle : settings.shuffle;
-  if (useShuffle) {
-    filtered = shuffleArray(filtered);
-  }
 
-  const finalIndex = getFinalIndex(targetMedia, filtered, index);
+  let finalIndex = index;
+  if (useShuffle && filtered.length > 0) {
+    const selectedMedia = filtered[index];
+    const shuffled = shuffleArray(filtered);
+    if (selectedMedia) {
+      const idxInShuffled = shuffled.findIndex((m) => m.id === selectedMedia.id);
+      if (idxInShuffled >= 0) {
+        const [item] = shuffled.splice(idxInShuffled, 1);
+        shuffled.unshift(item);
+        finalIndex = 0;
+      } else {
+        finalIndex = 0;
+      }
+    } else {
+      finalIndex = 0;
+    }
+    filtered = shuffled;
+  } else {
+    finalIndex = Math.max(0, Math.min(index, filtered.length - 1));
+  }
 
   updateUrl({
     player: 'true',

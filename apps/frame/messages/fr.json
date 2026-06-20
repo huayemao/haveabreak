@@ -66,5 +66,7 @@
   "feed": "Flux",
   "swipeSwitching": "Glissement",
   "refresh": "Actualiser",
-  "recommendedForYou": "Recommandé pour vous"
+  "recommendedForYou": "Recommandé pour vous",
+  "pullToRefresh": "Tirer pour actualiser",
+  "releaseToRefresh": "Relâcher pour actualiser"
 }

@@ -66,5 +66,7 @@
   "feed": "피드",
   "swipeSwitching": "스와이프 전환",
   "refresh": "새로 고침",
-  "recommendedForYou": "당신을 위한 추천"
+  "recommendedForYou": "당신을 위한 추천",
+  "pullToRefresh": "당겨서 새로 고침",
+  "releaseToRefresh": "놓아서 새로 고침"
 }

@@ -10,6 +10,12 @@ import { RefreshCw, Play, Trash2, Download } from 'lucide-react';
 import { Masonry } from 'masonic';
 import { MediaItem } from '@/apps/frame/types';
 import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from '@/components/ui/tabs';
+import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
@@ -20,6 +26,8 @@ import {
 const MOBILE_BREAKPOINT = 768;
 const PULL_THRESHOLD = 80;
 const PULL_MAX = 160;
+
+type MediaFilter = 'all' | 'image' | 'video';
 
 export default function FeedPageClient() {
   const t = useTranslations();
@@ -34,6 +42,8 @@ export default function FeedPageClient() {
     generateFeedMedia,
     deleteMedia,
   } = useFrameStore();
+
+  const [mediaFilter, setMediaFilter] = useState<MediaFilter>('all');
 
   const touchStartYRef = useRef<number | null>(null);
   const pullDistanceRef = useRef(0);
@@ -64,12 +74,10 @@ export default function FeedPageClient() {
   useEffect(() => {
     const onTouchStart = (e: TouchEvent) => {
       if (refreshingRef.current) return;
-      if (window.scrollY > 0) {
-        touchStartYRef.current = null;
-        return;
-      }
       const touch = e.touches[0];
       touchStartYRef.current = touch.clientY;
+      pullDistanceRef.current = 0;
+      setPullDistance(0);
     };
 
     const onTouchMove = (e: TouchEvent) => {
@@ -85,9 +93,6 @@ export default function FeedPageClient() {
       const damped = Math.min(PULL_MAX, delta * 0.5);
       pullDistanceRef.current = damped;
       setPullDistance(damped);
-      if (window.scrollY <= 0) {
-        e.preventDefault();
-      }
     };
 
     const onTouchEnd = () => {
@@ -102,7 +107,7 @@ export default function FeedPageClient() {
     };
 
     window.addEventListener('touchstart', onTouchStart, { passive: true });
-    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchmove', onTouchMove, { passive: true });
     window.addEventListener('touchend', onTouchEnd, { passive: true });
     window.addEventListener('touchcancel', onTouchEnd, { passive: true });
 
@@ -127,13 +132,19 @@ export default function FeedPageClient() {
     router.push(queryString ? `${pathname}?${queryString}` : pathname, { scroll: false });
   }, [pathname, router, searchParams]);
 
-  const displayedMedia = useMemo(() => {
-    return filterMediaByOrientation(feedMedia, settings.filterByOrientation);
-  }, [feedMedia, settings.filterByOrientation]);
+  const filteredMedia = useMemo(() => {
+    let list = filterMediaByOrientation(feedMedia, settings.filterByOrientation);
+    if (mediaFilter === 'image') {
+      list = list.filter((m) => m.type === 'image');
+    } else if (mediaFilter === 'video') {
+      list = list.filter((m) => m.type === 'video');
+    }
+    return list;
+  }, [feedMedia, settings.filterByOrientation, mediaFilter]);
 
   const handlePlayFeedItem = (index: number) => {
     startSlideshow({
-      media: displayedMedia,
+      media: filteredMedia,
       settings,
       updateUrl: (params) => {
         updateUrl({
@@ -210,14 +221,14 @@ export default function FeedPageClient() {
             className="gap-2"
           >
             <Play className="w-4 h-4" />
-            {t('frame.slideshow') || 'Slideshow'}
+            {t('frame.slideshow')}
           </ContextMenuItem>
           <ContextMenuItem
             onClick={() => handleDownload(item)}
             className="gap-2"
           >
             <Download className="w-4 h-4" />
-            {t('frame.download') || 'Download'}
+            {t('frame.download')}
           </ContextMenuItem>
           <ContextMenuSeparator />
           <ContextMenuItem
@@ -262,9 +273,9 @@ export default function FeedPageClient() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-xl font-bold text-fg-primary">{t('frame.feed') || 'Feed'}</h2>
+          <h2 className="text-xl font-bold text-fg-primary">{t('frame.feed')}</h2>
           <p className="text-sm text-fg-muted mt-1">
-            {t('frame.recommendedForYou') || 'Recommended for you'}
+            {t('frame.recommendedForYou')}
           </p>
         </div>
         <button
@@ -273,56 +284,107 @@ export default function FeedPageClient() {
           className="neumorphic-button px-4 py-2 text-sm flex items-center gap-2 disabled:opacity-60"
         >
           <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-          {t('frame.refresh') || 'Refresh'}
+          {t('frame.refresh')}
         </button>
       </div>
 
-      <div className="relative">
-        <div
-          className="flex flex-col items-center justify-center text-xs text-fg-muted overflow-hidden"
-          style={{
-            height: isRefreshing
-              ? `${headerHeight}px`
-              : `${Math.min(pullDistance, headerHeight)}px`,
-            transition: pullDistance > 0 || isRefreshing ? 'none' : 'height 250ms ease',
-            opacity: pullDistance > 0 || isRefreshing ? 1 : 0,
-            marginTop: pullDistance > 0 ? `${pullDistance - headerHeight}px` : 0,
-          }}
-        >
-          {isRefreshing ? (
-            <>
-              <RefreshCw className="w-5 h-5 animate-spin text-accent mb-1" />
-              <span>{t('common.loading') || 'Loading...'}</span>
-            </>
-          ) : (
-            <>
-              <RefreshCw
-                className={`w-5 h-5 mb-1 transition-transform ${pullDistance >= PULL_THRESHOLD ? 'text-accent rotate-180' : ''}`}
-              />
-              <span>
-                {pullDistance >= PULL_THRESHOLD
-                  ? t('frame.releaseToRefresh') || 'Release to refresh'
-                  : t('frame.pullToRefresh') || 'Pull down to refresh'}
-              </span>
-            </>
-          )}
-        </div>
+      <Tabs
+        value={mediaFilter}
+        onValueChange={(val) => setMediaFilter(val as MediaFilter)}
+      >
+        <TabsList>
+          <TabsTrigger value="all">{t('frame.mixedSlideshow')}</TabsTrigger>
+          <TabsTrigger value="image">{t('frame.image')}</TabsTrigger>
+          <TabsTrigger value="video">{t('frame.video')}</TabsTrigger>
+        </TabsList>
 
-        {displayedMedia.length === 0 ? (
-          <div className="text-center py-16 bg-muted/50 rounded-3xl">
-            <p className="text-fg-muted">{t('frame.noMedia')}</p>
+        <TabsContent value="all">
+          <div className="relative">
+            <div
+              className="flex flex-col items-center justify-center text-xs text-fg-muted overflow-hidden"
+              style={{
+                height: isRefreshing
+                  ? `${headerHeight}px`
+                  : `${Math.min(pullDistance, headerHeight)}px`,
+                transition: pullDistance > 0 || isRefreshing ? 'none' : 'height 250ms ease',
+                opacity: pullDistance > 0 || isRefreshing ? 1 : 0,
+                marginTop: pullDistance > 0 ? `${pullDistance - headerHeight}px` : 0,
+              }}
+            >
+              {isRefreshing ? (
+                <>
+                  <RefreshCw className="w-5 h-5 animate-spin text-accent mb-1" />
+                  <span>{t('common.loading')}</span>
+                </>
+              ) : (
+                <>
+                  <RefreshCw
+                    className={`w-5 h-5 mb-1 transition-transform ${pullDistance >= PULL_THRESHOLD ? 'text-accent rotate-180' : ''}`}
+                  />
+                  <span>
+                    {pullDistance >= PULL_THRESHOLD
+                      ? t('frame.releaseToRefresh')
+                      : t('frame.pullToRefresh')}
+                  </span>
+                </>
+              )}
+            </div>
+
+            {filteredMedia.length === 0 ? (
+              <div className="text-center py-16 bg-muted/50 rounded-3xl">
+                <p className="text-fg-muted">{t('frame.noMedia')}</p>
+              </div>
+            ) : (
+              <Masonry
+                items={filteredMedia}
+                columnGutter={feedCardGutter}
+                columnWidth={feedCardColumnWidth}
+                columnCount={feedCardColumnCount}
+                render={FeedCard}
+                overscanBy={2}
+              />
+            )}
           </div>
-        ) : (
-          <Masonry
-            items={displayedMedia}
-            columnGutter={feedCardGutter}
-            columnWidth={feedCardColumnWidth}
-            columnCount={feedCardColumnCount}
-            render={FeedCard}
-            overscanBy={2}
-          />
-        )}
-      </div>
+        </TabsContent>
+
+        <TabsContent value="image">
+          <div className="relative">
+            {filteredMedia.length === 0 ? (
+              <div className="text-center py-16 bg-muted/50 rounded-3xl">
+                <p className="text-fg-muted">{t('frame.noMedia')}</p>
+              </div>
+            ) : (
+              <Masonry
+                items={filteredMedia}
+                columnGutter={feedCardGutter}
+                columnWidth={feedCardColumnWidth}
+                columnCount={feedCardColumnCount}
+                render={FeedCard}
+                overscanBy={2}
+              />
+            )}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="video">
+          <div className="relative">
+            {filteredMedia.length === 0 ? (
+              <div className="text-center py-16 bg-muted/50 rounded-3xl">
+                <p className="text-fg-muted">{t('frame.noMedia')}</p>
+              </div>
+            ) : (
+              <Masonry
+                items={filteredMedia}
+                columnGutter={feedCardGutter}
+                columnWidth={feedCardColumnWidth}
+                columnCount={feedCardColumnCount}
+                render={FeedCard}
+                overscanBy={2}
+              />
+            )}
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

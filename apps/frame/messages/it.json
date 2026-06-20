@@ -66,5 +66,7 @@
   "feed": "Feed",
   "swipeSwitching": "Scorrimento",
   "refresh": "Aggiorna",
-  "recommendedForYou": "Consigliato per te"
+  "recommendedForYou": "Consigliato per te",
+  "pullToRefresh": "Trascina per aggiornare",
+  "releaseToRefresh": "Rilascia per aggiornare"
 }

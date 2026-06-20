@@ -66,5 +66,7 @@
   "feed": "动态",
   "swipeSwitching": "滑动切换",
   "refresh": "刷新",
-  "recommendedForYou": "为你推荐"
+  "recommendedForYou": "为你推荐",
+  "pullToRefresh": "下拉刷新",
+  "releaseToRefresh": "松开刷新"
 }

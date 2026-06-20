@@ -29,7 +29,7 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
       [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
-  }, [media.length]);
+  }, [media]);
 
   const [shuffledOrder, setShuffledOrder] = useState<number[]>(shuffleArray);
   const [shuffledIndex, setShuffledIndex] = useState(0);
@@ -43,6 +43,7 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
   const audioRef = useRef<HTMLAudioElement>(null);
   const controlsTimeoutRef = useRef<number | null>(null);
   const slideIntervalRef = useRef<number | null>(null);
+  const lastManualSwitchRef = useRef<number>(0);
   
   const dragStartRef = useRef<{ x: number; y: number } | null>(null);
   const lastSwitchTimeRef = useRef<number>(0);
@@ -96,6 +97,7 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
       setCurrentIndex((prev) => (prev + 1) % media.length);
     }
     setProgress(0);
+    lastManualSwitchRef.current = Date.now();
   }, [media.length, settings.shuffle, shuffledOrder, shuffledIndex]);
 
   const goToPrev = useCallback(() => {
@@ -109,6 +111,7 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
       setCurrentIndex((prev) => (prev - 1 + media.length) % media.length);
     }
     setProgress(0);
+    lastManualSwitchRef.current = Date.now();
   }, [media.length, settings.shuffle, shuffledOrder, shuffledIndex]);
 
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -209,17 +212,22 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
   }, [showControls]);
 
   useEffect(() => {
+    if (slideIntervalRef.current) {
+      clearInterval(slideIntervalRef.current);
+      slideIntervalRef.current = null;
+    }
     if (isPlaying && currentMedia?.type === 'image') {
-      slideIntervalRef.current = window.setInterval(goToNext, settings.slideInterval);
-    } else {
-      if (slideIntervalRef.current) {
-        clearInterval(slideIntervalRef.current);
-      }
+      slideIntervalRef.current = window.setInterval(() => {
+        const now = Date.now();
+        if (now - lastManualSwitchRef.current < settings.slideInterval) return;
+        goToNext();
+      }, settings.slideInterval);
     }
 
     return () => {
       if (slideIntervalRef.current) {
         clearInterval(slideIntervalRef.current);
+        slideIntervalRef.current = null;
       }
     };
   }, [isPlaying, currentMedia?.type, settings.slideInterval, goToNext]);
@@ -252,11 +260,19 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          goToNext();
+          break;
         case 'ArrowRight':
           e.preventDefault();
           goToNext();
           break;
         case 'ArrowLeft':
+          e.preventDefault();
+          goToPrev();
+          break;
+        case 'ArrowUp':
           e.preventDefault();
           goToPrev();
           break;

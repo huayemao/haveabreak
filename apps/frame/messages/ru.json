@@ -66,5 +66,7 @@
   "feed": "Лента",
   "swipeSwitching": "Переключение свайпом",
   "refresh": "Обновить",
-  "recommendedForYou": "Рекомендуем для вас"
+  "recommendedForYou": "Рекомендуем для вас",
+  "pullToRefresh": "Потяните вниз чтобы обновить",
+  "releaseToRefresh": "Отпустите чтобы обновить"
 }
