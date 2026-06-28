@@ -167,6 +167,9 @@ export default function MediaGallery({
         close={() => setLightboxOpen(false)}
         slides={slides}
         index={currentIndex}
+        on={{
+          view: ({ index }) => setCurrentIndex(index),
+        }}
         plugins={[Video]}
         controller={{
           closeOnPullDown: true,

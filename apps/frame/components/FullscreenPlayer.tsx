@@ -28,8 +28,15 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
       const j = Math.floor(Math.random() * (i + 1));
       [array[i], array[j]] = [array[j], array[i]];
     }
+    if (startIndex >= 0 && startIndex < media.length) {
+      const idx = array.indexOf(startIndex);
+      if (idx !== -1) {
+        array.splice(idx, 1);
+        array.unshift(startIndex);
+      }
+    }
     return array;
-  }, [media]);
+  }, [media, startIndex]);
 
   const [shuffledOrder, setShuffledOrder] = useState<number[]>(shuffleArray);
   const [shuffledIndex, setShuffledIndex] = useState(0);
@@ -42,7 +49,6 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const controlsTimeoutRef = useRef<number | null>(null);
-  const slideIntervalRef = useRef<number | null>(null);
   const lastManualSwitchRef = useRef<number>(0);
   
   const dragStartRef = useRef<{ x: number; y: number } | null>(null);
@@ -212,25 +218,16 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
   }, [showControls]);
 
   useEffect(() => {
-    if (slideIntervalRef.current) {
-      clearInterval(slideIntervalRef.current);
-      slideIntervalRef.current = null;
-    }
-    if (isPlaying && currentMedia?.type === 'image') {
-      slideIntervalRef.current = window.setInterval(() => {
-        const now = Date.now();
-        if (now - lastManualSwitchRef.current < settings.slideInterval) return;
-        goToNext();
-      }, settings.slideInterval);
+    if (!isPlaying || !currentMedia || currentMedia.type !== 'image') {
+      return;
     }
 
-    return () => {
-      if (slideIntervalRef.current) {
-        clearInterval(slideIntervalRef.current);
-        slideIntervalRef.current = null;
-      }
-    };
-  }, [isPlaying, currentMedia?.type, settings.slideInterval, goToNext]);
+    const timer = setTimeout(() => {
+      goToNext();
+    }, settings.slideInterval);
+
+    return () => clearTimeout(timer);
+  }, [isPlaying, currentIndex, settings.slideInterval, goToNext, currentMedia]);
 
   useEffect(() => {
     const video = videoRef.current;

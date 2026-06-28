@@ -104,6 +104,11 @@ export default function FrameLayoutClient({
     [currentMedia],
   );
 
+  const currentCollection = useMemo(() => {
+    if (!selectedCollectionId) return null;
+    return collections.find((col) => col.id === selectedCollectionId);
+  }, [selectedCollectionId, collections]);
+
   const handleExitFullscreen = () => {
     updateUrl({
       player: null,
@@ -306,6 +311,7 @@ export default function FrameLayoutClient({
           settings={{
             ...settings,
             shuffle: playShuffle,
+            slideInterval: currentCollection?.slideInterval || settings.slideInterval,
           }}
           onExit={handleExitFullscreen}
           onDelete={deleteMedia}

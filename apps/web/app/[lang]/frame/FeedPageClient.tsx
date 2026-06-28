@@ -38,6 +38,7 @@ export default function FeedPageClient() {
   const {
     media,
     feedMedia,
+    collections,
     settings,
     generateFeedMedia,
     deleteMedia,
@@ -142,21 +143,44 @@ export default function FeedPageClient() {
     return list;
   }, [feedMedia, settings.filterByOrientation, mediaFilter]);
 
-  const handlePlayFeedItem = (index: number) => {
-    startSlideshow({
-      media: filteredMedia,
-      settings,
-      updateUrl: (params) => {
-        updateUrl({
-          ...params,
-          feed: 'true',
-        });
-      },
-      collectionId: null,
-      paused: false,
-      index,
-      shuffle: false,
-    });
+  const handlePlayFeedItem = (item: MediaItem, index: number) => {
+    const targetCollection = collections.find((col) => col.mediaIds.includes(item.id));
+    if (targetCollection) {
+      const collectionMedia = media.filter((m) => targetCollection.mediaIds.includes(m.id));
+      const filteredCollectionMedia = filterMediaByOrientation(collectionMedia, settings.filterByOrientation);
+      const idx = filteredCollectionMedia.findIndex((m) => m.id === item.id);
+      startSlideshow({
+        media,
+        collectionMedia,
+        settings,
+        updateUrl: (params) => {
+          updateUrl({
+            ...params,
+            feed: null,
+          });
+        },
+        collectionId: targetCollection.id,
+        paused: false,
+        index: idx >= 0 ? idx : 0,
+        shuffle: false,
+      });
+    } else {
+      startSlideshow({
+        media: filteredMedia,
+        settings,
+        updateUrl: (params) => {
+          updateUrl({
+            ...params,
+            feed: 'true',
+          });
+        },
+        collectionId: null,
+        paused: false,
+        index,
+        shuffle: false,
+        mediaType: mediaFilter === 'all' ? 'mixed' : mediaFilter,
+      });
+    }
   };
 
   const handleDownload = async (item: MediaItem) => {
@@ -185,7 +209,7 @@ export default function FeedPageClient() {
       <ContextMenu key={item.id}>
         <ContextMenuTrigger>
           <div
-            onClick={() => handlePlayFeedItem(index)}
+            onClick={() => handlePlayFeedItem(item, index)}
             className="relative group bg-bg-base rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-xl border border-white/5"
           >
             <MediaThumbnail
@@ -217,7 +241,7 @@ export default function FeedPageClient() {
         </ContextMenuTrigger>
         <ContextMenuContent className="w-48">
           <ContextMenuItem
-            onClick={() => handlePlayFeedItem(index)}
+            onClick={() => handlePlayFeedItem(item, index)}
             className="gap-2"
           >
             <Play className="w-4 h-4" />
