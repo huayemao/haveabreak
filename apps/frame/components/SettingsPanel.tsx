@@ -2,9 +2,9 @@ import { useTranslations } from 'next-intl';
 import { FrameSettings, Collection } from '../types';
 import { useScrollLock } from '../utils/useScrollLock';
 import { useState } from 'react';
-import { Slider } from '@/components/ui/slider';
-import { Switch } from '@/components/ui/switch';
-import DataManagementSection from '../../web/components/DataManagementSection';
+import { Slider } from '@haveabreak/ui/components/ui/slider';
+import { Switch } from '@haveabreak/ui/components/ui/switch';
+import DataManagementSection from '@haveabreak/ui/components/DataManagementSection';
 import { exportData } from '../storage';
 
 const fetchUrlContent = async (url: string): Promise<string> => {

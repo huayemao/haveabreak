@@ -1,4 +1,4 @@
-import CardPageClient from './CardPageClient';
+import CardPageClient from '@haveabreak/card/components/CardPageClient';
 import { Suspense } from 'react';
 
 export default async function CardPage() {

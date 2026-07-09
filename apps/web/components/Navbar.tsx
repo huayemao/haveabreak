@@ -16,7 +16,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@haveabreak/ui/components/ui/dropdown-menu';
 import { isTauriBuild } from '@/lib/utils';
 
 interface VersionInfo {

@@ -7,7 +7,7 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
   ContextMenuTrigger,
-} from '@/components/ui/context-menu';
+} from '@haveabreak/ui/components/ui/context-menu';
 import { Trash2, Play, Download } from 'lucide-react';
 import MediaThumbnail from './MediaThumbnail';
 

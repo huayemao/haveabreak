@@ -1,7 +1,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { DialogContent, DialogHeader, Dialog, DialogTrigger, DialogTitle } from './ui/dialog';
+import { DialogContent, DialogHeader, Dialog, DialogTrigger, DialogTitle } from '@haveabreak/ui/components/ui/dialog';
 import { useTimerStore } from '@/store/timerStore';
 import { toast } from 'sonner';
 

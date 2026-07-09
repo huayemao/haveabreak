@@ -14,7 +14,7 @@ import LanguageBanner from '@/components/LanguageBanner';
 import { NavbarProvider } from '@/context/NavbarContext';
 import LayoutContent from '@/components/LayoutContent';
 import { notFound } from 'next/navigation';
-import { Toaster } from '@/components/ui/sonner';
+import { Toaster } from '@haveabreak/ui/components/ui/sonner';
 import { isTauriBuild } from '@/lib/utils';
 
 const { locales } = routing;

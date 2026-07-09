@@ -8,7 +8,7 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
   ContextMenuTrigger,
-} from '../../web/components/ui/context-menu';
+} from '@haveabreak/ui/components/ui/context-menu';
 import { Play, Trash2, Share2, Edit3, Eye, Shuffle, ListOrdered } from 'lucide-react';
 
 interface CollectionCardProps {

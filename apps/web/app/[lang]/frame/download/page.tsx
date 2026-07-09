@@ -1,4 +1,4 @@
-import DownloadPageClient from './DownloadPageClient';
+import DownloadPageClient from '@haveabreak/frame/components/DownloadPageClient';
 import { Suspense } from 'react';
 
 export default async function DownloadPage() {

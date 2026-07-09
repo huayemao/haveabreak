@@ -1,4 +1,4 @@
-import CardLayoutClient from './CardLayoutClient';
+import CardLayoutClient from '@haveabreak/card/components/CardLayoutClient';
 import { Suspense } from 'react';
 import { Metadata } from 'next';
 import { getMessages, setRequestLocale } from 'next-intl/server';

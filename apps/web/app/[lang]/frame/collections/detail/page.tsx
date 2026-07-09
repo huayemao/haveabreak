@@ -1,7 +1,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import CollectionsPageClient from '../CollectionsPageClient';
+import CollectionsPageClient from '@haveabreak/frame/components/CollectionsPageClient';
 import { Suspense } from 'react';
 
 function CollectionDetailContent() {

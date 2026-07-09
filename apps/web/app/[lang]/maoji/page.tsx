@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import MaojiClient from './MaojiClient';
+import MaojiClient from '@haveabreak/maoji/components/MaojiClient';
 
 export default function MaojiPage() {
   return (

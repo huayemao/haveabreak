@@ -40,7 +40,7 @@ const nextConfig: NextConfig = {
   output: isTauriBuild ? 'export' : 'standalone',
   trailingSlash: isTauriBuild ? true : undefined,
   pageExtensions: isTauriBuild ? ['tsx', 'jsx'] : undefined,
-  transpilePackages: ['motion', '@haveabreak/card', '@haveabreak/frame', '@haveabreak/maoji'],
+  transpilePackages: ['motion', '@haveabreak/card', '@haveabreak/frame', '@haveabreak/maoji', '@haveabreak/ui', '@haveabreak/utils'],
   webpack: (config, { dev }) => {
     if (dev && process.env.DISABLE_HMR === 'true') {
       config.watchOptions = {

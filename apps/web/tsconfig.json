@@ -28,14 +28,20 @@
       "@/*": [
         "./*"
       ],
-      "@/apps/card/*": [
+      "@haveabreak/card/*": [
         "../card/*"
       ],
-      "@/apps/frame/*": [
+      "@haveabreak/frame/*": [
         "../frame/*"
       ],
-      "@/apps/maoji/*": [
+      "@haveabreak/maoji/*": [
         "../maoji/*"
+      ],
+      "@haveabreak/ui/*": [
+        "../../packages/ui/*"
+      ],
+      "@haveabreak/utils/*": [
+        "../../packages/utils/*"
       ]
     }
   },
@@ -51,7 +57,11 @@
     "../frame/**/*.ts",
     "../frame/**/*.tsx",
     "../maoji/**/*.ts",
-    "../maoji/**/*.tsx"
+    "../maoji/**/*.tsx",
+    "../../packages/ui/**/*.ts",
+    "../../packages/ui/**/*.tsx",
+    "../../packages/utils/**/*.ts",
+    "../../packages/utils/**/*.tsx"
   ],
   "exclude": [
     "node_modules",

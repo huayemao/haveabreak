@@ -1,4 +1,4 @@
-import FrameLayoutClient from './FrameLayoutClient';
+import FrameLayoutClient from '@haveabreak/frame/components/FrameLayoutClient';
 import { Suspense } from 'react';
 import { Metadata } from 'next';
 import { getMessages, setRequestLocale } from 'next-intl/server';

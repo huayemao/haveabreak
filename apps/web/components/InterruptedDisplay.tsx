@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@haveabreak/utils/hooks/use-mobile';
 
 export default function InterruptedDisplay() {
   const t = useTranslations();
