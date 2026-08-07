@@ -51,7 +51,7 @@ export default function TimerDisplay({ timeLeft, totalSeconds, onStop, isInterru
         {/* <CircularProgress progress={progress} size={320} strokeWidth={8} /> */}
         <div className="absolute inset-0 flex items-center justify-center">
           {/* Time display in center */}
-          <div className="relative p-12 rounded-[32px] shadow-extruded bg-bg-base space-y-6 overflow-hidden">
+          <div className="relative p-12 rounded-[32px] shadow-extruded bg-bg-base space-y-6 overflow-hidden w-sm md:w-md lg:w-lg">
             {/* Decorative Circles */}
             <div className="absolute top-[-5%] right-[-5%] w-36 h-36 rounded-full bg-bg-base shadow-inset opacity-30 pointer-events-none" />
             <div className="absolute bottom-[-10%] left-[-10%] w-36 h-36 rounded-full bg-bg-base shadow-extruded-sm opacity-20 pointer-events-none" />
