@@ -5,11 +5,11 @@ import { useScrollLock } from '@haveabreak/frame/utils/useScrollLock';
 import { useState } from 'react';
 import { X, Download, Database, Settings, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { Book, Subscription } from '@haveabreak/card/types';
+import { Book } from '@haveabreak/card/types';
 import { useCardStore } from '@haveabreak/card/store';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@haveabreak/ui/components/ui/tabs';
 import DataManagementSection from '@haveabreak/ui/components/DataManagementSection';
-import SubscriptionSection from './settings/SubscriptionSection';
+import SubscriptionManagerSection from '@haveabreak/ui/components/SubscriptionManagerSection';
 import SortSection from './settings/SortSection';
 import AutoPlaySection from './settings/AutoPlaySection';
 import { writeTextFile } from '@tauri-apps/plugin-fs';
@@ -33,51 +33,27 @@ export default function CardSettingsPanel({
   const t = useTranslations();
   useScrollLock();
   const [activeTab, setActiveTab] = useState('data');
-  const [showAddSubscription, setShowAddSubscription] = useState(false);
-  const [newSubscriptionName, setNewSubscriptionName] = useState('');
-  const [newSubscriptionUrl, setNewSubscriptionUrl] = useState('');
-  const [showSubscriptionList, setShowSubscriptionList] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
   const {
     settings,
     exportData,
     subscriptionDiff,
-    isChecking,
-    hasUpdate,
-    checkError,
+    isCheckingAll,
+    currentCheckingSubscriptionId,
     addSubscription,
+    updateSubscription,
     deleteSubscription,
-    setActiveSubscription,
+    toggleSubscription,
     checkSubscription,
-    applyUpdate,
+    checkAllSubscriptions,
+    applySubscriptionDiff,
     clearUpdate,
+    testSubscriptionUrl,
     updateQuoteSortOrder,
     updateSwipeInterval,
     updateIsRandom,
   } = useCardStore();
-
-  const handleAddSubscription = () => {
-    if (newSubscriptionName.trim() && newSubscriptionUrl.trim()) {
-      addSubscription(newSubscriptionName.trim(), newSubscriptionUrl.trim());
-      setNewSubscriptionName('');
-      setNewSubscriptionUrl('');
-      setShowAddSubscription(false);
-      toast.success(t('common.subscriptionAdded', { defaultValue: 'Subscription added!' }));
-    }
-  };
-
-  const handleDeleteSubscription = (id: string) => {
-    if (confirm(t('common.confirmDelete', { defaultValue: 'Are you sure you want to delete this subscription?' }))) {
-      deleteSubscription(id);
-    }
-  };
-
-  const handleSelectSubscription = (subscription: Subscription) => {
-    setActiveSubscription(subscription.id);
-    setShowSubscriptionList(false);
-    clearUpdate();
-  };
 
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -158,7 +134,6 @@ export default function CardSettingsPanel({
     toast.success(t('card.randomSettingChanged', { defaultValue: 'Random setting updated!' }));
   };
 
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -194,29 +169,29 @@ export default function CardSettingsPanel({
         </div>
 
         {isExporting && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 z-[90] flex items-center justify-center bg-bg-base/80 backdrop-blur-sm rounded-[32px]"
-            >
-              <div className="flex flex-col items-center gap-4">
-                <Loader2 className="w-10 h-10 text-accent animate-spin" />
-                <span className="text-fg-primary font-medium">
-                  {t('card.exporting', { defaultValue: 'Exporting...' })}
-                </span>
-              </div>
-            </motion.div>
-          )}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-[90] flex items-center justify-center bg-bg-base/80 backdrop-blur-sm rounded-[32px]"
+          >
+            <div className="flex flex-col items-center gap-4">
+              <Loader2 className="w-10 h-10 text-accent animate-spin" />
+              <span className="text-fg-primary font-medium">
+                {t('card.exporting', { defaultValue: 'Exporting...' })}
+              </span>
+            </div>
+          </motion.div>
+        )}
 
-          <div className="flex-shrink-0 px-8 pt-4 border-b border-white/10">
+        <div className="flex-shrink-0 px-8 pt-4 border-b border-white/10">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="w-full">
-              <TabsTrigger value="data" className="flex-1 gap-1" >
+              <TabsTrigger value="data" className="flex-1 gap-1">
                 <Database className="w-3 h-3" />
                 <span>{t('card.dataManagement', { defaultValue: 'Data' })}</span>
               </TabsTrigger>
-              <TabsTrigger value="basic" className="flex-1 gap-1" >
+              <TabsTrigger value="basic" className="flex-1 gap-1">
                 <Settings className="w-3 h-3" />
                 <span>{t('card.basicSettings', { defaultValue: 'Basic' })}</span>
               </TabsTrigger>
@@ -226,38 +201,47 @@ export default function CardSettingsPanel({
 
         <div className="flex-1 overflow-y-auto p-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsContent value="data" className="mt-0">
+            <TabsContent value="data" className="mt-0 space-y-6">
               <DataManagementSection
                 onExport={handleExport}
                 onImport={handleImport}
                 onCopyJson={exportData}
                 onPasteJson={onImport}
               />
-              <div className="mt-6">
-                <SubscriptionSection
-                  subscriptions={settings.subscriptions}
-                  activeSubscriptionId={settings.activeSubscriptionId}
-                  subscriptionDiff={subscriptionDiff}
-                  isChecking={isChecking}
-                  hasUpdate={hasUpdate}
-                  checkError={checkError}
-                  showAddSubscription={showAddSubscription}
-                  showSubscriptionList={showSubscriptionList}
-                  newSubscriptionName={newSubscriptionName}
-                  newSubscriptionUrl={newSubscriptionUrl}
-                  onToggleAddSubscription={() => setShowAddSubscription(!showAddSubscription)}
-                  onNameChange={setNewSubscriptionName}
-                  onUrlChange={setNewSubscriptionUrl}
-                  onAddSubscription={handleAddSubscription}
-                  onCancelAddSubscription={() => setShowAddSubscription(false)}
-                  onToggleSubscriptionList={() => setShowSubscriptionList(!showSubscriptionList)}
-                  onSelectSubscription={handleSelectSubscription}
-                  onDeleteSubscription={handleDeleteSubscription}
-                  onCheckSubscription={() => checkSubscription()}
-                  onApplyUpdate={applyUpdate}
-                  onClearUpdate={clearUpdate}
-                />
-              </div>
+              
+              <SubscriptionManagerSection
+                subscriptions={settings.subscriptions || []}
+                activeDiff={subscriptionDiff}
+                isCheckingAll={isCheckingAll}
+                checkingId={currentCheckingSubscriptionId}
+                onAddSubscription={async ({ name, url, syncStrategy }) => {
+                  addSubscription(name, url, syncStrategy);
+                  toast.success(t('common.subscriptionAdded', { defaultValue: 'Subscription added!' }));
+                }}
+                onUpdateSubscription={async (id, updates) => {
+                  updateSubscription(id, updates);
+                  toast.success(t('common.subscriptionUpdated', { defaultValue: 'Subscription updated!' }));
+                }}
+                onDeleteSubscription={async (id) => {
+                  deleteSubscription(id);
+                  toast.success(t('common.subscriptionDeleted', { defaultValue: 'Subscription deleted!' }));
+                }}
+                onToggleSubscription={(id, enabled) => {
+                  toggleSubscription(id, enabled);
+                }}
+                onCheckSubscription={async (id) => {
+                  await checkSubscription(id);
+                }}
+                onCheckAll={async () => {
+                  await checkAllSubscriptions();
+                }}
+                onApplyDiff={(diff) => {
+                  applySubscriptionDiff(diff);
+                  toast.success(t('common.updateApplied', { defaultValue: 'Updates applied successfully!' }));
+                }}
+                onDismissDiff={clearUpdate}
+                onTestUrl={testSubscriptionUrl}
+              />
             </TabsContent>
 
             <TabsContent value="basic" className="mt-0">

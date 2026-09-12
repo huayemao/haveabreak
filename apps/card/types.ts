@@ -1,3 +1,5 @@
+import { Subscription as BaseSubscription, SubscriptionDiff as GenericSubscriptionDiff, SyncStrategy } from '@haveabreak/utils/lib/utils';
+
 export interface Book {
   id: string;
   title: string;
@@ -7,6 +9,7 @@ export interface Book {
   publisher: string;
   isbn: string;
   createdAt: number;
+  updatedAt?: number;
 }
 
 export interface Quote {
@@ -16,16 +19,10 @@ export interface Quote {
   chapter?: string;
   page?: string;
   createdAt: number;
+  updatedAt?: number;
 }
 
-export interface Subscription {
-  id: string;
-  name: string;
-  url: string;
-  lastCheckTime: number;
-  lastUpdateTime: number;
-  enabled: boolean;
-}
+export type Subscription = BaseSubscription;
 
 export interface CardSettings {
   autoPlay: boolean;
@@ -38,19 +35,12 @@ export interface CardSettings {
   isRandom: boolean;
 }
 
-export interface SubscriptionDiff {
-  newBooks: Book[];
-  updatedBooks: Book[];
-  deletedBooks: string[];
-  newQuotes: Quote[];
-  updatedQuotes: Quote[];
-  deletedQuotes: string[];
-}
+export type SubscriptionDiff = GenericSubscriptionDiff;
 
 export interface SubscriptionConfig {
   books: Book[];
   quotes: Quote[];
-  lastModified: number;
+  lastModified?: number;
 }
 
 // For UI convenience

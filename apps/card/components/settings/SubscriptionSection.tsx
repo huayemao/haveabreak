@@ -156,11 +156,11 @@ export default function SubscriptionSection({
             <div className="text-xs text-fg-muted space-y-1">
               <div className="flex items-center gap-2">
                 <Clock className="w-3 h-3" />
-                {t('common.lastChecked', { defaultValue: 'Last checked: {time}', time: formatTime(activeSubscription.lastCheckTime) })}
+                {t('common.lastChecked', { defaultValue: 'Last checked: {time}', time: formatTime(activeSubscription.lastCheckTime || 0) })}
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-3 h-3" />
-                {t('common.lastUpdated', { defaultValue: 'Last updated: {time}', time: formatTime(activeSubscription.lastUpdateTime) })}
+                {t('common.lastUpdated', { defaultValue: 'Last updated: {time}', time: formatTime(activeSubscription.lastUpdateTime || 0) })}
               </div>
             </div>
           )}

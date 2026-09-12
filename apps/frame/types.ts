@@ -1,3 +1,5 @@
+import { Subscription } from '@haveabreak/utils/lib/utils';
+
 export type MediaOrientation = 'landscape' | 'portrait' | 'square';
 
 export type MediaType = 'image' | 'video';
@@ -14,6 +16,7 @@ export interface MediaItem {
   duration?: number;
   thumbnailUrl?: string;
   createdAt: number;
+  updatedAt?: number;
 }
 
 export interface Collection {
@@ -36,6 +39,14 @@ export interface FrameSettings {
   backgroundMusicEnabled: boolean;
   volume: number;
   swipeSwitching: boolean;
+  subscriptions: Subscription[];
+}
+
+export interface FrameSubscriptionConfig {
+  media: MediaItem[];
+  collections?: Collection[];
+  version?: string;
+  lastModified?: number;
 }
 
 export const DEFAULT_SLIDE_INTERVAL = 5000;

@@ -150,14 +150,26 @@ export async function deleteCollection(id: string): Promise<void> {
 }
 
 export async function getSettings(): Promise<FrameSettings> {
+  const defaultSettings: FrameSettings = {
+    ...(presets.settings as any),
+    subscriptions: [],
+  };
   const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
   if (stored) {
-    return JSON.parse(stored);
+    try {
+      const parsed = JSON.parse(stored);
+      return {
+        ...defaultSettings,
+        ...parsed,
+        subscriptions: parsed.subscriptions || [],
+      };
+    } catch (e) {
+      console.error('Failed to parse frame settings', e);
+    }
   }
 
-
-  localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(presets.settings));
-  return presets.settings;
+  localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(defaultSettings));
+  return defaultSettings;
 }
 
 export function saveSettings(settings: FrameSettings): void {
@@ -170,6 +182,17 @@ export async function exportData(): Promise<string> {
   const settings = await getSettings();
 
   return JSON.stringify({ media, collections, settings }, null, 2);
+}
+
+export async function exportSubscriptionData(): Promise<string> {
+  const media = await getStoredMedia();
+  const collections = await getCollections();
+  return JSON.stringify({
+    version: '1.0',
+    lastModified: Date.now(),
+    media,
+    collections,
+  }, null, 2);
 }
 
 export function importData(data: string): void {
