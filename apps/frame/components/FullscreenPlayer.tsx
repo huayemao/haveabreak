@@ -108,11 +108,13 @@ export default function FullscreenPlayer({
       }
     } else {
       setVideoThumbnail(null);
+      videoRef.current = null;
     }
   }, [currentMedia?.url, currentMedia?.id, currentMedia?.type, currentMedia?.thumbnailUrl]);
 
   // Attempt to play video with automatic muted fallback for mobile autoplay policy compliance
   const attemptPlayVideo = useCallback(async (video: HTMLVideoElement) => {
+    if (!video.paused && !video.ended) return;
     try {
       video.volume = settings.volume ?? 0.3;
       video.muted = false;
@@ -135,6 +137,16 @@ export default function FullscreenPlayer({
 
   const goToNext = useCallback(() => {
     if (media.length === 0) return;
+    if (media.length === 1 && currentMedia?.type === 'video' && videoRef.current) {
+      videoRef.current.currentTime = 0;
+      attemptPlayVideo(videoRef.current);
+      return;
+    }
+    if (videoRef.current) {
+      try {
+        videoRef.current.pause();
+      } catch {}
+    }
     setDirection('next');
     if (settings.shuffle) {
       const nextShuffledIndex = (shuffledIndex + 1) % media.length;
@@ -158,10 +170,20 @@ export default function FullscreenPlayer({
     setCurrentTime(0);
     setDuration(0);
     lastManualSwitchRef.current = Date.now();
-  }, [media.length, settings.shuffle, shuffledOrder, shuffledIndex]);
+  }, [media.length, currentMedia?.type, settings.shuffle, shuffledOrder, shuffledIndex, attemptPlayVideo]);
 
   const goToPrev = useCallback(() => {
     if (media.length === 0) return;
+    if (media.length === 1 && currentMedia?.type === 'video' && videoRef.current) {
+      videoRef.current.currentTime = 0;
+      attemptPlayVideo(videoRef.current);
+      return;
+    }
+    if (videoRef.current) {
+      try {
+        videoRef.current.pause();
+      } catch {}
+    }
     setDirection('prev');
     if (settings.shuffle) {
       const prevShuffledIndex = (shuffledIndex - 1 + media.length) % media.length;
@@ -174,7 +196,7 @@ export default function FullscreenPlayer({
     setCurrentTime(0);
     setDuration(0);
     lastManualSwitchRef.current = Date.now();
-  }, [media.length, settings.shuffle, shuffledOrder, shuffledIndex]);
+  }, [media.length, currentMedia?.type, settings.shuffle, shuffledOrder, shuffledIndex, attemptPlayVideo]);
 
   // Robust play/pause toggle directly bound to user gesture
   const togglePlayPause = useCallback(() => {
@@ -497,11 +519,14 @@ export default function FullscreenPlayer({
                 <video
                   key={currentMedia.url}
                   ref={(el) => {
-                    videoRef.current = el;
+                    if (el) {
+                      videoRef.current = el;
+                    }
                   }}
                   src={currentMedia.url}
                   poster={videoThumbnail || currentMedia.thumbnailUrl || TRANSPARENT_POSTER}
                   preload="auto"
+                  autoPlay={isPlaying}
                   className="w-full h-full object-cover"
                   playsInline
                   onPlay={() => {
@@ -515,15 +540,39 @@ export default function FullscreenPlayer({
                   onLoadedData={() => {
                     setIsVideoReady(true);
                   }}
-                  onPause={() => {
-                    if (!isScrubbingRef.current) {
-                      setIsPlaying(false);
+                  onPause={(e) => {
+                    // Ignore pause from an old exiting video element
+                    if (videoRef.current && e.currentTarget !== videoRef.current) {
+                      return;
                     }
+                    // Ignore pause when video ended or reached the end of playback (auto-advancing)
+                    if (
+                      e.currentTarget.ended ||
+                      (e.currentTarget.duration > 0 &&
+                        e.currentTarget.currentTime >= e.currentTarget.duration - 0.5)
+                    ) {
+                      return;
+                    }
+                    // Ignore pause right after switching slides (e.g. pausing the old video)
+                    if (Date.now() - lastManualSwitchRef.current < 800) {
+                      return;
+                    }
+                    // Ignore pause while scrubbing
+                    if (isScrubbingRef.current) {
+                      return;
+                    }
+                    setIsPlaying(false);
                   }}
                   onLoadedMetadata={(e) => {
                     const vid = e.currentTarget;
                     setDuration(vid.duration || 0);
-                    if (isPlaying) {
+                    if (isPlaying && vid.paused) {
+                      attemptPlayVideo(vid);
+                    }
+                  }}
+                  onCanPlay={(e) => {
+                    const vid = e.currentTarget;
+                    if (isPlaying && vid.paused) {
                       attemptPlayVideo(vid);
                     }
                   }}
@@ -535,7 +584,13 @@ export default function FullscreenPlayer({
                       setProgress((vid.currentTime / vid.duration) * 100);
                     }
                   }}
-                  onEnded={goToNext}
+                  onEnded={(e) => {
+                    if (videoRef.current && e.currentTarget !== videoRef.current) {
+                      return;
+                    }
+                    setIsPlaying(true);
+                    goToNext();
+                  }}
                   draggable={false}
                 />
                 {/* Poster / Cover Layer to ensure zero native Android placeholder or black flash */}
