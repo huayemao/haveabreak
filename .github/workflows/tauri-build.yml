@@ -474,19 +474,19 @@ jobs:
             ## Downloads
             
             ### Windows
-            - [Card (Installer)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/windows-binaries-card/quotelite_0.1.0_x64_en-US.msi)
-            - [Card (Portable)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/windows-binaries-card/quotelite_0.1.0_x64-setup.exe)
-            - [Frame (Installer)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/windows-binaries-frame/digital-frame_0.1.0_x64_en-US.msi)
-            - [Frame (Portable)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/windows-binaries-frame/digital-frame_0.1.0_x64-setup.exe)
+            - [Card (Installer)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/quotelite_${{ needs.get-release.outputs.release_version }}_x64_en-US.msi)
+            - [Card (Portable)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/quotelite_${{ needs.get-release.outputs.release_version }}_x64-setup.exe)
+            - [Frame (Installer)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/digital-frame_${{ needs.get-release.outputs.release_version }}_x64_en-US.msi)
+            - [Frame (Portable)](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/digital-frame_${{ needs.get-release.outputs.release_version }}_x64-setup.exe)
             
             ### Android
-            - [Card APK](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/android-apk-card/quotelite.apk)
-            - [Frame APK](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/android-apk-frame/digital-frame.apk)
-            - [Maoji APK](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/android-apk-maoji/maoji.apk)
+            - [Card APK](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/quotelite.apk)
+            - [Frame APK](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/digital-frame.apk)
+            - [Maoji APK](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/maoji.apk)
             
             ### iOS
-            - [Card IPA](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/ios-ipa-card/arm64/quotelite.ipa)
-            - [Frame IPA](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/ios-ipa-frame/arm64/digital-frame.ipa)
+            - [Card IPA](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/quotelite.ipa)
+            - [Frame IPA](https://github.com/${{ github.repository }}/releases/download/${{ needs.get-release.outputs.release_tag }}/digital-frame.ipa)
 
       - name: Update Release Body with Notes
         uses: actions/github-script@v7
@@ -497,6 +497,31 @@ jobs:
           release_version: ${{ needs.get-release.outputs.release_version }}
         with:
           script: |
+            const release = await github.rest.repos.getRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: parseInt(process.env.release_id)
+            });
+
+            const assets = release.data.assets || [];
+            const baseUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}`;
+            const findUrl = (pattern, fallback) => {
+              const asset = assets.find(a => pattern.test(a.name));
+              return asset ? asset.browser_download_url : `${baseUrl}/${fallback}`;
+            };
+
+            const cardMsi = findUrl(/^quotelite.*\.msi$/i, `quotelite_${process.env.release_version}_x64_en-US.msi`);
+            const cardExe = findUrl(/^quotelite.*-setup\.exe$/i, `quotelite_${process.env.release_version}_x64-setup.exe`);
+            const frameMsi = findUrl(/^(digital-frame|haveabreak-frame).*\.msi$/i, `digital-frame_${process.env.release_version}_x64_en-US.msi`);
+            const frameExe = findUrl(/^(digital-frame|haveabreak-frame).*-setup\.exe$/i, `digital-frame_${process.env.release_version}_x64-setup.exe`);
+
+            const cardApk = findUrl(/^quotelite.*\.apk$/i, 'quotelite.apk');
+            const frameApk = findUrl(/^(digital-frame|haveabreak-frame).*\.apk$/i, 'digital-frame.apk');
+            const maojiApk = findUrl(/^maoji.*\.apk$/i, 'maoji.apk');
+
+            const cardIpa = findUrl(/^quotelite.*\.ipa$/i, 'quotelite.ipa');
+            const frameIpa = findUrl(/^(digital-frame|haveabreak-frame).*\.ipa$/i, 'digital-frame.ipa');
+
             const notes = process.env.release_note.split(/\d+\.\s/).filter(Boolean);
             const formattedNotes = notes.map(note => `* ${note.trim()}`).join("\n");
             
@@ -504,17 +529,17 @@ jobs:
             body += `${formattedNotes}\n\n`;
             body += `## Downloads\n\n`;
             body += `### Windows\n`;
-            body += `- [Card (Installer)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries-card/quotelite_0.1.0_x64_en-US.msi)\n`;
-            body += `- [Card (Portable)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries-card/quotelite_0.1.0_x64-setup.exe)\n`;
-            body += `- [Frame (Installer)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries-frame/digital-frame_0.1.0_x64_en-US.msi)\n`;
-            body += `- [Frame (Portable)](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/windows-binaries-frame/digital-frame_0.1.0_x64-setup.exe)\n\n`;
+            body += `- [Card (Installer)](${cardMsi})\n`;
+            body += `- [Card (Portable)](${cardExe})\n`;
+            body += `- [Frame (Installer)](${frameMsi})\n`;
+            body += `- [Frame (Portable)](${frameExe})\n\n`;
             body += `### Android\n`;
-            body += `- [Card APK](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/android-apk-card/quotelite.apk)\n`;
-            body += `- [Frame APK](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/android-apk-frame/digital-frame.apk)\n`;
-            body += `- [Maoji APK](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/android-apk-maoji/maoji.apk)\n\n`;
+            body += `- [Card APK](${cardApk})\n`;
+            body += `- [Frame APK](${frameApk})\n`;
+            body += `- [Maoji APK](${maojiApk})\n\n`;
             body += `### iOS\n`;
-            body += `- [Card IPA](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/ios-ipa-card/arm64/quotelite.ipa)\n`;
-            body += `- [Frame IPA](https://github.com/${context.repo.owner}/${context.repo.repo}/releases/download/${process.env.release_tag}/ios-ipa-frame/arm64/digital-frame.ipa)\n`;
+            body += `- [Card IPA](${cardIpa})\n`;
+            body += `- [Frame IPA](${frameIpa})\n`;
             
             console.log('Release body:', body);
             
