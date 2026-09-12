@@ -68,5 +68,6 @@
   "refresh": "Refresh",
   "recommendedForYou": "Recommended for you",
   "pullToRefresh": "Pull down to refresh",
-  "releaseToRefresh": "Release to refresh"
+  "releaseToRefresh": "Release to refresh",
+  "tapToUnmute": "Tap to unmute"
 }

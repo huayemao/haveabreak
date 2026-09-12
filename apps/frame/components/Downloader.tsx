@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { MediaItem } from '../types';
 import { downloadMediaFile } from '../storage';
+import { TRANSPARENT_POSTER } from '../utils/videoThumbnail';
 
 interface DownloaderProps {
   media: MediaItem[];
@@ -92,6 +93,8 @@ export default function Downloader({ media }: DownloaderProps) {
                   <div className="w-full h-full bg-black/20 flex items-center justify-center">
                     <video
                       src={item.url}
+                      poster={item.thumbnailUrl || TRANSPARENT_POSTER}
+                      preload="auto"
                       className="w-full h-full object-cover"
                       muted
                       loop

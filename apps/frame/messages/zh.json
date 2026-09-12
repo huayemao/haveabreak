@@ -68,5 +68,6 @@
   "refresh": "刷新",
   "recommendedForYou": "为你推荐",
   "pullToRefresh": "下拉刷新",
-  "releaseToRefresh": "松开刷新"
+  "releaseToRefresh": "松开刷新",
+  "tapToUnmute": "点击开启声音"
 }

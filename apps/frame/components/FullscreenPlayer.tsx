@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { MediaItem, FrameSettings } from '../types';
 import { getCurrentWindow } from '@tauri-apps/api/window';
+import { getVideoThumbnail, generateVideoPoster, TRANSPARENT_POSTER } from '../utils/videoThumbnail';
 
 interface FullscreenPlayerProps {
   media: MediaItem[];
@@ -56,6 +57,9 @@ export default function FullscreenPlayer({
   const [isScrubbing, setIsScrubbing] = useState(false);
   const [scrubPercent, setScrubPercent] = useState<number | null>(null);
   const [direction, setDirection] = useState<'next' | 'prev'>('next');
+  const [videoThumbnail, setVideoThumbnail] = useState<string | null>(null);
+  const [isVideoReady, setIsVideoReady] = useState(false);
+  const [isAutoplayMuted, setIsAutoplayMuted] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const progressBarRef = useRef<HTMLDivElement | null>(null);
@@ -82,6 +86,52 @@ export default function FullscreenPlayer({
   }, [currentIndex, pathname, router, searchParams]);
 
   const currentMedia = media[currentIndex] || media[0];
+
+  // Preload and retrieve video thumbnail and reset ready state on slide switch
+  useEffect(() => {
+    setIsVideoReady(false);
+    setIsAutoplayMuted(false);
+
+    if (currentMedia?.type === 'video') {
+      if (currentMedia.thumbnailUrl) {
+        setVideoThumbnail(currentMedia.thumbnailUrl);
+      } else {
+        let active = true;
+        getVideoThumbnail(currentMedia.url, currentMedia.id).then((url) => {
+          if (active && url) {
+            setVideoThumbnail(url);
+          }
+        });
+        return () => {
+          active = false;
+        };
+      }
+    } else {
+      setVideoThumbnail(null);
+    }
+  }, [currentMedia?.url, currentMedia?.id, currentMedia?.type, currentMedia?.thumbnailUrl]);
+
+  // Attempt to play video with automatic muted fallback for mobile autoplay policy compliance
+  const attemptPlayVideo = useCallback(async (video: HTMLVideoElement) => {
+    try {
+      video.volume = settings.volume ?? 0.3;
+      video.muted = false;
+      await video.play();
+      setIsPlaying(true);
+      setIsAutoplayMuted(false);
+    } catch (err: any) {
+      if (err?.name === 'NotAllowedError' || err?.name === 'AbortError') {
+        try {
+          video.muted = true;
+          await video.play();
+          setIsPlaying(true);
+          setIsAutoplayMuted(true);
+        } catch (mutedErr) {
+          console.warn('Muted autoplay failed:', mutedErr);
+        }
+      }
+    }
+  }, [settings.volume]);
 
   const goToNext = useCallback(() => {
     if (media.length === 0) return;
@@ -130,18 +180,13 @@ export default function FullscreenPlayer({
   const togglePlayPause = useCallback(() => {
     const video = videoRef.current;
     if (currentMedia?.type === 'video' && video) {
+      if (isAutoplayMuted) {
+        video.muted = false;
+        video.volume = settings.volume ?? 0.3;
+        setIsAutoplayMuted(false);
+      }
       if (video.paused) {
-        const playPromise = video.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              setIsPlaying(true);
-            })
-            .catch((err) => {
-              console.warn('Video play blocked or failed:', err);
-              setIsPlaying(false);
-            });
-        }
+        attemptPlayVideo(video);
       } else {
         video.pause();
         setIsPlaying(false);
@@ -149,7 +194,7 @@ export default function FullscreenPlayer({
     } else {
       setIsPlaying((prev) => !prev);
     }
-  }, [currentMedia?.type]);
+  }, [currentMedia?.type, isAutoplayMuted, attemptPlayVideo, settings.volume]);
 
   const handlePointerDown = (e: React.PointerEvent) => {
     if (!settings.swipeSwitching) return;
@@ -268,16 +313,13 @@ export default function FullscreenPlayer({
   useEffect(() => {
     const video = videoRef.current;
     if (currentMedia?.type === 'video' && video) {
-      video.volume = settings.volume ?? 0.3;
       if (isPlaying) {
-        video.play().catch((err) => {
-          console.warn('Video play prevented:', err);
-        });
+        attemptPlayVideo(video);
       } else {
         video.pause();
       }
     }
-  }, [isPlaying, currentMedia?.url, settings.volume]);
+  }, [isPlaying, currentMedia?.url, attemptPlayVideo]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -451,43 +493,89 @@ export default function FullscreenPlayer({
                 draggable={false}
               />
             ) : (
-              <video
-                key={currentMedia.url}
-                ref={(el) => {
-                  videoRef.current = el;
-                }}
-                src={currentMedia.url}
-                className="w-full h-full object-cover"
-                playsInline
-                onPlay={() => setIsPlaying(true)}
-                onPause={() => {
-                  if (!isScrubbingRef.current) {
-                    setIsPlaying(false);
-                  }
-                }}
-                onLoadedMetadata={(e) => {
-                  const vid = e.currentTarget;
-                  setDuration(vid.duration || 0);
-                  vid.volume = settings.volume ?? 0.3;
-                  if (isPlaying) {
-                    vid.play().catch((err) => console.warn('Autoplay on metadata failed:', err));
-                  }
-                }}
-                onTimeUpdate={(e) => {
-                  if (isScrubbingRef.current) return;
-                  const vid = e.currentTarget;
-                  setCurrentTime(vid.currentTime);
-                  if (vid.duration) {
-                    setProgress((vid.currentTime / vid.duration) * 100);
-                  }
-                }}
-                onEnded={goToNext}
-                draggable={false}
-              />
+              <div className="relative w-full h-full overflow-hidden">
+                <video
+                  key={currentMedia.url}
+                  ref={(el) => {
+                    videoRef.current = el;
+                  }}
+                  src={currentMedia.url}
+                  poster={videoThumbnail || currentMedia.thumbnailUrl || TRANSPARENT_POSTER}
+                  preload="auto"
+                  className="w-full h-full object-cover"
+                  playsInline
+                  onPlay={() => {
+                    setIsPlaying(true);
+                    setIsVideoReady(true);
+                  }}
+                  onPlaying={() => {
+                    setIsPlaying(true);
+                    setIsVideoReady(true);
+                  }}
+                  onLoadedData={() => {
+                    setIsVideoReady(true);
+                  }}
+                  onPause={() => {
+                    if (!isScrubbingRef.current) {
+                      setIsPlaying(false);
+                    }
+                  }}
+                  onLoadedMetadata={(e) => {
+                    const vid = e.currentTarget;
+                    setDuration(vid.duration || 0);
+                    if (isPlaying) {
+                      attemptPlayVideo(vid);
+                    }
+                  }}
+                  onTimeUpdate={(e) => {
+                    if (isScrubbingRef.current) return;
+                    const vid = e.currentTarget;
+                    setCurrentTime(vid.currentTime);
+                    if (vid.duration) {
+                      setProgress((vid.currentTime / vid.duration) * 100);
+                    }
+                  }}
+                  onEnded={goToNext}
+                  draggable={false}
+                />
+                {/* Poster / Cover Layer to ensure zero native Android placeholder or black flash */}
+                <div
+                  className={`absolute inset-0 transition-opacity duration-500 pointer-events-none ${
+                    isVideoReady ? 'opacity-0' : 'opacity-100'
+                  }`}
+                >
+                  <img
+                    src={videoThumbnail || currentMedia.thumbnailUrl || generateVideoPoster(currentMedia.title)}
+                    alt={currentMedia.title || ''}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
             )}
           </motion.div>
         </AnimatePresence>
       </div>
+
+      {/* Tap to Unmute Button for Mobile Autoplay */}
+      {isAutoplayMuted && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            if (videoRef.current) {
+              videoRef.current.muted = false;
+              videoRef.current.volume = settings.volume ?? 0.3;
+              setIsAutoplayMuted(false);
+            }
+          }}
+          className="absolute bottom-24 sm:bottom-28 left-1/2 -translate-x-1/2 z-30 bg-black/75 hover:bg-black/90 active:scale-95 backdrop-blur-md text-white text-xs sm:text-sm px-4 py-2 rounded-full flex items-center gap-2 shadow-2xl border border-white/20 transition-all pointer-events-auto cursor-pointer"
+        >
+          <svg className="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+          </svg>
+          <span>{t('frame.tapToUnmute') || '点击开启声音'}</span>
+        </button>
+      )}
 
       <AnimatePresence>
         {showControls && (

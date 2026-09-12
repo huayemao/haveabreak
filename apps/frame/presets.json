@@ -27,6 +27,7 @@
     {
       "id": "preset-vid-portrait-0",
       "url": "https://sns-bak-v1.xhscdn.com/stream/1/110/258/01e8f23dfae7d9e80103700199f2462433_258.mp4",
+      "thumbnailUrl": "https://sns-img-hw.xhscdn.com/notes_pre_post/1040g3k031q2cgaru005g48jjnrr56mgk6mlui3o?imageView2/2/w/0/format/jpg",
       "type": "video",
       "orientation": "portrait",
       "title": "Calming Waves",
@@ -67,6 +68,7 @@
     {
       "id": "preset-vid-landscape-0",
       "url": "https://sns-bak-v1.xhscdn.com/pre_post/1040g2t031ku7kqjt2ur0472skhjr8fl3horpcl0",
+      "thumbnailUrl": "https://sns-img-hw.xhscdn.com/1040g008316h3ngsu1e005ovab1rpguo3j50vlf0?imageView2/2/w/0/format/jpg",
       "type": "video",
       "orientation": "landscape",
       "title": "Flowing River",
