@@ -114,7 +114,7 @@ export default async function RootLayout({
         `}} />
       </head>
       <body suppressHydrationWarning className="bg-[#E0E5EC] text-slate-900 antialiased">
-        <SerwistProvider swUrl="/serwist/sw.js">
+        <SerwistProvider swUrl="/sw.js">
           <NextIntlClientProvider messages={messages}>
             {!isTauriBuild && (
               <ServiceWorkerUpdate />

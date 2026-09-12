@@ -63,18 +63,33 @@ async function main() {
   if (apiCopied) removeDir(apiDir);
   if (modalsCopied) removeDir(modalsDir);
 
+  console.log('\n2. Compiling Service Worker for Tauri...');
+  execSync('node scripts/build-sw.mjs', {
+    cwd: webDir,
+    stdio: 'inherit',
+  });
+
   try {
-    console.log('\n2. Building Next.js static export...');
+    console.log('\n3. Building Next.js static export...');
     execSync('npx cross-env TAURI_BUILD=true next build', {
       cwd: webDir,
       stdio: 'inherit',
     });
+
+    const outDir = path.join(webDir, 'out');
+    const outSw = path.join(outDir, 'sw.js');
+    const publicSw = path.join(webDir, 'public', 'sw.js');
+    if (fs.existsSync(publicSw) && fs.existsSync(outDir)) {
+      fs.copyFileSync(publicSw, outSw);
+      console.log('Ensured sw.js copied to out/sw.js');
+    }
+
     console.log('\n✅ Build completed successfully!');
   } catch (err) {
     console.error('\n❌ Build failed:', err.message);
     throw err;
   } finally {
-    console.log('\n3. Restoring dynamic folders...');
+    console.log('\n4. Restoring dynamic folders...');
     restoreDir(apiBackupDir, apiDir);
     restoreDir(modalsBackupDir, modalsDir);
   }

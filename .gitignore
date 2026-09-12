@@ -7,5 +7,5 @@ coverage/
 !.env.example
 out/
 # Serwist
-public/sw*
-public/swe-worker*
+**/public/sw*
+**/public/swe-worker*

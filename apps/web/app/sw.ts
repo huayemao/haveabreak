@@ -2,7 +2,15 @@
 /// <reference lib="webworker" />
 import { defaultCache } from "@serwist/turbopack/worker";
 import type { PrecacheEntry, SerwistGlobalConfig } from "serwist";
-import { Serwist, ExpirationPlugin, CacheFirst, StaleWhileRevalidate, NetworkFirst } from "serwist";
+import {
+  Serwist,
+  ExpirationPlugin,
+  CacheFirst,
+  StaleWhileRevalidate,
+  NetworkFirst,
+  RangeRequestsPlugin,
+  CacheableResponsePlugin,
+} from "serwist";
 
 declare global {
   interface WorkerGlobalScope extends SerwistGlobalConfig {
@@ -12,10 +20,13 @@ declare global {
 
 declare const self: ServiceWorkerGlobalScope;
 
+const MEDIA_EXTENSIONS = /\.(?:png|jpg|jpeg|svg|gif|webp|avif|mp4|webm|mov|ogg|mp3|wav|flac|aac|woff2?|eot|ttf|otf)(?:\?.*)?$/i;
+const MEDIA_HOSTS = ['sns-img-hw.xhscdn.com', 'sns-bak-v1.xhscdn.com', 'picsum.photos'];
+
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
-  skipWaiting: false,
-  clientsClaim: false,
+  skipWaiting: true,
+  clientsClaim: true,
   navigationPreload: true,
   runtimeCaching: [
     {
@@ -31,24 +42,44 @@ const serwist = new Serwist({
       }),
     },
     {
-      matcher: ({ request }) => {
-        return request.destination === 'image' || 
-               request.destination === 'video' || 
-               request.destination === 'audio' || 
-               request.destination === 'font';
+      matcher: ({ request, url }) => {
+        // Skip Tauri internal IPC and custom scheme requests
+        if (url.protocol === 'tauri:' || url.pathname.includes('__tauri') || url.pathname.includes('ipc')) {
+          return false;
+        }
+
+        const isMediaDest =
+          request.destination === 'image' ||
+          request.destination === 'video' ||
+          request.destination === 'audio' ||
+          request.destination === 'font';
+
+        const isMediaExt = MEDIA_EXTENSIONS.test(url.pathname);
+        const isMediaHost = MEDIA_HOSTS.some(host => url.hostname.includes(host));
+
+        return isMediaDest || isMediaExt || isMediaHost;
       },
       handler: new CacheFirst({
         cacheName: "assets",
         plugins: [
           new ExpirationPlugin({
-            maxEntries: 300,
+            maxEntries: 500,
             maxAgeSeconds: 60 * 60 * 24 * 365,
           }),
+          new CacheableResponsePlugin({
+            statuses: [0, 200],
+          }),
+          new RangeRequestsPlugin(),
         ],
       }),
     },
     {
-      matcher: () => true,
+      matcher: ({ url }) => {
+        if (url.protocol === 'tauri:' || url.pathname.includes('__tauri') || url.pathname.includes('ipc')) {
+          return false;
+        }
+        return true;
+      },
       handler: new CacheFirst({
         cacheName: "others",
         plugins: [
