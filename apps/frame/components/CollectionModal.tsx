@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Collection, MediaItem } from '../types';
 import { useTranslations } from 'next-intl';
 import MediaThumbnail from './MediaThumbnail';
+import { Slider } from '@haveabreak/ui/components/ui/slider';
 
 interface CollectionModalProps {
   isOpen: boolean;
@@ -10,8 +11,10 @@ interface CollectionModalProps {
   collection?: Collection | null;
   media: MediaItem[];
   onClose: () => void;
-  onSave: (name: string, description: string, mediaIds: string[]) => void;
+  onSave: (name: string, description: string, mediaIds: string[], slideInterval: number) => void;
 }
+
+const INTERVAL_PRESETS = [3, 5, 10, 15, 30];
 
 export default function CollectionModal({
   isOpen,
@@ -25,6 +28,7 @@ export default function CollectionModal({
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [selectedMediaIds, setSelectedMediaIds] = useState<string[]>([]);
+  const [slideInterval, setSlideInterval] = useState(5);
 
   useEffect(() => {
     if (isOpen) {
@@ -32,10 +36,12 @@ export default function CollectionModal({
         setName(collection.name);
         setDescription(collection.description || '');
         setSelectedMediaIds([...collection.mediaIds]);
+        setSlideInterval(collection.slideInterval ? Math.max(1, Math.round(collection.slideInterval / 1000)) : 5);
       } else {
         setName('');
         setDescription('');
         setSelectedMediaIds([]);
+        setSlideInterval(5);
       }
     }
   }, [isOpen, mode, collection]);
@@ -48,7 +54,7 @@ export default function CollectionModal({
 
   const handleSave = () => {
     if (name.trim()) {
-      onSave(name.trim(), description.trim(), selectedMediaIds);
+      onSave(name.trim(), description.trim(), selectedMediaIds, slideInterval * 1000);
     }
   };
 
@@ -56,7 +62,7 @@ export default function CollectionModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="neumorphic-dialog p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto">
+      <div className="neumorphic-dialog p-6 max-w-lg w-full max-h-[85vh] overflow-y-auto">
         <h3 className="text-lg font-bold mb-4">
           {mode === 'add' ? t('frame.addCollection') : t('common.edit')}
         </h3>
@@ -82,6 +88,46 @@ export default function CollectionModal({
               rows={2}
               className="neumorphic-input w-full resize-none"
             />
+          </div>
+
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium">
+                {t('frame.slideInterval')}
+              </label>
+              <span className="text-sm font-bold text-accent">
+                {slideInterval}s
+              </span>
+            </div>
+            <div className="space-y-2">
+              <Slider
+                value={[slideInterval]}
+                onValueChange={([val]) => setSlideInterval(val)}
+                min={1}
+                max={60}
+                step={1}
+                className="w-full"
+              />
+              <div className="flex items-center justify-between gap-1 pt-1">
+                <div className="flex gap-1.5 flex-wrap">
+                  {INTERVAL_PRESETS.map((preset) => (
+                    <button
+                      key={preset}
+                      type="button"
+                      onClick={() => setSlideInterval(preset)}
+                      className={`px-2.5 py-1 text-xs rounded-lg transition-all ${
+                        slideInterval === preset
+                          ? 'bg-accent text-white font-medium shadow-sm'
+                          : 'bg-muted hover:bg-muted/80 text-fg-muted'
+                      }`}
+                    >
+                      {preset}s
+                    </button>
+                  ))}
+                </div>
+                <span className="text-xs text-fg-muted">1s - 60s</span>
+              </div>
+            </div>
           </div>
 
           <div>

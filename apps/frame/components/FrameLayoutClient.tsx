@@ -69,6 +69,8 @@ export default function FrameLayoutClient({
 
   const handleCloseModal = () => updateUrl({ modal: null });
 
+  const isFeed = searchParams.get("feed") === "true";
+
   const currentMedia = useMemo(() => {
     let mediaList: MediaItem[];
     if (selectedCollectionId) {
@@ -80,7 +82,7 @@ export default function FrameLayoutClient({
       } else {
         mediaList = media;
       }
-    } else if (searchParams.get("feed") === "true") {
+    } else if (isFeed) {
       mediaList = feedMedia.length > 0 ? feedMedia : media;
     } else {
       mediaList = media;
@@ -92,7 +94,7 @@ export default function FrameLayoutClient({
     media,
     feedMedia,
     settings.filterByOrientation,
-    searchParams,
+    isFeed,
   ]);
 
   const imageMedia = useMemo(
@@ -215,7 +217,6 @@ export default function FrameLayoutClient({
     },
   ];
 
-  const isFeed = searchParams.get("feed") === "true";
   const urlShuffle = searchParams.get("shuffle");
   const urlMediaType = searchParams.get("mediaType");
   const playShuffle = isFeed

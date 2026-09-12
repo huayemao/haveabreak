@@ -4,8 +4,6 @@ const MEDIA_STORAGE_KEY = 'frame_media';
 const COLLECTION_STORAGE_KEY = 'frame_collections';
 const SETTINGS_STORAGE_KEY = 'frame_settings';
 
-// 不能删除
-console.log(presets)
 
 export async function getOrientationFromUrl(url: string, type?: 'image' | 'video'): Promise<'landscape' | 'portrait' | 'square'> {
   return new Promise((resolve) => {
@@ -115,14 +113,19 @@ export function saveCollections(collections: Collection[]): void {
   localStorage.setItem(COLLECTION_STORAGE_KEY, JSON.stringify(collections));
 }
 
-export async function createCollection(name: string, description?: string, mediaIds: string[] = []): Promise<Collection> {
+export async function createCollection(
+  name: string,
+  description?: string,
+  mediaIds: string[] = [],
+  slideInterval: number = DEFAULT_SLIDE_INTERVAL
+): Promise<Collection> {
   const collections = await getCollections();
   const newCollection: Collection = {
     id: generateId(),
     name,
     description,
     mediaIds,
-    slideInterval: DEFAULT_SLIDE_INTERVAL,
+    slideInterval: slideInterval > 0 ? slideInterval : DEFAULT_SLIDE_INTERVAL,
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };
@@ -205,18 +208,20 @@ export async function importUrlList(urls: string[], type: 'image' | 'video'): Pr
   return results;
 }
 
-export async function downloadMedia(url: string, filename: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    link.target = '_blank';
-
-    link.onload = () => resolve();
-    link.onerror = () => reject(new Error('Download failed'));
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  });
+export async function downloadMediaFile(url: string, filename?: string): Promise<void> {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Download failed with status: ${response.status}`);
+  }
+  const blob = await response.blob();
+  const blobUrl = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = blobUrl;
+  link.download = filename || url.split('/').pop()?.split('?')[0] || 'media-download';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(blobUrl);
 }
+
+export const downloadMedia = (url: string, filename?: string) => downloadMediaFile(url, filename);

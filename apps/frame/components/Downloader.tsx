@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { MediaItem } from '../types';
+import { downloadMediaFile } from '../storage';
 
 interface DownloaderProps {
   media: MediaItem[];
@@ -17,16 +18,8 @@ export default function Downloader({ media }: DownloaderProps) {
     setDownloadProgress((prev) => ({ ...prev, [item.id]: 0 }));
 
     try {
-      const response = await fetch(item.url);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = item.title || `media-${item.id}.${item.type === 'image' ? 'jpg' : 'mp4'}`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      const filename = item.title ? `${item.title}.${item.type === 'image' ? 'jpg' : 'mp4'}` : `media-${item.id}.${item.type === 'image' ? 'jpg' : 'mp4'}`;
+      await downloadMediaFile(item.url, filename);
 
       setDownloadProgress((prev) => ({ ...prev, [item.id]: 100 }));
       setShowComplete(true);
@@ -44,17 +37,9 @@ export default function Downloader({ media }: DownloaderProps) {
     for (const item of media) {
       setDownloadingId(item.id);
       try {
-        const response = await fetch(item.url);
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = item.title || `media-${item.id}.${item.type === 'image' ? 'jpg' : 'mp4'}`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        const filename = item.title ? `${item.title}.${item.type === 'image' ? 'jpg' : 'mp4'}` : `media-${item.id}.${item.type === 'image' ? 'jpg' : 'mp4'}`;
+        await downloadMediaFile(item.url, filename);
+        await new Promise((resolve) => setTimeout(resolve, 300));
       } catch (error) {
         console.error('Download failed:', error);
       }

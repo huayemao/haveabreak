@@ -27,7 +27,7 @@ interface FrameState {
   generateFeedMedia: () => void;
   addMedia: (url: string, type: MediaType, title?: string, collectionId?: string) => Promise<MediaItem | void>;
   deleteMedia: (id: string) => Promise<void>;
-  createCollection: (name: string, description?: string, mediaIds?: string[]) => Promise<void>;
+  createCollection: (name: string, description?: string, mediaIds?: string[], slideInterval?: number) => Promise<void>;
   updateCollection: (id: string, updates: Partial<Collection>) => Promise<void>;
   deleteCollection: (id: string) => Promise<void>;
   updateSettings: (settings: FrameSettings) => void;
@@ -60,23 +60,18 @@ export const useFrameStore = create<FrameState>((set, get) => ({
         getCollections(),
         getSettings(),
       ]);
-      const mergedSettings = {
-        // @ts-ignore
+      const defaultSettings: FrameSettings = {
         autoPlay: true,
-        // @ts-ignore
         slideInterval: 5000,
-        // @ts-ignore
         showInfo: false,
-        // @ts-ignore
         shuffle: false,
-        // @ts-ignore
         filterByOrientation: true,
-        // @ts-ignore
         backgroundMusicEnabled: false,
-        // @ts-ignore
         volume: 0.3,
-        // @ts-ignore
         swipeSwitching: false,
+      };
+      const mergedSettings: FrameSettings = {
+        ...defaultSettings,
         ...settings,
       };
       set({ media, collections, settings: mergedSettings });
@@ -135,9 +130,9 @@ export const useFrameStore = create<FrameState>((set, get) => ({
     }
   },
 
-  createCollection: async (name, description, mediaIds) => {
+  createCollection: async (name, description, mediaIds, slideInterval) => {
     try {
-      const newCollection = await storageCreateCollection(name, description, mediaIds);
+      const newCollection = await storageCreateCollection(name, description, mediaIds, slideInterval);
       set((state) => ({ collections: [...state.collections, newCollection] }));
     } catch (error) {
       console.error('Failed to create collection:', error);

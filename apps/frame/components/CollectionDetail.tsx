@@ -70,8 +70,15 @@ export default function CollectionDetail({
         </div>
       </div>
 
-      <div className="flex items-center gap-6 text-sm text-fg-muted">
+      <div className="flex items-center gap-4 text-sm text-fg-muted">
         <span>{collectionMedia.length} {t('frame.mediaLibrary')}</span>
+        <span>•</span>
+        <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted text-fg-primary text-xs font-medium">
+          <svg className="w-3.5 h-3.5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {t('frame.slideInterval')}: {Math.round((collection.slideInterval || 5000) / 1000)}s
+        </span>
       </div>
 
       <MediaGallery

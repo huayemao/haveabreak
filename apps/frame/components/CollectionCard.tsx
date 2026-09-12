@@ -79,6 +79,10 @@ export default function CollectionCard({
               )}
               <div className="flex items-center gap-2 mt-2 text-white/70 text-xs">
                 <span>{collection.mediaIds.length} {t('frame.media')}</span>
+                <span>•</span>
+                <span className="px-1.5 py-0.5 rounded-md bg-white/20 text-white font-medium">
+                  {Math.round((collection.slideInterval || 5000) / 1000)}s
+                </span>
               </div>
             </div>
           </div>

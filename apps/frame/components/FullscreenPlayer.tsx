@@ -16,7 +16,14 @@ interface FullscreenPlayerProps {
   startIndex?: number;
 }
 
-export default function FullscreenPlayer({ media, settings, onExit, onDelete, startPaused = false, startIndex = 0 }: FullscreenPlayerProps) {
+export default function FullscreenPlayer({
+  media,
+  settings,
+  onExit,
+  onDelete,
+  startPaused = false,
+  startIndex = 0,
+}: FullscreenPlayerProps) {
   const t = useTranslations();
   const router = useRouter();
   const pathname = usePathname();
@@ -44,40 +51,35 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
   const [isPlaying, setIsPlaying] = useState(startPaused ? false : settings.autoPlay);
   const [showControls, setShowControls] = useState(true);
   const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [isScrubbing, setIsScrubbing] = useState(false);
+  const [scrubPercent, setScrubPercent] = useState<number | null>(null);
   const [direction, setDirection] = useState<'next' | 'prev'>('next');
-  
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const audioRef = useRef<HTMLAudioElement>(null);
+
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const progressBarRef = useRef<HTMLDivElement | null>(null);
+  const isScrubbingRef = useRef(false);
   const controlsTimeoutRef = useRef<number | null>(null);
   const lastManualSwitchRef = useRef<number>(0);
-  
+
   const dragStartRef = useRef<{ x: number; y: number } | null>(null);
   const lastSwitchTimeRef = useRef<number>(0);
 
   // Lock body scroll when player is open
   useScrollLock();
 
+  // Sync index to URL without triggering heavy layout re-renders
   useEffect(() => {
     const newParams = new URLSearchParams(searchParams.toString());
     const targetIndex = currentIndex > 0 ? currentIndex.toString() : null;
-    const targetPaused = !isPlaying ? 'true' : null;
 
-    let changed = false;
     if (newParams.get('index') !== targetIndex) {
       if (targetIndex === null) newParams.delete('index');
       else newParams.set('index', targetIndex);
-      changed = true;
-    }
-    if (newParams.get('paused') !== targetPaused) {
-      if (targetPaused === null) newParams.delete('paused');
-      else newParams.set('paused', targetPaused);
-      changed = true;
-    }
-
-    if (changed) {
       router.replace(`${pathname}?${newParams.toString()}`, { scroll: false });
     }
-  }, [currentIndex, isPlaying, pathname, router, searchParams]);
+  }, [currentIndex, pathname, router, searchParams]);
 
   const currentMedia = media[currentIndex] || media[0];
 
@@ -103,6 +105,8 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
       setCurrentIndex((prev) => (prev + 1) % media.length);
     }
     setProgress(0);
+    setCurrentTime(0);
+    setDuration(0);
     lastManualSwitchRef.current = Date.now();
   }, [media.length, settings.shuffle, shuffledOrder, shuffledIndex]);
 
@@ -117,8 +121,35 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
       setCurrentIndex((prev) => (prev - 1 + media.length) % media.length);
     }
     setProgress(0);
+    setCurrentTime(0);
+    setDuration(0);
     lastManualSwitchRef.current = Date.now();
   }, [media.length, settings.shuffle, shuffledOrder, shuffledIndex]);
+
+  // Robust play/pause toggle directly bound to user gesture
+  const togglePlayPause = useCallback(() => {
+    const video = videoRef.current;
+    if (currentMedia?.type === 'video' && video) {
+      if (video.paused) {
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              setIsPlaying(true);
+            })
+            .catch((err) => {
+              console.warn('Video play blocked or failed:', err);
+              setIsPlaying(false);
+            });
+        }
+      } else {
+        video.pause();
+        setIsPlaying(false);
+      }
+    } else {
+      setIsPlaying((prev) => !prev);
+    }
+  }, [currentMedia?.type]);
 
   const handlePointerDown = (e: React.PointerEvent) => {
     if (!settings.swipeSwitching) return;
@@ -161,19 +192,19 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
     }
   };
 
+  // Fullscreen support
   useEffect(() => {
     const enterFullscreen = async () => {
       try {
         const appWindow = getCurrentWindow();
         await appWindow.setFullscreen(true);
       } catch (tauriError) {
-        console.warn('Tauri fullscreen failed, falling back to Web API:', tauriError);
         try {
           if (!document.fullscreenElement) {
             await document.documentElement.requestFullscreen();
           }
         } catch (webError) {
-          console.warn('Web fullscreen also failed:', webError);
+          console.warn('Fullscreen entry failed:', webError);
         }
       }
     };
@@ -200,14 +231,17 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
     };
   }, [onExit]);
 
+  // Controls auto-hide
   useEffect(() => {
     if (controlsTimeoutRef.current) {
       clearTimeout(controlsTimeoutRef.current);
     }
     if (showControls) {
       controlsTimeoutRef.current = window.setTimeout(() => {
-        setShowControls(false);
-      }, 3000);
+        if (!isScrubbingRef.current) {
+          setShowControls(false);
+        }
+      }, 3500);
     }
 
     return () => {
@@ -215,8 +249,9 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
         clearTimeout(controlsTimeoutRef.current);
       }
     };
-  }, [showControls]);
+  }, [showControls, isScrubbing]);
 
+  // Slideshow auto-advance for images
   useEffect(() => {
     if (!isPlaying || !currentMedia || currentMedia.type !== 'image') {
       return;
@@ -229,53 +264,38 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
     return () => clearTimeout(timer);
   }, [isPlaying, currentIndex, settings.slideInterval, goToNext, currentMedia]);
 
+  // Handle video element play state when current media or isPlaying changes
   useEffect(() => {
     const video = videoRef.current;
     if (currentMedia?.type === 'video' && video) {
+      video.volume = settings.volume ?? 0.3;
       if (isPlaying) {
-        video.play().catch(err => {
-          console.warn('Auto-play blocked or failed:', err);
+        video.play().catch((err) => {
+          console.warn('Video play prevented:', err);
         });
       } else {
         video.pause();
       }
     }
-    return () => {
-      if (video) {
-        video.pause();
-      }
-    };
-  }, [isPlaying, currentMedia?.url]);
+  }, [isPlaying, currentMedia?.url, settings.volume]);
 
-  const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
-    const video = e.currentTarget;
-    if (video.duration) {
-      setProgress((video.currentTime / video.duration) * 100);
-    }
-  };
-
+  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       switch (e.key) {
         case 'ArrowDown':
-          e.preventDefault();
-          goToNext();
-          break;
         case 'ArrowRight':
           e.preventDefault();
           goToNext();
           break;
         case 'ArrowLeft':
-          e.preventDefault();
-          goToPrev();
-          break;
         case 'ArrowUp':
           e.preventDefault();
           goToPrev();
           break;
         case ' ':
           e.preventDefault();
-          setIsPlaying((prev) => !prev);
+          togglePlayPause();
           break;
         case 'Escape':
           onExit();
@@ -285,11 +305,79 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [goToNext, goToPrev, onExit]);
+  }, [goToNext, goToPrev, togglePlayPause, onExit]);
 
   const handleContainerClick = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest('.player-controls')) return;
     setShowControls((prev) => !prev);
+  };
+
+  // Video progress bar scrubbing logic
+  const calculateProgressFromPointer = (clientX: number) => {
+    const bar = progressBarRef.current;
+    if (!bar) return 0;
+    const rect = bar.getBoundingClientRect();
+    const clickX = clientX - rect.left;
+    return Math.max(0, Math.min(1, clickX / rect.width));
+  };
+
+  const handleProgressBarPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const video = videoRef.current;
+    if (!video || !video.duration) return;
+
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {}
+
+    isScrubbingRef.current = true;
+    setIsScrubbing(true);
+
+    const ratio = calculateProgressFromPointer(e.clientX);
+    const targetTime = ratio * video.duration;
+    video.currentTime = targetTime;
+    setCurrentTime(targetTime);
+    setProgress(ratio * 100);
+    setScrubPercent(ratio * 100);
+  };
+
+  const handleProgressBarPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isScrubbingRef.current) return;
+    e.stopPropagation();
+    const video = videoRef.current;
+    if (!video || !video.duration) return;
+
+    const ratio = calculateProgressFromPointer(e.clientX);
+    const targetTime = ratio * video.duration;
+    video.currentTime = targetTime;
+    setCurrentTime(targetTime);
+    setProgress(ratio * 100);
+    setScrubPercent(ratio * 100);
+  };
+
+  const handleProgressBarPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isScrubbingRef.current) return;
+    e.stopPropagation();
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch {}
+
+    isScrubbingRef.current = false;
+    setIsScrubbing(false);
+    setScrubPercent(null);
+
+    const video = videoRef.current;
+    if (video && isPlaying && video.paused) {
+      video.play().catch((err) => console.warn('Resume play after scrub failed:', err));
+    }
+  };
+
+  const formatTime = (seconds: number) => {
+    if (isNaN(seconds) || seconds < 0) return '00:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
   if (!currentMedia) {
@@ -328,9 +416,11 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
     },
   };
 
+  const activePercent = scrubPercent !== null ? scrubPercent : progress;
+
   return (
     <div
-      className="fixed inset-0 bg-black z-[100] overflow-hidden cursor-none touch-none"
+      className="fixed inset-0 bg-black z-[100] overflow-hidden select-none touch-none"
       style={{ cursor: showControls ? 'default' : 'none' }}
       onClick={handleContainerClick}
       onPointerDown={handlePointerDown}
@@ -346,9 +436,10 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
             initial="initial"
             animate="animate"
             exit="exit"
-            transition={settings.swipeSwitching
-              ? { duration: 0.45, ease: [0.25, 1, 0.5, 1] }
-              : { duration: 0.5, ease: "easeInOut" }
+            transition={
+              settings.swipeSwitching
+                ? { duration: 0.45, ease: [0.25, 1, 0.5, 1] }
+                : { duration: 0.5, ease: 'easeInOut' }
             }
             className="w-full h-full"
           >
@@ -356,17 +447,40 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
               <img
                 src={currentMedia.url}
                 alt={currentMedia.title || ''}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover pointer-events-none"
                 draggable={false}
               />
             ) : (
               <video
                 key={currentMedia.url}
-                ref={videoRef}
+                ref={(el) => {
+                  videoRef.current = el;
+                }}
                 src={currentMedia.url}
                 className="w-full h-full object-cover"
                 playsInline
-                onTimeUpdate={handleTimeUpdate}
+                onPlay={() => setIsPlaying(true)}
+                onPause={() => {
+                  if (!isScrubbingRef.current) {
+                    setIsPlaying(false);
+                  }
+                }}
+                onLoadedMetadata={(e) => {
+                  const vid = e.currentTarget;
+                  setDuration(vid.duration || 0);
+                  vid.volume = settings.volume ?? 0.3;
+                  if (isPlaying) {
+                    vid.play().catch((err) => console.warn('Autoplay on metadata failed:', err));
+                  }
+                }}
+                onTimeUpdate={(e) => {
+                  if (isScrubbingRef.current) return;
+                  const vid = e.currentTarget;
+                  setCurrentTime(vid.currentTime);
+                  if (vid.duration) {
+                    setProgress((vid.currentTime / vid.duration) * 100);
+                  }
+                }}
                 onEnded={goToNext}
                 draggable={false}
               />
@@ -384,14 +498,20 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
             className="player-controls absolute inset-0 pointer-events-none"
           >
             {/* Top Bar */}
-            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black/60 to-transparent p-8 flex justify-between items-start pointer-events-auto">
+            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black/70 via-black/30 to-transparent p-8 flex justify-between items-start pointer-events-auto">
               <div className="text-white">
                 <h3 className="text-xl font-medium drop-shadow-md">{currentMedia.title || ''}</h3>
-                <p className="text-sm text-white/60">{currentIndex + 1} / {media.length}</p>
+                <p className="text-sm text-white/60">
+                  {currentIndex + 1} / {media.length}
+                </p>
               </div>
               <button
-                onClick={(e) => { e.stopPropagation(); onExit(); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onExit();
+                }}
                 className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all group"
+                title={t('frame.exitFullscreen')}
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -400,14 +520,33 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
             </div>
 
             {/* Bottom Controls */}
-            <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-black/60 to-transparent p-8 flex flex-col items-center justify-end pointer-events-auto">
-              {/* Progress Bar for Video */}
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6 sm:p-8 flex flex-col items-center justify-end pointer-events-auto">
+              {/* Progress Bar for Video with Drag Scrubbing */}
               {currentMedia.type === 'video' && (
-                <div className="w-full max-w-4xl mb-8 px-4">
-                  <div className="h-1.5 bg-white/20 rounded-full overflow-hidden group/progress cursor-pointer relative">
-                    <motion.div
-                      className="absolute inset-y-0 left-0 bg-white"
-                      style={{ width: `${progress}%` }}
+                <div className="w-full max-w-4xl mb-6 px-4">
+                  <div className="flex items-center justify-between text-xs text-white/70 font-mono mb-1.5 px-0.5 select-none">
+                    <span>{formatTime(currentTime)}</span>
+                    <span>{formatTime(duration)}</span>
+                  </div>
+                  <div
+                    ref={progressBarRef}
+                    className="h-6 flex items-center cursor-pointer group/progress relative touch-none"
+                    onPointerDown={handleProgressBarPointerDown}
+                    onPointerMove={handleProgressBarPointerMove}
+                    onPointerUp={handleProgressBarPointerUp}
+                    onPointerCancel={handleProgressBarPointerUp}
+                  >
+                    {/* Track Background */}
+                    <div className="w-full h-1.5 group-hover/progress:h-2 bg-white/25 rounded-full overflow-hidden transition-all relative">
+                      <div
+                        className="h-full bg-accent rounded-full"
+                        style={{ width: `${activePercent}%` }}
+                      />
+                    </div>
+                    {/* Draggable Scrubber Knob */}
+                    <div
+                      className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 bg-white rounded-full shadow-lg pointer-events-none transition-transform group-hover/progress:scale-125"
+                      style={{ left: `${activePercent}%` }}
                     />
                   </div>
                 </div>
@@ -416,8 +555,12 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
               {/* Control Buttons */}
               <div className="flex items-center gap-8">
                 <button
-                  onClick={(e) => { e.stopPropagation(); goToPrev(); }}
-                  className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    goToPrev();
+                  }}
+                  className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all active:scale-95"
+                  title={t('frame.previous')}
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -425,8 +568,12 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
                 </button>
 
                 <button
-                  onClick={(e) => { e.stopPropagation(); setIsPlaying(!isPlaying); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    togglePlayPause();
+                  }}
                   className="w-20 h-20 rounded-full bg-white text-black hover:scale-105 active:scale-95 flex items-center justify-center transition-all shadow-xl"
+                  title={isPlaying ? t('frame.pause') : t('frame.play')}
                 >
                   {isPlaying ? (
                     <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
@@ -440,8 +587,12 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
                 </button>
 
                 <button
-                  onClick={(e) => { e.stopPropagation(); goToNext(); }}
-                  className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    goToNext();
+                  }}
+                  className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all active:scale-95"
+                  title={t('frame.next')}
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -449,9 +600,9 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
                 </button>
               </div>
 
-              {/* Indicators */}
-              <div className="flex gap-2.5 mt-8">
-                {media.map((_, index) => (
+              {/* Media Index Indicators */}
+              <div className="flex gap-2 mt-6 max-w-xl overflow-hidden py-1">
+                {media.slice(0, 30).map((_, index) => (
                   <button
                     key={index}
                     onClick={(e) => {
@@ -464,9 +615,12 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
                       }
                       setCurrentIndex(index);
                       setProgress(0);
+                      setCurrentTime(0);
+                      setDuration(0);
                     }}
-                    className={`h-1.5 rounded-full transition-all duration-500 ${index === currentIndex ? 'bg-white w-8' : 'bg-white/30 w-1.5'
-                      }`}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                      index === currentIndex ? 'bg-white w-8' : 'bg-white/30 w-1.5 hover:bg-white/50'
+                    }`}
                   />
                 ))}
               </div>
@@ -474,8 +628,6 @@ export default function FullscreenPlayer({ media, settings, onExit, onDelete, st
           </motion.div>
         )}
       </AnimatePresence>
-
-      <audio ref={audioRef} loop />
     </div>
   );
 }

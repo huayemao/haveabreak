@@ -9,6 +9,7 @@ import { useTranslations } from 'next-intl';
 import 'yet-another-react-lightbox/styles.css';
 import MediaCard from './MediaCard';
 import { useScrollLock } from '../utils/useScrollLock';
+import { downloadMediaFile } from '../storage';
 
 interface MediaGalleryProps {
   media: MediaItem[];
@@ -85,16 +86,8 @@ export default function MediaGallery({
 
   const handleDownload = async (item: MediaItem) => {
     try {
-      const response = await fetch(item.url);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = item.title || `media-${item.id}.${item.type === 'image' ? 'jpg' : 'mp4'}`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      const filename = item.title ? `${item.title}.${item.type === 'image' ? 'jpg' : 'mp4'}` : `media-${item.id}.${item.type === 'image' ? 'jpg' : 'mp4'}`;
+      await downloadMediaFile(item.url, filename);
     } catch (error) {
       console.error('Download failed:', error);
     }

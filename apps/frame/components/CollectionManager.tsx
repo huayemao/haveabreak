@@ -17,7 +17,7 @@ interface CollectionManagerProps {
   media: MediaItem[];
   selectedCollectionId: string | null;
   onSelect: (id: string | null) => void;
-  onCreate: (name: string, description?: string, mediaIds?: string[]) => void;
+  onCreate: (name: string, description?: string, mediaIds?: string[], slideInterval?: number) => void;
   onUpdate: (id: string, updates: Partial<Collection>) => void;
   onDelete: (id: string) => void;
   onShare: (collection: Collection) => void;
@@ -78,17 +78,18 @@ export default function CollectionManager({
 
   const closeModal = () => updateUrl({ modal: null, editId: null });
 
-  const handleCreate = (name: string, description: string, mediaIds: string[]) => {
-    onCreate(name, description || undefined, mediaIds);
+  const handleCreate = (name: string, description: string, mediaIds: string[], slideInterval: number) => {
+    onCreate(name, description || undefined, mediaIds, slideInterval);
     closeModal();
   };
 
-  const handleUpdate = (name: string, description: string, mediaIds: string[]) => {
+  const handleUpdate = (name: string, description: string, mediaIds: string[], slideInterval: number) => {
     if (editingCollection) {
       onUpdate(editingCollection.id, {
         name,
         description: description || undefined,
         mediaIds,
+        slideInterval,
       });
       closeModal();
     }

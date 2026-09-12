@@ -3,6 +3,7 @@ import { useFrameStore } from '@haveabreak/frame/store';
 import { useSearchParams } from 'next/navigation';
 import { useRouter, usePathname } from '@/i18n/routing';
 import { startSlideshow, filterMediaByOrientation } from '@haveabreak/frame/utils/playerUtils';
+import { downloadMediaFile } from '@haveabreak/frame/storage';
 import { useEffect, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import MediaThumbnail from '@haveabreak/frame/components/MediaThumbnail';
@@ -185,16 +186,8 @@ export default function FeedPageClient() {
 
   const handleDownload = async (item: MediaItem) => {
     try {
-      const response = await fetch(item.url);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = item.title || `media-${item.id}.${item.type === 'image' ? 'jpg' : 'mp4'}`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      const filename = item.title ? `${item.title}.${item.type === 'image' ? 'jpg' : 'mp4'}` : `media-${item.id}.${item.type === 'image' ? 'jpg' : 'mp4'}`;
+      await downloadMediaFile(item.url, filename);
     } catch (error) {
       console.error('Download failed:', error);
     }
