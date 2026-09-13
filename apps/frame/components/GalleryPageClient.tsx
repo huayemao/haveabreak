@@ -2,7 +2,7 @@
 import { useFrameStore } from '@haveabreak/frame/store';
 import MediaGallery from '@haveabreak/frame/components/MediaGallery';
 import { useSearchParams } from 'next/navigation';
-import { useRouter, usePathname } from 'i18n/routing';
+import { useRouter, usePathname } from '@/i18n/routing';
 import { startSlideshow } from '@haveabreak/frame/utils/playerUtils';
 import { useCallback } from 'react';
 

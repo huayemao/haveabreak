@@ -26,6 +26,7 @@
   "title": "标题",
   "description": "描述",
   "slideInterval": "切换间隔（秒）",
+  "transitionDuration": "自动淡入淡出时长",
   "autoPlay": "自动播放",
   "shuffle": "随机播放",
   "sequential": "顺序播放",

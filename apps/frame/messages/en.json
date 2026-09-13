@@ -26,6 +26,7 @@
   "title": "Title",
   "description": "Description",
   "slideInterval": "Slide Interval (seconds)",
+  "transitionDuration": "Auto Fade Duration",
   "autoPlay": "Auto Play",
   "shuffle": "Shuffle",
   "sequential": "Sequential",

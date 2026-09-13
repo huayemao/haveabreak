@@ -33,6 +33,7 @@ export interface Collection {
 export interface FrameSettings {
   autoPlay: boolean;
   slideInterval: number;
+  transitionDuration: number;
   showInfo: boolean;
   shuffle: boolean;
   filterByOrientation: boolean;
@@ -50,4 +51,5 @@ export interface FrameSubscriptionConfig {
 }
 
 export const DEFAULT_SLIDE_INTERVAL = 5000;
+export const DEFAULT_TRANSITION_DURATION = 800;
 export const DEFAULT_VOLUME = 0.3;

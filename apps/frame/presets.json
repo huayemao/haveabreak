@@ -114,6 +114,7 @@
     "filterByOrientation": true,
     "backgroundMusicEnabled": false,
     "volume": 0.3,
-    "swipeSwitching": false
+    "swipeSwitching": false,
+    "transitionDuration": 800
   }
 }

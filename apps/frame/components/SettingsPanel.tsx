@@ -92,7 +92,7 @@ export default function SettingsPanel({
         <h2 className="text-xl font-bold text-fg-primary">{t('frame.settings')}</h2>
       </div>
 
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="w-full">
+      <Tabs value={activeTab} onValueChange={(v: string) => setActiveTab(v as any)} className="w-full">
         <TabsList className="w-full mb-4">
           <TabsTrigger value="basic" className="flex-1 gap-1.5 font-bold text-xs">
             <Sliders className="w-3.5 h-3.5" />
@@ -153,7 +153,7 @@ export default function SettingsPanel({
             </label>
             <Slider
               value={[Math.round(settings.slideInterval / 1000)]}
-              onValueChange={([value]) => updateSetting('slideInterval', value * 1000)}
+              onValueChange={([value]: number[]) => updateSetting('slideInterval', value * 1000)}
               min={3}
               max={60}
               step={1}
@@ -167,11 +167,29 @@ export default function SettingsPanel({
 
           <div className="p-4 rounded-[32px] bg-bg-elevated shadow-extruded border border-white/5">
             <label className="block font-medium text-fg-primary mb-3">
+              {t('frame.transitionDuration')}: {((settings.transitionDuration || 800) / 1000).toFixed(1)}s
+            </label>
+            <Slider
+              value={[Math.round((settings.transitionDuration || 800) / 100) / 10]}
+              onValueChange={([value]: number[]) => updateSetting('transitionDuration', Math.round(value * 1000))}
+              min={0.2}
+              max={3.0}
+              step={0.1}
+              className="w-full"
+            />
+            <div className="flex justify-between text-xs text-fg-muted mt-1">
+              <span>0.2s</span>
+              <span>3.0s</span>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-[32px] bg-bg-elevated shadow-extruded border border-white/5">
+            <label className="block font-medium text-fg-primary mb-3">
               {t('frame.volume')}: {Math.round(settings.volume * 100)}%
             </label>
             <Slider
               value={[Math.round(settings.volume * 100)]}
-              onValueChange={([value]) => updateSetting('volume', value / 100)}
+              onValueChange={([value]: number[]) => updateSetting('volume', value / 100)}
               min={0}
               max={100}
               step={1}
@@ -197,28 +215,28 @@ export default function SettingsPanel({
             activeDiff={subscriptionDiff}
             isCheckingAll={isCheckingAllSubscriptions}
             checkingId={currentCheckingSubscriptionId}
-            onAddSubscription={async ({ name, url, syncStrategy }) => {
+            onAddSubscription={async ({ name, url, syncStrategy }: any) => {
               addSubscription(name, url, syncStrategy);
               toast.success(t('common.subscriptionAdded', { defaultValue: 'Subscription added!' }));
             }}
-            onUpdateSubscription={async (id, updates) => {
+            onUpdateSubscription={async (id: string, updates: any) => {
               updateSubscription(id, updates);
               toast.success(t('common.subscriptionUpdated', { defaultValue: 'Subscription updated!' }));
             }}
-            onDeleteSubscription={async (id) => {
+            onDeleteSubscription={async (id: string) => {
               deleteSubscription(id);
               toast.success(t('common.subscriptionDeleted', { defaultValue: 'Subscription deleted!' }));
             }}
-            onToggleSubscription={(id, enabled) => {
+            onToggleSubscription={(id: string, enabled: boolean) => {
               toggleSubscription(id, enabled);
             }}
-            onCheckSubscription={async (id) => {
+            onCheckSubscription={async (id: string) => {
               await checkSubscription(id);
             }}
             onCheckAll={async () => {
               await checkAllSubscriptions();
             }}
-            onApplyDiff={(diff) => {
+            onApplyDiff={(diff: any) => {
               applySubscriptionDiff(diff);
               toast.success(t('common.updateApplied', { defaultValue: 'Updates applied successfully!' }));
             }}

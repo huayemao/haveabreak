@@ -1,12 +1,14 @@
+'use client';
+
 import { useTranslations } from 'next-intl';
 import { useScrollLock } from '../utils/useScrollLock';
-import { AnimatePresence, motion } from 'motion/react';
-import { useRouter, usePathname } from 'i18n/routing';
+import { useRouter, usePathname } from '@/i18n/routing';
 import { useSearchParams } from 'next/navigation';
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { MediaItem, FrameSettings } from '../types';
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import { getVideoThumbnail, generateVideoPoster, TRANSPARENT_POSTER } from '../utils/videoThumbnail';
+import PlayerViewport from './player/PlayerViewport';
+import PlayerControls from './player/PlayerControls';
 
 interface FullscreenPlayerProps {
   media: MediaItem[];
@@ -57,8 +59,7 @@ export default function FullscreenPlayer({
   const [isScrubbing, setIsScrubbing] = useState(false);
   const [scrubPercent, setScrubPercent] = useState<number | null>(null);
   const [direction, setDirection] = useState<'next' | 'prev'>('next');
-  const [videoThumbnail, setVideoThumbnail] = useState<string | null>(null);
-  const [isVideoReady, setIsVideoReady] = useState(false);
+  const [transitionType, setTransitionType] = useState<'slide' | 'fade'>('fade');
   const [isAutoplayMuted, setIsAutoplayMuted] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -66,9 +67,6 @@ export default function FullscreenPlayer({
   const isScrubbingRef = useRef(false);
   const controlsTimeoutRef = useRef<number | null>(null);
   const lastManualSwitchRef = useRef<number>(0);
-
-  const dragStartRef = useRef<{ x: number; y: number } | null>(null);
-  const lastSwitchTimeRef = useRef<number>(0);
 
   // Lock body scroll when player is open
   useScrollLock();
@@ -87,118 +85,132 @@ export default function FullscreenPlayer({
 
   const currentMedia = media[currentIndex] || media[0];
 
-  // Preload and retrieve video thumbnail and reset ready state on slide switch
-  useEffect(() => {
-    setIsVideoReady(false);
-    setIsAutoplayMuted(false);
+  // Calculate prev and next indices for 3-slot viewport
+  const prevIndex = useMemo(() => {
+    if (media.length <= 1) return 0;
+    if (settings.shuffle) {
+      return shuffledOrder[(shuffledIndex - 1 + media.length) % media.length];
+    }
+    return (currentIndex - 1 + media.length) % media.length;
+  }, [media.length, settings.shuffle, shuffledOrder, shuffledIndex, currentIndex]);
 
-    if (currentMedia?.type === 'video') {
-      if (currentMedia.thumbnailUrl) {
-        setVideoThumbnail(currentMedia.thumbnailUrl);
-      } else {
-        let active = true;
-        getVideoThumbnail(currentMedia.url, currentMedia.id).then((url) => {
-          if (active && url) {
-            setVideoThumbnail(url);
-          }
-        });
-        return () => {
-          active = false;
-        };
-      }
-    } else {
-      setVideoThumbnail(null);
+  const nextIndex = useMemo(() => {
+    if (media.length <= 1) return 0;
+    if (settings.shuffle) {
+      return shuffledOrder[(shuffledIndex + 1) % media.length];
+    }
+    return (currentIndex + 1) % media.length;
+  }, [media.length, settings.shuffle, shuffledOrder, shuffledIndex, currentIndex]);
+
+  const prevMedia = media.length > 1 ? media[prevIndex] : null;
+  const nextMedia = media.length > 1 ? media[nextIndex] : null;
+
+  // Clear video ref when current media is an image
+  useEffect(() => {
+    if (currentMedia?.type !== 'video') {
       videoRef.current = null;
     }
-  }, [currentMedia?.url, currentMedia?.id, currentMedia?.type, currentMedia?.thumbnailUrl]);
+    setIsAutoplayMuted(false);
+  }, [currentMedia?.url, currentMedia?.type]);
 
   // Attempt to play video with automatic muted fallback for mobile autoplay policy compliance
-  const attemptPlayVideo = useCallback(async (video: HTMLVideoElement) => {
-    if (!video.paused && !video.ended) return;
-    try {
-      video.volume = settings.volume ?? 0.3;
-      video.muted = false;
-      await video.play();
-      setIsPlaying(true);
-      setIsAutoplayMuted(false);
-    } catch (err: any) {
-      if (err?.name === 'NotAllowedError' || err?.name === 'AbortError') {
+  const attemptPlayVideo = useCallback(
+    async (video: HTMLVideoElement) => {
+      if (!video.paused && !video.ended) return;
+      try {
+        video.volume = settings.volume ?? 0.3;
+        video.muted = false;
+        await video.play();
+        setIsPlaying(true);
+        setIsAutoplayMuted(false);
+      } catch (err: any) {
+        if (err?.name === 'NotAllowedError' || err?.name === 'AbortError') {
+          try {
+            video.muted = true;
+            await video.play();
+            setIsPlaying(true);
+            setIsAutoplayMuted(true);
+          } catch (mutedErr) {
+            console.warn('Muted autoplay failed:', mutedErr);
+          }
+        }
+      }
+    },
+    [settings.volume]
+  );
+
+  const goToNext = useCallback(
+    (type: 'slide' | 'fade' = 'fade') => {
+      if (media.length === 0) return;
+      if (media.length === 1 && currentMedia?.type === 'video' && videoRef.current) {
+        videoRef.current.currentTime = 0;
+        attemptPlayVideo(videoRef.current);
+        return;
+      }
+      if (videoRef.current) {
         try {
-          video.muted = true;
-          await video.play();
-          setIsPlaying(true);
-          setIsAutoplayMuted(true);
-        } catch (mutedErr) {
-          console.warn('Muted autoplay failed:', mutedErr);
-        }
+          videoRef.current.pause();
+        } catch {}
       }
-    }
-  }, [settings.volume]);
-
-  const goToNext = useCallback(() => {
-    if (media.length === 0) return;
-    if (media.length === 1 && currentMedia?.type === 'video' && videoRef.current) {
-      videoRef.current.currentTime = 0;
-      attemptPlayVideo(videoRef.current);
-      return;
-    }
-    if (videoRef.current) {
-      try {
-        videoRef.current.pause();
-      } catch {}
-    }
-    setDirection('next');
-    if (settings.shuffle) {
-      const nextShuffledIndex = (shuffledIndex + 1) % media.length;
-      if (nextShuffledIndex === 0) {
-        const newOrder = media.map((_, index) => index);
-        for (let i = newOrder.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [newOrder[i], newOrder[j]] = [newOrder[j], newOrder[i]];
+      setDirection('next');
+      setTransitionType(type);
+      if (settings.shuffle) {
+        const nextShuffled = (shuffledIndex + 1) % media.length;
+        if (nextShuffled === 0) {
+          const newOrder = media.map((_, index) => index);
+          for (let i = newOrder.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [newOrder[i], newOrder[j]] = [newOrder[j], newOrder[i]];
+          }
+          setShuffledOrder(newOrder);
+          setCurrentIndex(newOrder[0]);
+          setShuffledIndex(0);
+        } else {
+          setCurrentIndex(shuffledOrder[nextShuffled]);
+          setShuffledIndex(nextShuffled);
         }
-        setShuffledOrder(newOrder);
-        setCurrentIndex(newOrder[0]);
-        setShuffledIndex(0);
       } else {
-        setCurrentIndex(shuffledOrder[nextShuffledIndex]);
-        setShuffledIndex(nextShuffledIndex);
+        setCurrentIndex((prev) => (prev + 1) % media.length);
       }
-    } else {
-      setCurrentIndex((prev) => (prev + 1) % media.length);
-    }
-    setProgress(0);
-    setCurrentTime(0);
-    setDuration(0);
-    lastManualSwitchRef.current = Date.now();
-  }, [media.length, currentMedia?.type, settings.shuffle, shuffledOrder, shuffledIndex, attemptPlayVideo]);
+      setProgress(0);
+      setCurrentTime(0);
+      setDuration(0);
+      lastManualSwitchRef.current = Date.now();
+    },
+    [media, currentMedia?.type, settings.shuffle, shuffledOrder, shuffledIndex, attemptPlayVideo]
+  );
 
-  const goToPrev = useCallback(() => {
-    if (media.length === 0) return;
-    if (media.length === 1 && currentMedia?.type === 'video' && videoRef.current) {
-      videoRef.current.currentTime = 0;
-      attemptPlayVideo(videoRef.current);
-      return;
-    }
-    if (videoRef.current) {
-      try {
-        videoRef.current.pause();
-      } catch {}
-    }
-    setDirection('prev');
-    if (settings.shuffle) {
-      const prevShuffledIndex = (shuffledIndex - 1 + media.length) % media.length;
-      setShuffledIndex(prevShuffledIndex);
-      setCurrentIndex(shuffledOrder[prevShuffledIndex]);
-    } else {
-      setCurrentIndex((prev) => (prev - 1 + media.length) % media.length);
-    }
-    setProgress(0);
-    setCurrentTime(0);
-    setDuration(0);
-    lastManualSwitchRef.current = Date.now();
-  }, [media.length, currentMedia?.type, settings.shuffle, shuffledOrder, shuffledIndex, attemptPlayVideo]);
+  const goToPrev = useCallback(
+    (type: 'slide' | 'fade' = 'fade') => {
+      if (media.length === 0) return;
+      if (media.length === 1 && currentMedia?.type === 'video' && videoRef.current) {
+        videoRef.current.currentTime = 0;
+        attemptPlayVideo(videoRef.current);
+        return;
+      }
+      if (videoRef.current) {
+        try {
+          videoRef.current.pause();
+        } catch {}
+      }
+      setDirection('prev');
+      setTransitionType(type);
+      if (settings.shuffle) {
+        const prevShuffled = (shuffledIndex - 1 + media.length) % media.length;
+        setShuffledIndex(prevShuffled);
+        setCurrentIndex(shuffledOrder[prevShuffled]);
+      } else {
+        setCurrentIndex((prev) => (prev - 1 + media.length) % media.length);
+      }
+      setProgress(0);
+      setCurrentTime(0);
+      setDuration(0);
+      lastManualSwitchRef.current = Date.now();
+    },
+    [media, currentMedia?.type, settings.shuffle, shuffledOrder, shuffledIndex, attemptPlayVideo]
+  );
 
-  // Robust play/pause toggle directly bound to user gesture
+  // Play/pause toggle
   const togglePlayPause = useCallback(() => {
     const video = videoRef.current;
     if (currentMedia?.type === 'video' && video) {
@@ -218,54 +230,13 @@ export default function FullscreenPlayer({
     }
   }, [currentMedia?.type, isAutoplayMuted, attemptPlayVideo, settings.volume]);
 
-  const handlePointerDown = (e: React.PointerEvent) => {
-    if (!settings.swipeSwitching) return;
-    if ((e.target as HTMLElement).closest('.player-controls')) return;
-    dragStartRef.current = { x: e.clientX, y: e.clientY };
-  };
-
-  const handlePointerUp = (e: React.PointerEvent) => {
-    if (!settings.swipeSwitching || !dragStartRef.current) return;
-    const deltaY = e.clientY - dragStartRef.current.y;
-    const deltaX = e.clientX - dragStartRef.current.x;
-    dragStartRef.current = null;
-
-    const swipeThreshold = 55;
-    if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > swipeThreshold) {
-      const now = Date.now();
-      if (now - lastSwitchTimeRef.current < 450) return;
-      lastSwitchTimeRef.current = now;
-
-      if (deltaY < 0) {
-        goToNext();
-      } else {
-        goToPrev();
-      }
-    }
-  };
-
-  const handleWheel = (e: React.WheelEvent) => {
-    if (!settings.swipeSwitching) return;
-    const now = Date.now();
-    if (now - lastSwitchTimeRef.current < 650) return;
-
-    if (Math.abs(e.deltaY) > 30) {
-      lastSwitchTimeRef.current = now;
-      if (e.deltaY > 0) {
-        goToNext();
-      } else {
-        goToPrev();
-      }
-    }
-  };
-
   // Fullscreen support
   useEffect(() => {
     const enterFullscreen = async () => {
       try {
         const appWindow = getCurrentWindow();
         await appWindow.setFullscreen(true);
-      } catch (tauriError) {
+      } catch {
         try {
           if (!document.fullscreenElement) {
             await document.documentElement.requestFullscreen();
@@ -325,7 +296,7 @@ export default function FullscreenPlayer({
     }
 
     const timer = setTimeout(() => {
-      goToNext();
+      goToNext('fade');
     }, settings.slideInterval);
 
     return () => clearTimeout(timer);
@@ -350,12 +321,12 @@ export default function FullscreenPlayer({
         case 'ArrowDown':
         case 'ArrowRight':
           e.preventDefault();
-          goToNext();
+          goToNext('slide');
           break;
         case 'ArrowLeft':
         case 'ArrowUp':
           e.preventDefault();
-          goToPrev();
+          goToPrev('slide');
           break;
         case ' ':
           e.preventDefault();
@@ -371,12 +342,7 @@ export default function FullscreenPlayer({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [goToNext, goToPrev, togglePlayPause, onExit]);
 
-  const handleContainerClick = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest('.player-controls')) return;
-    setShowControls((prev) => !prev);
-  };
-
-  // Video progress bar scrubbing logic
+  // Scrubbing logic
   const calculateProgressFromPointer = (clientX: number) => {
     const bar = progressBarRef.current;
     if (!bar) return 0;
@@ -437,11 +403,83 @@ export default function FullscreenPlayer({
     }
   };
 
-  const formatTime = (seconds: number) => {
-    if (isNaN(seconds) || seconds < 0) return '00:00';
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  const handleVideoCallbackRef = useCallback((el: HTMLVideoElement | null) => {
+    if (el) {
+      videoRef.current = el;
+    }
+  }, []);
+
+  const handleVideoPause = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    if (videoRef.current && e.currentTarget !== videoRef.current) {
+      return;
+    }
+    if (
+      e.currentTarget.ended ||
+      (e.currentTarget.duration > 0 && e.currentTarget.currentTime >= e.currentTarget.duration - 0.5)
+    ) {
+      return;
+    }
+    if (Date.now() - lastManualSwitchRef.current < 800) {
+      return;
+    }
+    if (isScrubbingRef.current) {
+      return;
+    }
+    setIsPlaying(false);
+  };
+
+  const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const vid = e.currentTarget;
+    setDuration(vid.duration || 0);
+    if (isPlaying && vid.paused) {
+      attemptPlayVideo(vid);
+    }
+  };
+
+  const handleCanPlay = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const vid = e.currentTarget;
+    if (isPlaying && vid.paused) {
+      attemptPlayVideo(vid);
+    }
+  };
+
+  const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    if (isScrubbingRef.current) return;
+    const vid = e.currentTarget;
+    setCurrentTime(vid.currentTime);
+    if (vid.duration) {
+      setProgress((vid.currentTime / vid.duration) * 100);
+    }
+  };
+
+  const handleVideoEnded = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    if (videoRef.current && e.currentTarget !== videoRef.current) {
+      return;
+    }
+    setIsPlaying(true);
+    goToNext('fade');
+  };
+
+  const handleSelectIndex = (index: number) => {
+    if (settings.shuffle) {
+      const targetShuffled = shuffledOrder.indexOf(index);
+      if (targetShuffled >= 0) {
+        setShuffledIndex(targetShuffled);
+      }
+    }
+    setTransitionType('fade');
+    setCurrentIndex(index);
+    setProgress(0);
+    setCurrentTime(0);
+    setDuration(0);
+  };
+
+  const handleUnmute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = false;
+      videoRef.current.volume = settings.volume ?? 0.3;
+      setIsAutoplayMuted(false);
+    }
   };
 
   if (!currentMedia) {
@@ -452,325 +490,60 @@ export default function FullscreenPlayer({
     );
   }
 
-  const variants = {
-    initial: (dir: 'next' | 'prev') => {
-      if (settings.swipeSwitching) {
-        return {
-          y: dir === 'next' ? '100%' : '-100%',
-          opacity: 1,
-          scale: 1,
-        };
-      }
-      return { opacity: 0, scale: 1.02, y: 0 };
-    },
-    animate: {
-      y: 0,
-      scale: 1,
-      opacity: 1,
-    },
-    exit: (dir: 'next' | 'prev') => {
-      if (settings.swipeSwitching) {
-        return {
-          y: dir === 'next' ? '-100%' : '100%',
-          opacity: 1,
-          scale: 1,
-        };
-      }
-      return { opacity: 0, scale: 0.98, y: 0 };
-    },
-  };
-
-  const activePercent = scrubPercent !== null ? scrubPercent : progress;
-
   return (
     <div
       className="fixed inset-0 bg-black z-[100] overflow-hidden select-none touch-none"
       style={{ cursor: showControls ? 'default' : 'none' }}
-      onClick={handleContainerClick}
-      onPointerDown={handlePointerDown}
-      onPointerUp={handlePointerUp}
-      onWheel={handleWheel}
     >
-      <div className="absolute inset-0">
-        <AnimatePresence custom={direction} mode="popLayout">
-          <motion.div
-            key={currentMedia.url}
-            custom={direction}
-            variants={variants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={
-              settings.swipeSwitching
-                ? { duration: 0.45, ease: [0.25, 1, 0.5, 1] }
-                : { duration: 0.5, ease: 'easeInOut' }
-            }
-            className="w-full h-full"
-          >
-            {currentMedia.type === 'image' ? (
-              <img
-                src={currentMedia.url}
-                alt={currentMedia.title || ''}
-                className="w-full h-full object-cover pointer-events-none"
-                draggable={false}
-              />
-            ) : (
-              <div className="relative w-full h-full overflow-hidden">
-                <video
-                  key={currentMedia.url}
-                  ref={(el) => {
-                    if (el) {
-                      videoRef.current = el;
-                    }
-                  }}
-                  src={currentMedia.url}
-                  poster={videoThumbnail || currentMedia.thumbnailUrl || TRANSPARENT_POSTER}
-                  preload="auto"
-                  autoPlay={isPlaying}
-                  className="w-full h-full object-cover"
-                  playsInline
-                  onPlay={() => {
-                    setIsPlaying(true);
-                    setIsVideoReady(true);
-                  }}
-                  onPlaying={() => {
-                    setIsPlaying(true);
-                    setIsVideoReady(true);
-                  }}
-                  onLoadedData={() => {
-                    setIsVideoReady(true);
-                  }}
-                  onPause={(e) => {
-                    // Ignore pause from an old exiting video element
-                    if (videoRef.current && e.currentTarget !== videoRef.current) {
-                      return;
-                    }
-                    // Ignore pause when video ended or reached the end of playback (auto-advancing)
-                    if (
-                      e.currentTarget.ended ||
-                      (e.currentTarget.duration > 0 &&
-                        e.currentTarget.currentTime >= e.currentTarget.duration - 0.5)
-                    ) {
-                      return;
-                    }
-                    // Ignore pause right after switching slides (e.g. pausing the old video)
-                    if (Date.now() - lastManualSwitchRef.current < 800) {
-                      return;
-                    }
-                    // Ignore pause while scrubbing
-                    if (isScrubbingRef.current) {
-                      return;
-                    }
-                    setIsPlaying(false);
-                  }}
-                  onLoadedMetadata={(e) => {
-                    const vid = e.currentTarget;
-                    setDuration(vid.duration || 0);
-                    if (isPlaying && vid.paused) {
-                      attemptPlayVideo(vid);
-                    }
-                  }}
-                  onCanPlay={(e) => {
-                    const vid = e.currentTarget;
-                    if (isPlaying && vid.paused) {
-                      attemptPlayVideo(vid);
-                    }
-                  }}
-                  onTimeUpdate={(e) => {
-                    if (isScrubbingRef.current) return;
-                    const vid = e.currentTarget;
-                    setCurrentTime(vid.currentTime);
-                    if (vid.duration) {
-                      setProgress((vid.currentTime / vid.duration) * 100);
-                    }
-                  }}
-                  onEnded={(e) => {
-                    if (videoRef.current && e.currentTarget !== videoRef.current) {
-                      return;
-                    }
-                    setIsPlaying(true);
-                    goToNext();
-                  }}
-                  draggable={false}
-                />
-                {/* Poster / Cover Layer to ensure zero native Android placeholder or black flash */}
-                <div
-                  className={`absolute inset-0 transition-opacity duration-500 pointer-events-none ${
-                    isVideoReady ? 'opacity-0' : 'opacity-100'
-                  }`}
-                >
-                  <img
-                    src={videoThumbnail || currentMedia.thumbnailUrl || generateVideoPoster(currentMedia.title)}
-                    alt={currentMedia.title || ''}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
-            )}
-          </motion.div>
-        </AnimatePresence>
-      </div>
+      {/* 3-Slot Viewport: Handles gesture tracking, peek previews above/below, and natural cross-fade */}
+      <PlayerViewport
+        media={media}
+        currentIndex={currentIndex}
+        prevIndex={prevIndex}
+        nextIndex={nextIndex}
+        currentMedia={currentMedia}
+        prevMedia={prevMedia}
+        nextMedia={nextMedia}
+        transitionType={transitionType}
+        transitionDuration={settings.transitionDuration || 800}
+        swipeEnabled={settings.swipeSwitching}
+        isPlaying={isPlaying}
+        videoRef={handleVideoCallbackRef}
+        isAutoplayMuted={isAutoplayMuted}
+        onUnmute={handleUnmute}
+        onSlideNext={() => goToNext('slide')}
+        onSlidePrev={() => goToPrev('slide')}
+        onContainerClick={() => setShowControls((prev) => !prev)}
+        onPlay={() => setIsPlaying(true)}
+        onPlaying={() => setIsPlaying(true)}
+        onPause={handleVideoPause}
+        onLoadedMetadata={handleLoadedMetadata}
+        onCanPlay={handleCanPlay}
+        onTimeUpdate={handleTimeUpdate}
+        onEnded={handleVideoEnded}
+      />
 
-      {/* Tap to Unmute Button for Mobile Autoplay */}
-      {isAutoplayMuted && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            if (videoRef.current) {
-              videoRef.current.muted = false;
-              videoRef.current.volume = settings.volume ?? 0.3;
-              setIsAutoplayMuted(false);
-            }
-          }}
-          className="absolute bottom-24 sm:bottom-28 left-1/2 -translate-x-1/2 z-30 bg-black/75 hover:bg-black/90 active:scale-95 backdrop-blur-md text-white text-xs sm:text-sm px-4 py-2 rounded-full flex items-center gap-2 shadow-2xl border border-white/20 transition-all pointer-events-auto cursor-pointer"
-        >
-          <svg className="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
-          </svg>
-          <span>{t('frame.tapToUnmute') || '点击开启声音'}</span>
-        </button>
-      )}
-
-      <AnimatePresence>
-        {showControls && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="player-controls absolute inset-0 pointer-events-none"
-          >
-            {/* Top Bar */}
-            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black/70 via-black/30 to-transparent p-8 flex justify-between items-start pointer-events-auto">
-              <div className="text-white">
-                <h3 className="text-xl font-medium drop-shadow-md">{currentMedia.title || ''}</h3>
-                <p className="text-sm text-white/60">
-                  {currentIndex + 1} / {media.length}
-                </p>
-              </div>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onExit();
-                }}
-                className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all group"
-                title={t('frame.exitFullscreen')}
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Bottom Controls */}
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6 sm:p-8 flex flex-col items-center justify-end pointer-events-auto">
-              {/* Progress Bar for Video with Drag Scrubbing */}
-              {currentMedia.type === 'video' && (
-                <div className="w-full max-w-4xl mb-6 px-4">
-                  <div className="flex items-center justify-between text-xs text-white/70 font-mono mb-1.5 px-0.5 select-none">
-                    <span>{formatTime(currentTime)}</span>
-                    <span>{formatTime(duration)}</span>
-                  </div>
-                  <div
-                    ref={progressBarRef}
-                    className="h-6 flex items-center cursor-pointer group/progress relative touch-none"
-                    onPointerDown={handleProgressBarPointerDown}
-                    onPointerMove={handleProgressBarPointerMove}
-                    onPointerUp={handleProgressBarPointerUp}
-                    onPointerCancel={handleProgressBarPointerUp}
-                  >
-                    {/* Track Background */}
-                    <div className="w-full h-1.5 group-hover/progress:h-2 bg-white/25 rounded-full overflow-hidden transition-all relative">
-                      <div
-                        className="h-full bg-accent rounded-full"
-                        style={{ width: `${activePercent}%` }}
-                      />
-                    </div>
-                    {/* Draggable Scrubber Knob */}
-                    <div
-                      className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 bg-white rounded-full shadow-lg pointer-events-none transition-transform group-hover/progress:scale-125"
-                      style={{ left: `${activePercent}%` }}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Control Buttons */}
-              <div className="flex items-center gap-8">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    goToPrev();
-                  }}
-                  className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all active:scale-95"
-                  title={t('frame.previous')}
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    togglePlayPause();
-                  }}
-                  className="w-20 h-20 rounded-full bg-white text-black hover:scale-105 active:scale-95 flex items-center justify-center transition-all shadow-xl"
-                  title={isPlaying ? t('frame.pause') : t('frame.play')}
-                >
-                  {isPlaying ? (
-                    <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-                    </svg>
-                  ) : (
-                    <svg className="w-10 h-10 ml-1" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  )}
-                </button>
-
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    goToNext();
-                  }}
-                  className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all active:scale-95"
-                  title={t('frame.next')}
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Media Index Indicators */}
-              <div className="flex gap-2 mt-6 max-w-xl overflow-hidden py-1">
-                {media.slice(0, 30).map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (settings.shuffle) {
-                        const targetShuffledIndex = shuffledOrder.indexOf(index);
-                        if (targetShuffledIndex >= 0) {
-                          setShuffledIndex(targetShuffledIndex);
-                        }
-                      }
-                      setCurrentIndex(index);
-                      setProgress(0);
-                      setCurrentTime(0);
-                      setDuration(0);
-                    }}
-                    className={`h-1.5 rounded-full transition-all duration-300 ${
-                      index === currentIndex ? 'bg-white w-8' : 'bg-white/30 w-1.5 hover:bg-white/50'
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Control Overlay: Top Bar, Video Scrubber, Playback Buttons, Pagination Dots */}
+      <PlayerControls
+        showControls={showControls}
+        media={media}
+        currentMedia={currentMedia}
+        currentIndex={currentIndex}
+        isPlaying={isPlaying}
+        currentTime={currentTime}
+        duration={duration}
+        progress={progress}
+        scrubPercent={scrubPercent}
+        progressBarRef={progressBarRef}
+        onExit={onExit}
+        onTogglePlayPause={togglePlayPause}
+        onPrev={() => goToPrev('slide')}
+        onNext={() => goToNext('slide')}
+        onSelectIndex={handleSelectIndex}
+        onProgressBarPointerDown={handleProgressBarPointerDown}
+        onProgressBarPointerMove={handleProgressBarPointerMove}
+        onProgressBarPointerUp={handleProgressBarPointerUp}
+      />
     </div>
   );
 }

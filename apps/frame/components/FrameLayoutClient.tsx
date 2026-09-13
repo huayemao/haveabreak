@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 import { useFrameStore } from "@haveabreak/frame/store";
 import FullscreenPlayer from "@haveabreak/frame/components/FullscreenPlayer";
 import AddMediaModal from "@haveabreak/frame/components/AddMediaModal";
-import { usePathname, useRouter, Link } from "i18n/routing";
+import { usePathname, useRouter, Link } from "@/i18n/routing";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useCallback, useMemo, Suspense } from "react";
 import { Plus, Settings, Image as ImageIcon, Video, Home } from "lucide-react";

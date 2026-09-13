@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { MediaItem, Collection, FrameSettings, MediaType, FrameSubscriptionConfig } from './types';
+import { MediaItem, Collection, FrameSettings, MediaType, FrameSubscriptionConfig, DEFAULT_TRANSITION_DURATION } from './types';
 import {
   Subscription,
   SubscriptionDiff,
@@ -70,6 +70,7 @@ export const useFrameStore = create<FrameState>((set, get) => ({
   settings: {
     autoPlay: true,
     slideInterval: 5000,
+    transitionDuration: DEFAULT_TRANSITION_DURATION,
     showInfo: false,
     shuffle: false,
     filterByOrientation: true,
@@ -97,6 +98,7 @@ export const useFrameStore = create<FrameState>((set, get) => ({
       const defaultSettings: FrameSettings = {
         autoPlay: true,
         slideInterval: 5000,
+        transitionDuration: DEFAULT_TRANSITION_DURATION,
         showInfo: false,
         shuffle: false,
         filterByOrientation: true,
@@ -340,8 +342,8 @@ export const useFrameStore = create<FrameState>((set, get) => ({
         categoryLabel: 'Media',
         localItems: state.media,
         remoteItems: remoteMedia,
-        getTitle: (m) => m.title || m.url.split('/').pop()?.split('?')[0] || 'Media Item',
-        getSubtitle: (m) => `${m.type} (${m.orientation || 'unknown'})`,
+        getTitle: (m: MediaItem) => m.title || m.url.split('/').pop()?.split('?')[0] || 'Media Item',
+        getSubtitle: (m: MediaItem) => `${m.type} (${m.orientation || 'unknown'})`,
         strategy: sub.syncStrategy || 'merge',
       });
 
@@ -350,8 +352,8 @@ export const useFrameStore = create<FrameState>((set, get) => ({
         categoryLabel: 'Collections',
         localItems: state.collections,
         remoteItems: remoteCollections,
-        getTitle: (c) => c.name,
-        getSubtitle: (c) => c.description || `${c.mediaIds?.length || 0} items`,
+        getTitle: (c: Collection) => c.name,
+        getSubtitle: (c: Collection) => c.description || `${c.mediaIds?.length || 0} items`,
         strategy: sub.syncStrategy || 'merge',
       });
 
