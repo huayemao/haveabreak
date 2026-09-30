@@ -22,6 +22,9 @@ export default function InstallPrompt({ appId = '' }: InstallPromptProps) {
     const titleKeys = [`${appId}.pageTitle`, `${appId}.appTitle`, `${appId}.title`];
     for (const key of titleKeys) {
       try {
+        if (typeof (t as any).has === 'function' && !(t as any).has(key)) {
+          continue;
+        }
         const title = t(key);
         if (title && title !== key) return title;
       } catch {

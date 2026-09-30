@@ -116,7 +116,16 @@
     "button": "安装"
   },
   "timer": {
-    "pageTitle": "计时休息"
+    "pageTitle": "计时休息",
+    "appTitle": "计时休息"
+  },
+  "frame": {
+    "pageTitle": "电子画框",
+    "appTitle": "电子画框"
+  },
+  "card": {
+    "pageTitle": "书摘卡片",
+    "appTitle": "书摘卡片"
   },
   "home": {
     "title": "haveabreak",

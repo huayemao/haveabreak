@@ -5,10 +5,10 @@ import { useScrollLock } from '../utils/useScrollLock';
 import { useRouter, usePathname } from '@/i18n/routing';
 import { useSearchParams } from 'next/navigation';
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import { MediaItem, FrameSettings } from '../types';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import PlayerViewport from './player/PlayerViewport';
-import PlayerControls from './player/PlayerControls';
 
 interface FullscreenPlayerProps {
   media: MediaItem[];
@@ -269,25 +269,38 @@ export default function FullscreenPlayer({
     };
   }, [onExit]);
 
-  // Controls auto-hide
-  useEffect(() => {
+  const resetControlsTimeout = useCallback(() => {
+    setShowControls(true);
     if (controlsTimeoutRef.current) {
       clearTimeout(controlsTimeoutRef.current);
     }
-    if (showControls) {
-      controlsTimeoutRef.current = window.setTimeout(() => {
-        if (!isScrubbingRef.current) {
-          setShowControls(false);
-        }
-      }, 3500);
-    }
+    controlsTimeoutRef.current = window.setTimeout(() => {
+      if (!isScrubbingRef.current) {
+        setShowControls(false);
+      }
+    }, 3500);
+  }, []);
 
+  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+    if (e.pointerType === 'touch') return;
+    resetControlsTimeout();
+  }, [resetControlsTimeout]);
+
+  const handleContainerClick = useCallback(() => {
+    setShowControls((prev) => !prev);
+  }, []);
+
+  // Controls auto-hide
+  useEffect(() => {
+    if (showControls) {
+      resetControlsTimeout();
+    }
     return () => {
       if (controlsTimeoutRef.current) {
         clearTimeout(controlsTimeoutRef.current);
       }
     };
-  }, [showControls, isScrubbing]);
+  }, [showControls, isScrubbing, resetControlsTimeout]);
 
   // Slideshow auto-advance for images
   useEffect(() => {
@@ -317,6 +330,7 @@ export default function FullscreenPlayer({
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      resetControlsTimeout();
       switch (e.key) {
         case 'ArrowDown':
         case 'ArrowRight':
@@ -340,7 +354,7 @@ export default function FullscreenPlayer({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [goToNext, goToPrev, togglePlayPause, onExit]);
+  }, [goToNext, goToPrev, togglePlayPause, onExit, resetControlsTimeout]);
 
   // Scrubbing logic
   const calculateProgressFromPointer = (clientX: number) => {
@@ -490,9 +504,19 @@ export default function FullscreenPlayer({
     );
   }
 
+  const formatTime = (seconds: number) => {
+    if (isNaN(seconds) || seconds < 0) return '00:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const activePercent = scrubPercent !== null ? scrubPercent : progress;
+
   return (
     <div
       className="fixed inset-0 bg-black z-[100] overflow-hidden select-none touch-none"
+      onPointerMove={handlePointerMove}
       style={{ cursor: showControls ? 'default' : 'none' }}
     >
       {/* 3-Slot Viewport: Handles gesture tracking, peek previews above/below, and natural cross-fade */}
@@ -513,7 +537,7 @@ export default function FullscreenPlayer({
         onUnmute={handleUnmute}
         onSlideNext={() => goToNext('slide')}
         onSlidePrev={() => goToPrev('slide')}
-        onContainerClick={() => setShowControls((prev) => !prev)}
+        onContainerClick={handleContainerClick}
         onPlay={() => setIsPlaying(true)}
         onPlaying={() => setIsPlaying(true)}
         onPause={handleVideoPause}
@@ -523,27 +547,161 @@ export default function FullscreenPlayer({
         onEnded={handleVideoEnded}
       />
 
+      {/* Tap to Unmute Button for Mobile Autoplay */}
+      {isAutoplayMuted && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleUnmute();
+          }}
+          className="absolute bottom-24 sm:bottom-28 left-1/2 -translate-x-1/2 z-40 bg-black/75 hover:bg-black/90 active:scale-95 backdrop-blur-md text-white text-xs sm:text-sm px-4 py-2 rounded-full flex items-center gap-2 shadow-2xl border border-white/20 transition-all pointer-events-auto cursor-pointer"
+        >
+          <svg className="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+          </svg>
+          <span>{t('frame.tapToUnmute') || '点击开启声音'}</span>
+        </button>
+      )}
+
       {/* Control Overlay: Top Bar, Video Scrubber, Playback Buttons, Pagination Dots */}
-      <PlayerControls
-        showControls={showControls}
-        media={media}
-        currentMedia={currentMedia}
-        currentIndex={currentIndex}
-        isPlaying={isPlaying}
-        currentTime={currentTime}
-        duration={duration}
-        progress={progress}
-        scrubPercent={scrubPercent}
-        progressBarRef={progressBarRef}
-        onExit={onExit}
-        onTogglePlayPause={togglePlayPause}
-        onPrev={() => goToPrev('slide')}
-        onNext={() => goToNext('slide')}
-        onSelectIndex={handleSelectIndex}
-        onProgressBarPointerDown={handleProgressBarPointerDown}
-        onProgressBarPointerMove={handleProgressBarPointerMove}
-        onProgressBarPointerUp={handleProgressBarPointerUp}
-      />
+      <AnimatePresence>
+        {showControls && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="player-controls absolute inset-0 pointer-events-none z-30"
+          >
+            {/* Top Bar */}
+            <div
+              className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black/70 via-black/30 to-transparent p-8 flex justify-between items-start pointer-events-auto"
+              onPointerDown={(e) => e.stopPropagation()}
+            >
+              <div className="text-white">
+                <h3 className="text-xl font-medium drop-shadow-md">{currentMedia.title || ''}</h3>
+                <p className="text-sm text-white/60">
+                  {currentIndex + 1} / {media.length}
+                </p>
+              </div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onExit();
+                }}
+                className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all group active:scale-95"
+                title={t('frame.exitFullscreen')}
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Bottom Controls */}
+            <div
+              className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6 sm:p-8 flex flex-col items-center justify-end pointer-events-auto"
+              onPointerDown={(e) => e.stopPropagation()}
+            >
+              {/* Progress Bar for Video with Drag Scrubbing */}
+              {currentMedia.type === 'video' && (
+                <div className="w-full max-w-4xl mb-6 px-4">
+                  <div className="flex items-center justify-between text-xs text-white/70 font-mono mb-1.5 px-0.5 select-none">
+                    <span>{formatTime(currentTime)}</span>
+                    <span>{formatTime(duration)}</span>
+                  </div>
+                  <div
+                    ref={progressBarRef}
+                    className="h-6 flex items-center cursor-pointer group/progress relative touch-none"
+                    onPointerDown={handleProgressBarPointerDown}
+                    onPointerMove={handleProgressBarPointerMove}
+                    onPointerUp={handleProgressBarPointerUp}
+                    onPointerCancel={handleProgressBarPointerUp}
+                  >
+                    {/* Track Background */}
+                    <div className="w-full h-1.5 group-hover/progress:h-2 bg-white/25 rounded-full overflow-hidden transition-all relative">
+                      <div
+                        className="h-full bg-accent rounded-full"
+                        style={{ width: `${activePercent}%` }}
+                      />
+                    </div>
+                    {/* Draggable Scrubber Knob */}
+                    <div
+                      className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 bg-white rounded-full shadow-lg pointer-events-none transition-transform group-hover/progress:scale-125"
+                      style={{ left: `${activePercent}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Control Buttons */}
+              <div className="flex items-center gap-8">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    goToPrev('slide');
+                  }}
+                  className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all active:scale-95"
+                  title={t('frame.previous')}
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    togglePlayPause();
+                  }}
+                  className="w-20 h-20 rounded-full bg-white text-black hover:scale-105 active:scale-95 flex items-center justify-center transition-all shadow-xl"
+                  title={isPlaying ? t('frame.pause') : t('frame.play')}
+                >
+                  {isPlaying ? (
+                    <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+                    </svg>
+                  ) : (
+                    <svg className="w-10 h-10 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  )}
+                </button>
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    goToNext('slide');
+                  }}
+                  className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all active:scale-95"
+                  title={t('frame.next')}
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Media Index Indicators */}
+              <div className="flex gap-2 mt-6 max-w-xl overflow-hidden py-1">
+                {media.slice(0, 30).map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSelectIndex(index);
+                    }}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                      index === currentIndex ? 'bg-white w-8' : 'bg-white/30 w-1.5 hover:bg-white/50'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

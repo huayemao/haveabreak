@@ -22,7 +22,7 @@ interface PlayerViewportProps {
   onUnmute: () => void;
   onSlideNext: () => void;
   onSlidePrev: () => void;
-  onContainerClick: (e: React.MouseEvent) => void;
+  onContainerClick: (e?: React.MouseEvent) => void;
   // Video lifecycle events
   onPlay?: () => void;
   onPlaying?: () => void;
@@ -94,8 +94,20 @@ export default function PlayerViewport({
     [y, hasMultipleMedia, onSlideNext, onSlidePrev]
   );
 
+  const dragStartTimeRef = useRef(0);
+  const lastTapTimeRef = useRef(0);
+
+  const triggerTap = useCallback(() => {
+    if (isAnimatingRef.current) return;
+    const now = Date.now();
+    if (now - lastTapTimeRef.current < 350) return;
+    lastTapTimeRef.current = now;
+    onContainerClick();
+  }, [onContainerClick]);
+
   const handleDragStart = () => {
     isDraggingRef.current = true;
+    dragStartTimeRef.current = Date.now();
   };
 
   const handleDragEnd = (_e: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
@@ -103,15 +115,21 @@ export default function PlayerViewport({
       isDraggingRef.current = false;
     }, 120);
 
+    const offsetY = info.offset.y;
+    const velocityY = info.velocity.y;
+    const isTinyOffset = Math.abs(offsetY) < 15 && Math.abs(info.offset.x) < 15;
+    const elapsed = Date.now() - dragStartTimeRef.current;
+
     if (!hasMultipleMedia || isAnimatingRef.current) {
       animate(y, 0, { type: 'spring', stiffness: 350, damping: 30 });
+      if (isTinyOffset && elapsed < 400) {
+        triggerTap();
+      }
       return;
     }
 
     const threshold = 70;
     const velocityThreshold = 400;
-    const offsetY = info.offset.y;
-    const velocityY = info.velocity.y;
 
     // Swiped up -> next media
     if (offsetY < -threshold || velocityY < -velocityThreshold) {
@@ -124,6 +142,9 @@ export default function PlayerViewport({
     // Did not exceed threshold -> spring back to center
     else {
       animate(y, 0, { type: 'spring', stiffness: 350, damping: 30 });
+      if (isTinyOffset && elapsed < 400) {
+        triggerTap();
+      }
     }
   };
 
@@ -143,8 +164,8 @@ export default function PlayerViewport({
   };
 
   const handleClick = (e: React.MouseEvent) => {
-    if (isDraggingRef.current || isAnimatingRef.current) return;
-    onContainerClick(e);
+    if (isDraggingRef.current && Math.abs(y.get()) > 10) return;
+    triggerTap();
   };
 
   // When transitionType is 'fade', ensure y is centered
@@ -159,7 +180,7 @@ export default function PlayerViewport({
 
   return (
     <div
-      className="fixed inset-0 bg-black z-[100] overflow-hidden select-none touch-none"
+      className="absolute inset-0 overflow-hidden select-none touch-none"
       onClick={handleClick}
       onWheel={handleWheel}
     >
@@ -169,8 +190,12 @@ export default function PlayerViewport({
         drag={canSwipe ? 'y' : false}
         dragConstraints={{ top: 0, bottom: 0 }}
         dragElastic={canSwipe ? 1 : 0.1}
+        onPointerDown={() => {
+          dragStartTimeRef.current = Date.now();
+        }}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
+        onTap={() => triggerTap()}
         className="absolute inset-0 w-full h-full touch-none cursor-grab active:cursor-grabbing"
       >
         {/* Previous Slide: physically positioned directly above (-100%) */}

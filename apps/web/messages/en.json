@@ -116,7 +116,16 @@
     "button": "Install"
   },
   "timer": {
-    "pageTitle": "Timed Break"
+    "pageTitle": "Timed Break",
+    "appTitle": "Timed Break"
+  },
+  "frame": {
+    "pageTitle": "Digital Frame",
+    "appTitle": "Digital Frame"
+  },
+  "card": {
+    "pageTitle": "Book Excerpts",
+    "appTitle": "Book Excerpts"
   },
   "home": {
     "title": "haveabreak",
