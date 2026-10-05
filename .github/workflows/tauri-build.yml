@@ -219,11 +219,10 @@ jobs:
           distribution: "zulu"
           java-version: "17"
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4
-
-      - name: install NDK
-        run: sdkmanager "ndk;28.2.13676358"
+      - name: Setup Android SDK & NDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools ndk;28.2.13676358'
 
       - name: Setup Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
