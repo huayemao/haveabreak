@@ -1,4 +1,4 @@
-import { MediaItem, Collection, FrameSettings, DEFAULT_SLIDE_INTERVAL, DEFAULT_VOLUME } from './types';
+import { MediaItem, Collection, FrameSettings, DEFAULT_SLIDE_INTERVAL, DEFAULT_FRAME_SETTINGS } from './types';
 import presets from './presets.json';
 const MEDIA_STORAGE_KEY = 'frame_media';
 const COLLECTION_STORAGE_KEY = 'frame_collections';
@@ -150,16 +150,12 @@ export async function deleteCollection(id: string): Promise<void> {
 }
 
 export async function getSettings(): Promise<FrameSettings> {
-  const defaultSettings: FrameSettings = {
-    ...(presets.settings as any),
-    subscriptions: [],
-  };
   const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
   if (stored) {
     try {
       const parsed = JSON.parse(stored);
       return {
-        ...defaultSettings,
+        ...DEFAULT_FRAME_SETTINGS,
         ...parsed,
         subscriptions: parsed.subscriptions || [],
       };
@@ -168,8 +164,8 @@ export async function getSettings(): Promise<FrameSettings> {
     }
   }
 
-  localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(defaultSettings));
-  return defaultSettings;
+  localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(DEFAULT_FRAME_SETTINGS));
+  return DEFAULT_FRAME_SETTINGS;
 }
 
 export function saveSettings(settings: FrameSettings): void {

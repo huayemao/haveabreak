@@ -53,3 +53,16 @@ export interface FrameSubscriptionConfig {
 export const DEFAULT_SLIDE_INTERVAL = 5000;
 export const DEFAULT_TRANSITION_DURATION = 800;
 export const DEFAULT_VOLUME = 0.3;
+
+export const DEFAULT_FRAME_SETTINGS: FrameSettings = {
+  autoPlay: true,
+  slideInterval: DEFAULT_SLIDE_INTERVAL,
+  transitionDuration: DEFAULT_TRANSITION_DURATION,
+  showInfo: false,
+  shuffle: false,
+  filterByOrientation: true,
+  backgroundMusicEnabled: false,
+  volume: DEFAULT_VOLUME,
+  swipeSwitching: true,
+  subscriptions: [],
+};

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { MediaItem, Collection, FrameSettings, MediaType, FrameSubscriptionConfig, DEFAULT_TRANSITION_DURATION } from './types';
+import { MediaItem, Collection, FrameSettings, MediaType, FrameSubscriptionConfig, DEFAULT_FRAME_SETTINGS } from './types';
 import {
   Subscription,
   SubscriptionDiff,
@@ -67,18 +67,7 @@ export const useFrameStore = create<FrameState>((set, get) => ({
   media: [],
   collections: [],
   feedMedia: [],
-  settings: {
-    autoPlay: true,
-    slideInterval: 5000,
-    transitionDuration: DEFAULT_TRANSITION_DURATION,
-    showInfo: false,
-    shuffle: false,
-    filterByOrientation: true,
-    backgroundMusicEnabled: false,
-    volume: 0.3,
-    swipeSwitching: true,
-    subscriptions: [],
-  },
+  settings: DEFAULT_FRAME_SETTINGS,
   isLoading: true,
   isImporting: false,
 
@@ -95,20 +84,8 @@ export const useFrameStore = create<FrameState>((set, get) => ({
         getCollections(),
         getSettings(),
       ]);
-      const defaultSettings: FrameSettings = {
-        autoPlay: true,
-        slideInterval: 5000,
-        transitionDuration: DEFAULT_TRANSITION_DURATION,
-        showInfo: false,
-        shuffle: false,
-        filterByOrientation: true,
-        backgroundMusicEnabled: false,
-        volume: 0.3,
-        swipeSwitching: true,
-        subscriptions: [],
-      };
       const mergedSettings: FrameSettings = {
-        ...defaultSettings,
+        ...DEFAULT_FRAME_SETTINGS,
         ...settings,
         subscriptions: settings.subscriptions || [],
       };
