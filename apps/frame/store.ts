@@ -76,7 +76,7 @@ export const useFrameStore = create<FrameState>((set, get) => ({
     filterByOrientation: true,
     backgroundMusicEnabled: false,
     volume: 0.3,
-    swipeSwitching: false,
+    swipeSwitching: true,
     subscriptions: [],
   },
   isLoading: true,
@@ -104,7 +104,7 @@ export const useFrameStore = create<FrameState>((set, get) => ({
         filterByOrientation: true,
         backgroundMusicEnabled: false,
         volume: 0.3,
-        swipeSwitching: false,
+        swipeSwitching: true,
         subscriptions: [],
       };
       const mergedSettings: FrameSettings = {
