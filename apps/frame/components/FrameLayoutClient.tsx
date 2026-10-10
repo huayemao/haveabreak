@@ -48,6 +48,7 @@ export default function FrameLayoutClient({
   const startIndex = parseInt(searchParams.get("index") || "0", 10);
   const startPaused = searchParams.get("paused") === "true";
   const selectedCollectionId = searchParams.get("collection");
+  const selectedItemId = searchParams.get("item");
 
   const updateUrl = useCallback(
     (params: Record<string, string | null>) => {
@@ -73,7 +74,7 @@ export default function FrameLayoutClient({
 
   const currentMedia = useMemo(() => {
     let mediaList: MediaItem[];
-    if (selectedCollectionId) {
+    if (selectedCollectionId && !isFeed) {
       const collection = collections.find(
         (col) => col.id === selectedCollectionId,
       );
@@ -83,13 +84,47 @@ export default function FrameLayoutClient({
         mediaList = media;
       }
     } else if (isFeed) {
-      mediaList = feedMedia.length > 0 ? feedMedia : media;
+      const baseFeed = feedMedia.length > 0 ? feedMedia : media;
+      if (selectedCollectionId) {
+        const collection = collections.find(
+          (col) => col.id === selectedCollectionId,
+        );
+        if (collection) {
+          const collectionMedia = (collection.mediaIds || [])
+            .map((id) => media.find((m) => m.id === id))
+            .filter((m): m is MediaItem => !!m);
+
+          const itemIdx = selectedItemId
+            ? collectionMedia.findIndex((m) => m.id === selectedItemId)
+            : -1;
+
+          const orderedCollectionMedia =
+            itemIdx >= 0
+              ? [
+                  ...collectionMedia.slice(itemIdx),
+                  ...collectionMedia.slice(0, itemIdx),
+                ]
+              : collectionMedia;
+
+          const collectionIdSet = new Set(collection.mediaIds);
+          const remainingFeed = baseFeed.filter(
+            (m) => !collectionIdSet.has(m.id),
+          );
+
+          mediaList = [...orderedCollectionMedia, ...remainingFeed];
+        } else {
+          mediaList = baseFeed;
+        }
+      } else {
+        mediaList = baseFeed;
+      }
     } else {
       mediaList = media;
     }
     return filterMediaByOrientation(mediaList, settings.filterByOrientation);
   }, [
     selectedCollectionId,
+    selectedItemId,
     collections,
     media,
     feedMedia,
@@ -118,6 +153,8 @@ export default function FrameLayoutClient({
       index: null,
       shuffle: null,
       mediaType: null,
+      item: null,
+      ...(isFeed ? { collection: null } : {}),
     });
   };
 

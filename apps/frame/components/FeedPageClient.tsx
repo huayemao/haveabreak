@@ -147,23 +147,22 @@ export default function FeedPageClient() {
   const handlePlayFeedItem = (item: MediaItem, index: number) => {
     const targetCollection = collections.find((col) => col.mediaIds.includes(item.id));
     if (targetCollection) {
-      const collectionMedia = media.filter((m) => targetCollection.mediaIds.includes(m.id));
-      const filteredCollectionMedia = filterMediaByOrientation(collectionMedia, settings.filterByOrientation);
-      const idx = filteredCollectionMedia.findIndex((m) => m.id === item.id);
       startSlideshow({
-        media,
-        collectionMedia,
+        media: filteredMedia,
         settings,
         updateUrl: (params) => {
           updateUrl({
             ...params,
-            feed: null,
+            feed: 'true',
+            item: item.id,
+            index: null,
           });
         },
         collectionId: targetCollection.id,
         paused: false,
-        index: idx >= 0 ? idx : 0,
+        index: 0,
         shuffle: false,
+        mediaType: mediaFilter === 'all' ? 'mixed' : mediaFilter,
       });
     } else {
       startSlideshow({
@@ -173,6 +172,8 @@ export default function FeedPageClient() {
           updateUrl({
             ...params,
             feed: 'true',
+            item: null,
+            collection: null,
           });
         },
         collectionId: null,
