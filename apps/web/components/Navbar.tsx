@@ -1,22 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Link } from '@/i18n/routing';
+import { useState, useEffect, useRef } from 'react';
+import { Link, usePathname } from '@/i18n/routing';
 import { useTranslations } from 'next-intl';
 import LanguageSwitcher from './LanguageSwitcher';
-import { usePathname } from 'i18n/routing';
-import { Home, Frame, ScrollText, Menu, X, Info, Settings, LayoutGrid, Timer } from 'lucide-react';
+import { Home, Frame, ScrollText, Info, Timer, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavbar } from '@/context/NavbarContext';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuGroup,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@haveabreak/ui/components/ui/dropdown-menu';
 import { isTauriBuild } from '@/lib/utils';
 
 interface VersionInfo {
@@ -35,11 +25,15 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { isHidden } = useNavbar();
   const [version, setVersion] = useState<string | null>(null);
+  const containerRef = useRef<HTMLElement | null>(null);
+  const closeTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
-    fetchVersion().then((data) => {
-      setVersion(data.shortRevision);
-    });
+    fetchVersion()
+      .then((data) => {
+        setVersion(data.shortRevision);
+      })
+      .catch(() => {});
   }, []);
 
   const isRoot = pathname === '/' || pathname === '';
@@ -52,6 +46,42 @@ export default function Navbar() {
     setIsOpen(false);
   }, [pathname]);
 
+  // Close when clicking/tapping outside
+  useEffect(() => {
+    if (!isOpen) return;
+    const handlePointerDown = (e: PointerEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsOpen(false);
+    };
+    window.addEventListener('pointerdown', handlePointerDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('pointerdown', handlePointerDown);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen]);
+
+  const clearCloseTimer = () => {
+    if (closeTimerRef.current) {
+      window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  };
+
+  const scheduleClose = () => {
+    clearCloseTimer();
+    closeTimerRef.current = window.setTimeout(() => {
+      setIsOpen(false);
+    }, 450);
+  };
+
   const navLinks = [
     { href: '/', label: t('nav.home'), icon: Home, active: isRoot },
     { href: '/timer', label: t('nav.timer'), icon: Timer, active: isTimer },
@@ -59,150 +89,89 @@ export default function Navbar() {
     { href: '/frame', label: t('nav.frame'), icon: Frame, active: isFrame },
   ];
 
+  if (isHidden) return null;
+
   return (
-    <motion.nav
-      initial={false}
-      animate={{
-        y: isHidden ? -100 : 0,
-        opacity: isHidden ? 0 : 1,
-        pointerEvents: isHidden ? 'none' : 'auto'
-      }}
-      transition={{ duration: 0.3, ease: 'easeInOut' }}
+    <nav
+      ref={containerRef}
       style={{ marginTop: 'env(safe-area-inset-top)' }}
-      className="fixed top-6 right-4 md:left-1/2 md:-translate-x-1/2 z-50 px-4 flex flex-col items-end md:items-center pointer-events-none"
+      onMouseEnter={clearCloseTimer}
+      onMouseLeave={scheduleClose}
+      className="fixed top-0 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center pointer-events-none"
     >
-      {/* Desktop & Mobile Main Pill */}
+      {/* Concealed Top-Edge Handle: subtle 4px pill that never interferes with app UI */}
+      <button
+        type="button"
+        onClick={() => setIsOpen((prev) => !prev)}
+        onMouseEnter={() => {
+          clearCloseTimer();
+          setIsOpen(true);
+        }}
+        aria-label="Toggle Global Navigation"
+        className="group pointer-events-auto pt-2 pb-3 px-8 flex items-center justify-center cursor-pointer focus:outline-none"
+      >
+        <span
+          className={`block rounded-full transition-all duration-300 ${
+            isOpen
+              ? 'w-12 h-1.5 bg-accent/70'
+              : 'w-9 h-1 bg-fg-muted/20 group-hover:w-12 group-hover:h-1.5 group-hover:bg-fg-muted/50'
+          }`}
+        />
+      </button>
 
-      <div className="flex items-center gap-2 sm:gap-6 p-1 sm:px-6 sm:py-2.5 rounded-2xl sm:rounded-full bg-bg-base shadow-extruded backdrop-blur-md bg-opacity-90 border border-white/10 relative z-50 pointer-events-auto md:mx-auto">
-        {/* Desktop Links (Hidden on mobile) */}
-        {!isTauriBuild && (
-          <div className="hidden md:flex items-center gap-4">
-            {/* Home Link */}
-            <Link
-              href="/"
-              className={`flex items-center gap-2 px-4 py-2 rounded-2xl transition-all duration-300 ${isRoot
-                ? 'shadow-inset bg-bg-base text-accent font-bold scale-[0.98]'
-                : 'text-fg-muted hover:text-fg-primary hover:scale-105'
-                }`}
-            >
-              <Home className={`w-5 h-5 ${isRoot ? 'text-accent' : 'text-fg-muted'}`} />
-            </Link>
-            {/* Apps Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <button className="flex items-center gap-2 px-4 py-2 rounded-2xl text-fg-muted hover:text-fg-primary hover:scale-105 transition-all duration-300">
-                  <LayoutGrid className="w-5 h-5" />
-                  <span className="font-display">{t('nav.apps', { defaultValue: 'Apps' })}</span>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-48 bg-bg-base rounded-[24px] shadow-[9px_9px_16px_rgb(163,177,198,0.6),-9px_-9px_16px_rgba(255,255,255,0.5)] border-none p-3">
-                <DropdownMenuGroup className="space-y-1">
-                  <DropdownMenuLabel className="font-display text-fg-primary px-3 py-2">{t('nav.apps', { defaultValue: 'Apps' })}</DropdownMenuLabel>
-                  <div className="h-px bg-fg-muted opacity-20 my-1" />
-                  {navLinks.map((link) => (
-                    <DropdownMenuItem key={link.href} className={`flex items-center gap-2 px-3 py-2.5 rounded-xl transition-all duration-200 ${link.active
-                      ? 'shadow-[inset_3px_3px_6px_rgb(163,177,198,0.6),inset_-3px_-3px_6px_rgba(255,255,255,0.5)] bg-bg-base text-accent font-medium'
-                      : 'text-fg-muted hover:text-fg-primary hover:shadow-[inset_2px_2px_4px_rgb(163,177,198,0.4),inset_-2px_-2px_4px_rgba(255,255,255,0.4)] bg-bg-base'
-                      }`}>
-                      <Link href={link.href} className="flex items-center gap-2 w-full">
-                        <link.icon className="w-4 h-4" />
-                        <span className="font-display">{link.label}</span>
-                      </Link>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <div className="w-px h-6 bg-fg-muted opacity-20 mx-2" />
-
-            {/* Settings Dropdown with Version */}
-            <DropdownMenu>
-              <DropdownMenuTrigger >
-                <button className="flex items-center gap-2 px-4 py-2 rounded-2xl text-fg-muted hover:text-fg-primary hover:scale-105 transition-all duration-300">
-                  <Settings className="w-5 h-5" />
-                  <span className="font-display">{t('common.settingsTitle', { defaultValue: 'Settings' })}</span>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-48 bg-bg-base rounded-[24px] shadow-[9px_9px_16px_rgb(163,177,198,0.6),-9px_-9px_16px_rgba(255,255,255,0.5)] border-none p-3">
-                <DropdownMenuGroup className="space-y-1">
-                  <DropdownMenuLabel className="font-display text-fg-primary px-3 py-2">{t('common.settingsTitle', { defaultValue: 'Settings' })}</DropdownMenuLabel>
-                  <div className="h-px bg-fg-muted opacity-20 my-1" />
-                  <DropdownMenuItem className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-fg-muted hover:text-fg-primary hover:shadow-[inset_2px_2px_4px_rgb(163,177,198,0.4),inset_-2px_-2px_4px_rgba(255,255,255,0.4)] bg-bg-base transition-all duration-200">
-                    <Info className="w-4 h-4" />
-                    <span className="text-xs font-mono">v{version ?? '...'}</span>
-                  </DropdownMenuItem>
-                  <div className="h-px bg-fg-muted opacity-20 my-1" />
-                  <div className="px-3">
-                    <LanguageSwitcher />
-                  </div>
-                </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        )}
-        {/* Mobile Hamburger Button (Hidden on desktop) */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden flex items-center justify-center w-10 h-10 rounded-2xl p-0 shadow-none hover:shadow-none active:shadow-inset"
-          aria-label="Toggle Menu"
-        >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={isOpen ? 'close' : 'menu'}
-              initial={{ opacity: 0, rotate: -90 }}
-              animate={{ opacity: 1, rotate: 0 }}
-              exit={{ opacity: 0, rotate: 90 }}
-              transition={{ duration: 0.2 }}
-            >
-              {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </motion.div>
-          </AnimatePresence>
-        </button>
-      </div>
-      {/* Mobile Menu Dropdown */}
+      {/* Expandable Global App Switcher & Settings Drawer */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 12, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-            className="md:hidden w-full max-w-[320px] p-6 rounded-[32px] bg-bg-base shadow-extruded border border-white/10 z-40 pointer-events-auto mt-4"
+            initial={{ opacity: 0, y: -12, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -12, scale: 0.96 }}
+            transition={{ type: 'spring', damping: 24, stiffness: 340 }}
+            className="pointer-events-auto w-[min(92vw,420px)] p-3.5 rounded-3xl bg-bg-base/95 backdrop-blur-xl shadow-extruded border border-white/15"
           >
-            <div className="flex flex-col gap-4">
-              {!isTauriBuild && (
-                <>
-                  {navLinks.map((link) => (
+            {!isTauriBuild && (
+              <div className="grid grid-cols-4 gap-1.5 mb-3">
+                {navLinks.map((link) => {
+                  const Icon = link.icon;
+                  return (
                     <Link
                       key={link.href}
                       href={link.href}
-                      className={`flex items-center gap-4 p-4 rounded-2xl transition-all ${link.active
-                        ? 'shadow-inset bg-bg-base text-accent font-bold'
-                        : 'neumorphic-button text-fg-muted border-none shadow-extruded-sm'
-                        }`}
+                      className={`flex flex-col items-center justify-center gap-1.5 py-2.5 px-2 rounded-2xl text-xs transition-all ${
+                        link.active
+                          ? 'bg-accent text-white shadow-extruded-sm font-semibold'
+                          : 'text-fg-muted hover:text-fg-primary hover:bg-muted/40'
+                      }`}
                     >
-                      <div className={`p-2 rounded-xl ${link.active ? 'shadow-inset' : 'shadow-extruded-sm bg-bg-base'}`}>
-                        <link.icon className="w-5 h-5" />
-                      </div>
-                      <span className="font-display text-lg">{link.label}</span>
+                      <Icon className="w-4 h-4" />
+                      <span className="truncate max-w-full">{link.label}</span>
                     </Link>
-                  ))}
-                  <div className="h-px bg-fg-muted opacity-10 my-2" />
-                </>
-              )}
-              <div className="flex justify-between items-center px-2">
-                <span className="text-sm font-medium text-fg-muted">{t('common.settingsTitle')}</span>
-                <LanguageSwitcher />
+                  );
+                })}
               </div>
-              <div className="flex justify-end items-center gap-2">
-                <Info className="w-4 h-4" />
-                <span className="text-xs font-mono">{version ?? '...'}</span>
+            )}
+
+            <div className="flex items-center justify-between gap-3 pt-2.5 px-1.5 border-t border-fg-muted/10">
+              <div className="flex items-center gap-1.5 text-fg-muted text-xs font-mono">
+                <Info className="w-3.5 h-3.5" />
+                <span>v{version ?? '...'}</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <LanguageSwitcher />
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  className="p-1.5 rounded-full text-fg-muted hover:text-fg-primary hover:bg-muted/40 transition-colors cursor-pointer"
+                  aria-label="Close menu"
+                >
+                  <ChevronUp className="w-4 h-4" />
+                </button>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.nav>
+    </nav>
   );
 }

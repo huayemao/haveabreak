@@ -25,10 +25,13 @@ import {
   importUrlList as storageImportUrlList,
 } from './storage';
 
+export type FeedMediaFilter = 'all' | 'image' | 'video';
+
 interface FrameState {
   media: MediaItem[];
   collections: Collection[];
   feedMedia: MediaItem[];
+  feedFilter: FeedMediaFilter;
   settings: FrameSettings;
   isLoading: boolean;
   isImporting: boolean;
@@ -42,6 +45,7 @@ interface FrameState {
   // Actions
   loadData: () => Promise<void>;
   generateFeedMedia: () => void;
+  setFeedFilter: (filter: FeedMediaFilter) => void;
   addMedia: (url: string, type: MediaType, title?: string, collectionId?: string) => Promise<MediaItem | void>;
   deleteMedia: (id: string) => Promise<void>;
   createCollection: (name: string, description?: string, mediaIds?: string[], slideInterval?: number) => Promise<void>;
@@ -67,6 +71,7 @@ export const useFrameStore = create<FrameState>((set, get) => ({
   media: [],
   collections: [],
   feedMedia: [],
+  feedFilter: 'all',
   settings: DEFAULT_FRAME_SETTINGS,
   isLoading: true,
   isImporting: false,
@@ -75,6 +80,8 @@ export const useFrameStore = create<FrameState>((set, get) => ({
   isCheckingSubscription: false,
   isCheckingAllSubscriptions: false,
   currentCheckingSubscriptionId: null,
+
+  setFeedFilter: (feedFilter) => set({ feedFilter }),
 
   loadData: async () => {
     set({ isLoading: true });

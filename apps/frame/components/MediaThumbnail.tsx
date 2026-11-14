@@ -52,6 +52,7 @@ export default function MediaThumbnail({
           alt={item.title || ''}
           className={aspectRatio === 'aspect-auto' ? 'w-full h-auto' : 'w-full h-full object-cover'}
           loading="lazy"
+          draggable={false}
         />
       ) : (
         <div className={`w-full relative bg-muted overflow-hidden ${aspectRatio === 'aspect-auto' ? 'h-auto' : 'h-full'} ${computedAspectRatio}`}>
@@ -60,6 +61,7 @@ export default function MediaThumbnail({
             alt={item.title || ''}
             className="w-full h-full object-cover"
             loading="lazy"
+            draggable={false}
           />
           {showPlayIcon && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/20">

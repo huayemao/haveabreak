@@ -1,13 +1,21 @@
 "use client";
 import { useTranslations } from "next-intl";
-import { useFrameStore } from "@haveabreak/frame/store";
+import { useFrameStore, FeedMediaFilter } from "@haveabreak/frame/store";
 import FullscreenPlayer from "@haveabreak/frame/components/FullscreenPlayer";
 import AddMediaModal from "@haveabreak/frame/components/AddMediaModal";
 import { usePathname, useRouter, Link } from "@/i18n/routing";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useCallback, useMemo, Suspense } from "react";
-import { Plus, Settings, Image as ImageIcon, Video, Home } from "lucide-react";
-import NeumorphicBottomNav from "@haveabreak/ui/components/NeumorphicBottomNav";
+import {
+  Settings,
+  Image as ImageIcon,
+  Video,
+  Layers,
+  LayoutGrid,
+  Sparkles,
+  ArrowLeft,
+  FolderKanban,
+} from "lucide-react";
 import InstallPrompt from "@/components/InstallPrompt";
 import {
   startSlideshow,
@@ -29,6 +37,8 @@ export default function FrameLayoutClient({
     media,
     collections,
     feedMedia,
+    feedFilter,
+    setFeedFilter,
     settings,
     isLoading,
     isImporting,
@@ -85,7 +95,25 @@ export default function FrameLayoutClient({
       }
     } else if (isFeed) {
       const baseFeed = feedMedia.length > 0 ? feedMedia : media;
-      if (selectedCollectionId) {
+      if (selectedCollectionId === "__uncollected__") {
+        const collectedIds = new Set(
+          collections.flatMap((col) => col.mediaIds || []),
+        );
+        const uncollectedMedia = baseFeed.filter(
+          (m) => !collectedIds.has(m.id),
+        );
+        const itemIdx = selectedItemId
+          ? uncollectedMedia.findIndex((m) => m.id === selectedItemId)
+          : -1;
+        mediaList =
+          itemIdx >= 0
+            ? [
+                uncollectedMedia[itemIdx],
+                ...uncollectedMedia.slice(0, itemIdx),
+                ...uncollectedMedia.slice(itemIdx + 1),
+              ]
+            : uncollectedMedia;
+      } else if (selectedCollectionId) {
         const collection = collections.find(
           (col) => col.id === selectedCollectionId,
         );
@@ -98,20 +126,13 @@ export default function FrameLayoutClient({
             ? collectionMedia.findIndex((m) => m.id === selectedItemId)
             : -1;
 
-          const orderedCollectionMedia =
+          mediaList =
             itemIdx >= 0
               ? [
                   ...collectionMedia.slice(itemIdx),
                   ...collectionMedia.slice(0, itemIdx),
                 ]
               : collectionMedia;
-
-          const collectionIdSet = new Set(collection.mediaIds);
-          const remainingFeed = baseFeed.filter(
-            (m) => !collectionIdSet.has(m.id),
-          );
-
-          mediaList = [...orderedCollectionMedia, ...remainingFeed];
         } else {
           mediaList = baseFeed;
         }
@@ -121,7 +142,11 @@ export default function FrameLayoutClient({
     } else {
       mediaList = media;
     }
-    return filterMediaByOrientation(mediaList, settings.filterByOrientation);
+    const filtered = filterMediaByOrientation(
+      mediaList,
+      settings.filterByOrientation,
+    );
+    return filtered.length > 0 ? filtered : mediaList;
   }, [
     selectedCollectionId,
     selectedItemId,
@@ -131,15 +156,6 @@ export default function FrameLayoutClient({
     settings.filterByOrientation,
     isFeed,
   ]);
-
-  const imageMedia = useMemo(
-    () => currentMedia.filter((m) => m.type === "image"),
-    [currentMedia],
-  );
-  const videoMedia = useMemo(
-    () => currentMedia.filter((m) => m.type === "video"),
-    [currentMedia],
-  );
 
   const currentCollection = useMemo(() => {
     if (!selectedCollectionId) return null;
@@ -154,113 +170,57 @@ export default function FrameLayoutClient({
       shuffle: null,
       mediaType: null,
       item: null,
-      ...(isFeed ? { collection: null } : {}),
-    });
-  };
-
-  const handleStartSlideshow = (paused = false, index = 0) => {
-    startSlideshow({
-      media: currentMedia,
-      settings,
-      updateUrl,
-      collectionId: selectedCollectionId || null,
-      paused,
-      index,
-      mediaType: "mixed",
-    });
-  };
-
-  const handleStartImageSlideshow = (paused = false, index = 0) => {
-    startSlideshow({
-      media: currentMedia,
-      settings,
-      updateUrl,
-      collectionId: selectedCollectionId || null,
-      paused,
-      index,
-      mediaType: "image",
-    });
-  };
-
-  const handleStartVideoSlideshow = (paused = false, index = 0) => {
-    startSlideshow({
-      media: currentMedia,
-      settings,
-      updateUrl,
-      collectionId: selectedCollectionId || null,
-      paused,
-      index,
-      mediaType: "video",
+      ...(isFeed ? { collection: null, feed: null } : {}),
     });
   };
 
   const baseRoute = `/frame`;
+  const isFeedPage = pathname === baseRoute || pathname === `${baseRoute}/`;
   const isGallery = pathname === `${baseRoute}/gallery`;
   const isCollections = pathname.startsWith(`${baseRoute}/collections`);
   const isSettings = pathname === `${baseRoute}/settings`;
+  const isManage = isCollections || isGallery;
 
-  const navItems = [
+  const pageTitle = isFeedPage
+    ? t("frame.feed")
+    : isCollections
+      ? t("frame.collections")
+      : isGallery
+        ? t("frame.mediaLibrary")
+        : isSettings
+          ? t("frame.settings")
+          : t("frame.appTitle");
+
+  const feedTabs: {
+    value: FeedMediaFilter;
+    label: string;
+    icon: typeof Sparkles;
+  }[] = [
     {
-      href: `${baseRoute}`,
-      icon: <Home className="w-5 h-5" />,
-      label: t("frame.feed") || "Feed",
-      activePath: `${baseRoute}`,
+      value: "all",
+      label: t("frame.mixedSlideshow"),
+      icon: Sparkles,
     },
     {
-      href: `${baseRoute}/collections`,
-      icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-          />
-        </svg>
-      ),
-      label: t("frame.collections"),
-      activePath: `${baseRoute}/collections`,
+      value: "image",
+      label: t("frame.image"),
+      icon: ImageIcon,
     },
     {
-      href: `${baseRoute}/gallery`,
-      icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-          />
-        </svg>
-      ),
-      label: t("frame.mediaLibrary"),
-      activePath: `${baseRoute}/gallery`,
-    },
-    {
-      href: `${baseRoute}/settings`,
-      icon: <Settings className="w-5 h-5" />,
-      label: t("frame.settings"),
-      variant: "action" as const,
+      value: "video",
+      label: t("frame.video"),
+      icon: Video,
     },
   ];
 
   const urlShuffle = searchParams.get("shuffle");
   const urlMediaType = searchParams.get("mediaType");
-  const playShuffle = isFeed
-    ? false
-    : urlShuffle !== null
+  const playShuffle =
+    urlShuffle !== null
       ? urlShuffle === "true"
-      : settings.shuffle;
+      : isFeed
+        ? false
+        : settings.shuffle;
 
   const playMedia = useMemo(() => {
     if (urlMediaType === "image") {
@@ -286,62 +246,116 @@ export default function FrameLayoutClient({
   return (
     <div className="bg-bg-base pb-20 min-h-screen">
       <InstallPrompt appId="frame" />
-      <header className="bg-bg-base/90 backdrop-blur-lg border-b border-white/10 transition-all duration-300 mt-6">
-        <div className="max-w-7xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {imageMedia.length > 0 && (
-                <button
-                  onClick={() => handleStartImageSlideshow(false)}
-                  className="neumorphic-button-primary p-2 flex items-center gap-2 rounded-2xl"
-                  title={t("frame.imageSlideshow")}
-                >
-                  <ImageIcon className="w-5 h-5" />
-                  <span className="hidden sm:inline text-sm">
-                    {t("frame.imageSlideshow")}
-                  </span>
-                </button>
-              )}
-              {videoMedia.length > 0 && (
-                <button
-                  onClick={() => handleStartVideoSlideshow(false)}
-                  className="neumorphic-button-primary p-2 flex items-center gap-2 rounded-2xl"
-                  title={t("frame.videoSlideshow")}
-                >
-                  <Video className="w-5 h-5" />
-                  <span className="hidden sm:inline text-sm">
-                    {t("frame.videoSlideshow")}
-                  </span>
-                </button>
-              )}
-              {currentMedia.length > 0 && (
-                <button
-                  onClick={() => handleStartSlideshow(false)}
-                  className="neumorphic-button-primary p-2 flex items-center gap-2 rounded-2xl"
-                  title={t("frame.mixedSlideshow")}
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z" />
-                  </svg>
-                  <span className="hidden sm:inline text-sm">
-                    {t("frame.mixedSlideshow")}
-                  </span>
-                </button>
-              )}
+
+      {/* Unified Top Bar: Left = Navigation Title, Right = Clever Manage & Settings Entries */}
+      <header className="max-w-7xl mx-auto px-5 pt-6 pb-2 flex items-center justify-between gap-4 z-30 relative">
+        {/* Top-Left: Navigation Title (with Back button on subpages) */}
+        <div className="flex items-center gap-3 min-w-0">
+          {!isFeedPage && (
+            <Link
+              href={baseRoute}
+              className="w-9 h-9 rounded-full bg-bg-base shadow-extruded-sm active:shadow-inset border border-white/10 flex items-center justify-center text-fg-muted hover:text-fg-primary transition-all shrink-0"
+              title={t("frame.feed")}
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Link>
+          )}
+          <h1 className="text-lg sm:text-xl font-bold tracking-tight text-fg-primary truncate">
+            {pageTitle}
+          </h1>
+        </div>
+
+        {/* Top-Right: Unified Manage Switcher (Collections + Gallery) & Settings Entry */}
+        <div className="flex items-center gap-2 shrink-0">
+          {isManage ? (
+            /* Inside Manage: Segmented Switcher between Collections & Media Library */
+            <div className="flex items-center p-1 rounded-full bg-bg-base shadow-inset border border-white/5">
+              <Link
+                href={`${baseRoute}/collections`}
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  isCollections
+                    ? "bg-accent text-white shadow-extruded-sm"
+                    : "text-fg-muted hover:text-fg-primary"
+                }`}
+              >
+                <Layers className="w-3.5 h-3.5" />
+                <span>{t("frame.collections")}</span>
+              </Link>
+              <Link
+                href={`${baseRoute}/gallery`}
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  isGallery
+                    ? "bg-accent text-white shadow-extruded-sm"
+                    : "text-fg-muted hover:text-fg-primary"
+                }`}
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+                <span>{t("frame.mediaLibrary")}</span>
+              </Link>
             </div>
-          </div>
+          ) : (
+            /* Outside Manage: Single Subtle Manage Entry Pill */
+            <Link
+              href={`${baseRoute}/collections`}
+              title={`${t("frame.collections")} / ${t("frame.mediaLibrary")}`}
+              className="w-9 h-9 rounded-full bg-bg-base/80 hover:bg-bg-base shadow-extruded-sm active:shadow-inset border border-white/10 flex items-center justify-center text-fg-muted hover:text-fg-primary transition-all"
+            >
+              <FolderKanban className="w-4 h-4" />
+            </Link>
+          )}
+
+          {/* Settings Entry Pill (Toggles back to Feed if already on Settings) */}
+          <Link
+            href={isSettings ? baseRoute : `${baseRoute}/settings`}
+            title={t("frame.settings")}
+            className={`w-9 h-9 rounded-full border border-white/10 flex items-center justify-center transition-all ${
+              isSettings
+                ? "bg-accent text-white shadow-extruded-sm"
+                : "bg-bg-base/80 hover:bg-bg-base shadow-extruded-sm active:shadow-inset text-fg-muted hover:text-fg-primary"
+            }`}
+          >
+            <Settings className="w-4 h-4" />
+          </Link>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-6">
+      <main
+        className={
+          isFeedPage
+            ? "max-w-7xl mx-auto px-4"
+            : "max-w-7xl mx-auto px-4 py-4"
+        }
+      >
         <Suspense fallback={null}>{children}</Suspense>
       </main>
 
-      <NeumorphicBottomNav items={navItems} />
+      {/* Bottom Floating Media Filter Tabs (Icon-only on mobile, Icon + Label on sm+) */}
+      {isFeedPage && (
+        <div className="fixed bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 z-[50] flex items-center p-1.5 rounded-full bg-bg-base/85 backdrop-blur-lg shadow-extruded border border-white/10">
+          {feedTabs.map((tab, idx) => {
+            const Icon = tab.icon;
+            const active = feedFilter === tab.value;
+            return (
+              <div key={tab.value} className="flex items-center">
+                {idx > 0 && <div className="w-px h-5 bg-fg-muted/15 mx-1" />}
+                <button
+                  onClick={() => setFeedFilter(tab.value)}
+                  title={tab.label}
+                  aria-label={tab.label}
+                  className={`flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 rounded-full text-sm font-semibold transition-all cursor-pointer ${
+                    active
+                      ? "bg-accent text-white shadow-extruded-sm scale-[1.03]"
+                      : "text-fg-muted hover:text-fg-primary"
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {showFullscreen && (
         <FullscreenPlayer
@@ -349,7 +363,8 @@ export default function FrameLayoutClient({
           settings={{
             ...settings,
             shuffle: playShuffle,
-            slideInterval: currentCollection?.slideInterval || settings.slideInterval,
+            slideInterval:
+              currentCollection?.slideInterval || settings.slideInterval,
           }}
           onExit={handleExitFullscreen}
           onDelete={deleteMedia}
