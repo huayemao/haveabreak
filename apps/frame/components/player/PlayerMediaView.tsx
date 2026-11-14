@@ -1,9 +1,21 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { MediaItem } from '../../types';
 import { getVideoThumbnail, generateVideoPoster, TRANSPARENT_POSTER } from '../../utils/videoThumbnail';
 import { useTranslations } from 'next-intl';
+
+function stopAndUnloadVideo(vid: HTMLVideoElement | null) {
+  if (!vid) return;
+  try {
+    vid.pause();
+    vid.muted = true;
+    vid.removeAttribute('src');
+    vid.load();
+  } catch {
+    // Ignore cleanup errors
+  }
+}
 
 interface PlayerMediaViewProps {
   media: MediaItem;
@@ -41,6 +53,31 @@ export default function PlayerMediaView({
   const t = useTranslations();
   const [videoThumbnail, setVideoThumbnail] = useState<string | null>(null);
   const [isVideoReady, setIsVideoReady] = useState(false);
+  const internalVideoRef = useRef<HTMLVideoElement | null>(null);
+
+  const setVideoNode = useCallback(
+    (el: HTMLVideoElement | null) => {
+      if (internalVideoRef.current && internalVideoRef.current !== el) {
+        stopAndUnloadVideo(internalVideoRef.current);
+      }
+      internalVideoRef.current = el;
+      if (el && isActive) {
+        videoRef?.(el);
+      }
+    },
+    [videoRef, isActive]
+  );
+
+  // Stop and release decoder whenever this slide becomes inactive, switches media, or unmounts
+  useEffect(() => {
+    if (!isActive && internalVideoRef.current) {
+      stopAndUnloadVideo(internalVideoRef.current);
+    }
+    return () => {
+      stopAndUnloadVideo(internalVideoRef.current);
+      internalVideoRef.current = null;
+    };
+  }, [isActive, media.id, media.url]);
 
   useEffect(() => {
     setIsVideoReady(false);
@@ -95,10 +132,10 @@ export default function PlayerMediaView({
     <div className="relative w-full h-full overflow-hidden select-none bg-black">
       <video
         key={media.id || media.url}
-        ref={videoRef}
+        ref={setVideoNode}
         src={media.url}
         poster={videoThumbnail || media.thumbnailUrl || TRANSPARENT_POSTER}
-        preload="auto"
+        preload="metadata"
         autoPlay={isPlaying}
         className="w-full h-full object-cover pointer-events-none"
         playsInline

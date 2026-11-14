@@ -50,16 +50,16 @@ export default function MediaThumbnail({
         <img
           src={item.url}
           alt={item.title || ''}
-          className={aspectRatio === 'aspect-auto' ? 'w-full h-auto' : 'w-full h-full object-cover'}
+          className={aspectRatio === 'aspect-auto' ? 'w-full h-auto block' : 'w-full h-full object-cover block'}
           loading="lazy"
           draggable={false}
         />
       ) : (
-        <div className={`w-full relative bg-muted overflow-hidden ${aspectRatio === 'aspect-auto' ? 'h-auto' : 'h-full'} ${computedAspectRatio}`}>
+        <div className={`w-full relative bg-neutral-900 overflow-hidden ${aspectRatio === 'aspect-auto' ? 'h-auto' : 'h-full'} ${computedAspectRatio}`}>
           <img
             src={videoThumb}
             alt={item.title || ''}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover block"
             loading="lazy"
             draggable={false}
           />

@@ -37,8 +37,34 @@ export function generateVideoPoster(title?: string): string {
 
 // In-memory cache
 const memoryCache = new Map<string, string>();
+// Negative cache for URLs that failed or hit CORS taint so we don't repeatedly create video elements
+const failedCache = new Set<string>();
 // In-flight extraction promises to prevent duplicate requests
 const inFlightPromises = new Map<string, Promise<string | null>>();
+
+// Concurrency limiter to avoid flooding browser media decoders when switching to Video tab
+const MAX_CONCURRENT_EXTRACTIONS = 2;
+let activeExtractions = 0;
+const extractionQueue: Array<() => void> = [];
+
+function acquireExtractionSlot(): Promise<void> {
+  if (activeExtractions < MAX_CONCURRENT_EXTRACTIONS) {
+    activeExtractions++;
+    return Promise.resolve();
+  }
+  return new Promise((resolve) => {
+    extractionQueue.push(resolve);
+  });
+}
+
+function releaseExtractionSlot(): void {
+  const next = extractionQueue.shift();
+  if (next) {
+    next();
+  } else {
+    activeExtractions = Math.max(0, activeExtractions - 1);
+  }
+}
 
 function openDb(): Promise<IDBDatabase | null> {
   if (typeof window === 'undefined' || !window.indexedDB) {
@@ -110,17 +136,22 @@ function extractThumbnailFromVideo(videoUrl: string): Promise<string | null> {
     video.style.opacity = '0';
     video.style.pointerEvents = 'none';
     video.muted = true;
+    video.defaultMuted = true;
+    video.volume = 0;
     video.playsInline = true;
     video.crossOrigin = 'anonymous';
-    video.preload = 'auto';
+    video.preload = 'metadata';
 
     let resolved = false;
     const cleanup = () => {
+      try {
+        video.pause();
+        video.removeAttribute('src');
+        video.load();
+      } catch {}
       if (video.parentNode) {
-        document.body.removeChild(video);
+        video.parentNode.removeChild(video);
       }
-      video.removeAttribute('src');
-      video.load();
     };
 
     const finish = (result: string | null) => {
@@ -185,9 +216,12 @@ export async function getVideoThumbnail(url: string, id?: string): Promise<strin
 
   const cacheKey = id || url;
 
-  // 1. Check memory cache
+  // 1. Check memory cache & negative cache
   if (memoryCache.has(cacheKey)) {
     return memoryCache.get(cacheKey)!;
+  }
+  if (failedCache.has(cacheKey)) {
+    return null;
   }
 
   // 2. Check in-flight extraction
@@ -204,15 +238,20 @@ export async function getVideoThumbnail(url: string, id?: string): Promise<strin
         return stored;
       }
 
-      // 4. Extract from video
-      const extracted = await extractThumbnailFromVideo(url);
-      if (extracted) {
-        memoryCache.set(cacheKey, extracted);
-        await saveToDb(cacheKey, extracted);
-        return extracted;
+      // 4. Extract from video with concurrency limit
+      await acquireExtractionSlot();
+      try {
+        const extracted = await extractThumbnailFromVideo(url);
+        if (extracted) {
+          memoryCache.set(cacheKey, extracted);
+          await saveToDb(cacheKey, extracted);
+          return extracted;
+        }
+        failedCache.add(cacheKey);
+        return null;
+      } finally {
+        releaseExtractionSlot();
       }
-
-      return null;
     } finally {
       inFlightPromises.delete(cacheKey);
     }

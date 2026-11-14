@@ -88,14 +88,14 @@ const FeedCardView = React.memo(function FeedCardView({
   const innerCard = (
     <div
       onClick={() => onCardClick(card)}
-      className="relative w-full h-full overflow-hidden group cursor-pointer bg-bg-base select-none"
+      className="relative w-full h-full rounded-[28px] overflow-hidden group cursor-pointer bg-neutral-900 select-none [transform:translateZ(0)]"
     >
       {/* Cover Media */}
       <MediaThumbnail
         item={card.coverMedia}
         aspectRatio="w-full h-full"
         showPlayIcon={false}
-        className="w-full h-full pointer-events-none select-none transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+        className="w-full h-full pointer-events-none select-none scale-[1.01] transition-transform duration-500 ease-out group-hover:scale-[1.04]"
       />
 
       {/* Minimalist Bottom Gradient & Collection Name Only */}
@@ -598,7 +598,7 @@ export default function FeedPageClient() {
                 return (
                   <SwiperSlide
                     key={card.id}
-                    className="rounded-[28px] overflow-hidden shadow-[0_20px_50px_-15px_rgba(0,0,0,0.4)] ring-1 ring-white/15 bg-bg-base"
+                    className="rounded-[28px] overflow-hidden shadow-[0_20px_50px_-15px_rgba(0,0,0,0.45)] bg-transparent"
                   >
                     {isNear ? (
                       <FeedCardView

@@ -419,8 +419,30 @@ export default function FullscreenPlayer({
 
   const handleVideoCallbackRef = useCallback((el: HTMLVideoElement | null) => {
     if (el) {
+      if (videoRef.current && videoRef.current !== el) {
+        try {
+          videoRef.current.pause();
+          videoRef.current.muted = true;
+        } catch {}
+      }
       videoRef.current = el;
     }
+  }, []);
+
+  // Ensure any active video is paused and unloaded when FullscreenPlayer unmounts
+  useEffect(() => {
+    return () => {
+      const vid = videoRef.current;
+      if (vid) {
+        try {
+          vid.pause();
+          vid.muted = true;
+          vid.removeAttribute('src');
+          vid.load();
+        } catch {}
+        videoRef.current = null;
+      }
+    };
   }, []);
 
   const handleVideoPause = (e: React.SyntheticEvent<HTMLVideoElement>) => {
@@ -444,6 +466,13 @@ export default function FullscreenPlayer({
 
   const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const vid = e.currentTarget;
+    if (videoRef.current && vid !== videoRef.current) {
+      try {
+        vid.pause();
+        vid.muted = true;
+      } catch {}
+      return;
+    }
     setDuration(vid.duration || 0);
     if (isPlaying && vid.paused) {
       attemptPlayVideo(vid);
@@ -452,6 +481,13 @@ export default function FullscreenPlayer({
 
   const handleCanPlay = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const vid = e.currentTarget;
+    if (videoRef.current && vid !== videoRef.current) {
+      try {
+        vid.pause();
+        vid.muted = true;
+      } catch {}
+      return;
+    }
     if (isPlaying && vid.paused) {
       attemptPlayVideo(vid);
     }
@@ -460,6 +496,9 @@ export default function FullscreenPlayer({
   const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     if (isScrubbingRef.current) return;
     const vid = e.currentTarget;
+    if (videoRef.current && vid !== videoRef.current) {
+      return;
+    }
     setCurrentTime(vid.currentTime);
     if (vid.duration) {
       setProgress((vid.currentTime / vid.duration) * 100);
