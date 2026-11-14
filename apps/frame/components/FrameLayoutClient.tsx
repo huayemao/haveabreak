@@ -85,7 +85,25 @@ export default function FrameLayoutClient({
       }
     } else if (isFeed) {
       const baseFeed = feedMedia.length > 0 ? feedMedia : media;
-      if (selectedCollectionId) {
+      if (selectedCollectionId === "__uncollected__") {
+        const collectedIds = new Set(
+          collections.flatMap((col) => col.mediaIds || []),
+        );
+        const uncollectedMedia = baseFeed.filter(
+          (m) => !collectedIds.has(m.id),
+        );
+        const itemIdx = selectedItemId
+          ? uncollectedMedia.findIndex((m) => m.id === selectedItemId)
+          : -1;
+        mediaList =
+          itemIdx >= 0
+            ? [
+                uncollectedMedia[itemIdx],
+                ...uncollectedMedia.slice(0, itemIdx),
+                ...uncollectedMedia.slice(itemIdx + 1),
+              ]
+            : uncollectedMedia;
+      } else if (selectedCollectionId) {
         const collection = collections.find(
           (col) => col.id === selectedCollectionId,
         );
@@ -98,20 +116,13 @@ export default function FrameLayoutClient({
             ? collectionMedia.findIndex((m) => m.id === selectedItemId)
             : -1;
 
-          const orderedCollectionMedia =
+          mediaList =
             itemIdx >= 0
               ? [
                   ...collectionMedia.slice(itemIdx),
                   ...collectionMedia.slice(0, itemIdx),
                 ]
               : collectionMedia;
-
-          const collectionIdSet = new Set(collection.mediaIds);
-          const remainingFeed = baseFeed.filter(
-            (m) => !collectionIdSet.has(m.id),
-          );
-
-          mediaList = [...orderedCollectionMedia, ...remainingFeed];
         } else {
           mediaList = baseFeed;
         }
@@ -121,7 +132,11 @@ export default function FrameLayoutClient({
     } else {
       mediaList = media;
     }
-    return filterMediaByOrientation(mediaList, settings.filterByOrientation);
+    const filtered = filterMediaByOrientation(
+      mediaList,
+      settings.filterByOrientation,
+    );
+    return filtered.length > 0 ? filtered : mediaList;
   }, [
     selectedCollectionId,
     selectedItemId,
@@ -154,7 +169,7 @@ export default function FrameLayoutClient({
       shuffle: null,
       mediaType: null,
       item: null,
-      ...(isFeed ? { collection: null } : {}),
+      ...(isFeed ? { collection: null, feed: null } : {}),
     });
   };
 
@@ -195,6 +210,7 @@ export default function FrameLayoutClient({
   };
 
   const baseRoute = `/frame`;
+  const isFeedPage = pathname === baseRoute || pathname === `${baseRoute}/`;
   const isGallery = pathname === `${baseRoute}/gallery`;
   const isCollections = pathname.startsWith(`${baseRoute}/collections`);
   const isSettings = pathname === `${baseRoute}/settings`;
@@ -256,11 +272,12 @@ export default function FrameLayoutClient({
 
   const urlShuffle = searchParams.get("shuffle");
   const urlMediaType = searchParams.get("mediaType");
-  const playShuffle = isFeed
-    ? false
-    : urlShuffle !== null
+  const playShuffle =
+    urlShuffle !== null
       ? urlShuffle === "true"
-      : settings.shuffle;
+      : isFeed
+        ? false
+        : settings.shuffle;
 
   const playMedia = useMemo(() => {
     if (urlMediaType === "image") {
@@ -286,58 +303,60 @@ export default function FrameLayoutClient({
   return (
     <div className="bg-bg-base pb-20 min-h-screen">
       <InstallPrompt appId="frame" />
-      <header className="bg-bg-base/90 backdrop-blur-lg border-b border-white/10 transition-all duration-300 mt-6">
-        <div className="max-w-7xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {imageMedia.length > 0 && (
-                <button
-                  onClick={() => handleStartImageSlideshow(false)}
-                  className="neumorphic-button-primary p-2 flex items-center gap-2 rounded-2xl"
-                  title={t("frame.imageSlideshow")}
-                >
-                  <ImageIcon className="w-5 h-5" />
-                  <span className="hidden sm:inline text-sm">
-                    {t("frame.imageSlideshow")}
-                  </span>
-                </button>
-              )}
-              {videoMedia.length > 0 && (
-                <button
-                  onClick={() => handleStartVideoSlideshow(false)}
-                  className="neumorphic-button-primary p-2 flex items-center gap-2 rounded-2xl"
-                  title={t("frame.videoSlideshow")}
-                >
-                  <Video className="w-5 h-5" />
-                  <span className="hidden sm:inline text-sm">
-                    {t("frame.videoSlideshow")}
-                  </span>
-                </button>
-              )}
-              {currentMedia.length > 0 && (
-                <button
-                  onClick={() => handleStartSlideshow(false)}
-                  className="neumorphic-button-primary p-2 flex items-center gap-2 rounded-2xl"
-                  title={t("frame.mixedSlideshow")}
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
+      {!isFeedPage && (
+        <header className="bg-bg-base/90 backdrop-blur-lg border-b border-white/10 transition-all duration-300 mt-6">
+          <div className="max-w-7xl mx-auto px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                {imageMedia.length > 0 && (
+                  <button
+                    onClick={() => handleStartImageSlideshow(false)}
+                    className="neumorphic-button-primary p-2 flex items-center gap-2 rounded-2xl"
+                    title={t("frame.imageSlideshow")}
                   >
-                    <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z" />
-                  </svg>
-                  <span className="hidden sm:inline text-sm">
-                    {t("frame.mixedSlideshow")}
-                  </span>
-                </button>
-              )}
+                    <ImageIcon className="w-5 h-5" />
+                    <span className="hidden sm:inline text-sm">
+                      {t("frame.imageSlideshow")}
+                    </span>
+                  </button>
+                )}
+                {videoMedia.length > 0 && (
+                  <button
+                    onClick={() => handleStartVideoSlideshow(false)}
+                    className="neumorphic-button-primary p-2 flex items-center gap-2 rounded-2xl"
+                    title={t("frame.videoSlideshow")}
+                  >
+                    <Video className="w-5 h-5" />
+                    <span className="hidden sm:inline text-sm">
+                      {t("frame.videoSlideshow")}
+                    </span>
+                  </button>
+                )}
+                {currentMedia.length > 0 && (
+                  <button
+                    onClick={() => handleStartSlideshow(false)}
+                    className="neumorphic-button-primary p-2 flex items-center gap-2 rounded-2xl"
+                    title={t("frame.mixedSlideshow")}
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z" />
+                    </svg>
+                    <span className="hidden sm:inline text-sm">
+                      {t("frame.mixedSlideshow")}
+                    </span>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
+      )}
 
-      <main className="max-w-7xl mx-auto px-4 py-6">
+      <main className={isFeedPage ? "max-w-7xl mx-auto px-4" : "max-w-7xl mx-auto px-4 py-6"}>
         <Suspense fallback={null}>{children}</Suspense>
       </main>
 
