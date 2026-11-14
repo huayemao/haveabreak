@@ -321,9 +321,7 @@ export default function FrameLayoutClient({
 
       <main
         className={
-          isFeedPage
-            ? "max-w-7xl mx-auto px-4"
-            : "max-w-7xl mx-auto px-4 py-4"
+          isFeedPage ? "w-full" : "max-w-7xl mx-auto px-4 py-4"
         }
       >
         <Suspense fallback={null}>{children}</Suspense>

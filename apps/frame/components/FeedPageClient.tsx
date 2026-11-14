@@ -526,7 +526,7 @@ export default function FeedPageClient() {
   const headerHeight = 64;
 
   return (
-    <div className="relative h-[calc(100dvh-8.5rem)] flex flex-col items-center justify-center gap-5 py-2 overflow-hidden select-none">
+    <div className="relative w-full h-[calc(100dvh-8.5rem)] flex flex-col items-center justify-center gap-5 py-4 overflow-x-clip select-none">
       {/* Pull-to-Refresh Indicator */}
       <div
         className="flex flex-col items-center justify-center text-xs text-fg-muted overflow-hidden shrink-0 pointer-events-none"
