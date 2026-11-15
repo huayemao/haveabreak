@@ -16,6 +16,7 @@ interface PlayerViewportProps {
   transitionType: 'slide' | 'fade';
   transitionDuration: number;
   swipeEnabled: boolean;
+  isMenuOpen?: boolean;
   isPlaying: boolean;
   videoRef: (el: HTMLVideoElement | null) => void;
   isAutoplayMuted: boolean;
@@ -23,6 +24,7 @@ interface PlayerViewportProps {
   onSlideNext: () => void;
   onSlidePrev: () => void;
   onContainerClick: (e?: React.MouseEvent) => void;
+  onOpenContextMenu?: (x: number, y: number) => void;
   // Video lifecycle events
   onPlay?: () => void;
   onPlaying?: () => void;
@@ -33,6 +35,9 @@ interface PlayerViewportProps {
   onTimeUpdate?: (e: React.SyntheticEvent<HTMLVideoElement>) => void;
   onEnded?: (e: React.SyntheticEvent<HTMLVideoElement>) => void;
 }
+
+const LONG_PRESS_DURATION_MS = 450;
+const LONG_PRESS_MOVE_TOLERANCE_PX = 12;
 
 export default function PlayerViewport({
   media,
@@ -45,6 +50,7 @@ export default function PlayerViewport({
   transitionType,
   transitionDuration,
   swipeEnabled,
+  isMenuOpen = false,
   isPlaying,
   videoRef,
   isAutoplayMuted,
@@ -52,6 +58,7 @@ export default function PlayerViewport({
   onSlideNext,
   onSlidePrev,
   onContainerClick,
+  onOpenContextMenu,
   onPlay,
   onPlaying,
   onLoadedData,
@@ -65,9 +72,23 @@ export default function PlayerViewport({
   const isDraggingRef = useRef(false);
   const isAnimatingRef = useRef(false);
   const lastWheelTimeRef = useRef(0);
+  const longPressTimerRef = useRef<number | null>(null);
+  const longPressTriggeredRef = useRef(false);
+  const pointerDownPosRef = useRef<{ x: number; y: number } | null>(null);
 
   const hasMultipleMedia = media.length > 1;
-  const canSwipe = swipeEnabled && hasMultipleMedia;
+  const canSwipe = swipeEnabled && hasMultipleMedia && !isMenuOpen;
+
+  const clearLongPressTimer = useCallback(() => {
+    if (longPressTimerRef.current !== null) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => clearLongPressTimer();
+  }, [clearLongPressTimer]);
 
   // Programmatic vertical slide (used for swipe release, wheel, buttons, keyboard)
   const executeSlide = useCallback(
@@ -98,12 +119,75 @@ export default function PlayerViewport({
   const lastTapTimeRef = useRef(0);
 
   const triggerTap = useCallback(() => {
-    if (isAnimatingRef.current) return;
+    if (isAnimatingRef.current || longPressTriggeredRef.current) return;
     const now = Date.now();
     if (now - lastTapTimeRef.current < 350) return;
     lastTapTimeRef.current = now;
     onContainerClick();
   }, [onContainerClick]);
+
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent) => {
+      dragStartTimeRef.current = Date.now();
+      // Right-click is handled by onContextMenu
+      if (e.button === 2) return;
+
+      longPressTriggeredRef.current = false;
+      const clientX = e.clientX;
+      const clientY = e.clientY;
+      pointerDownPosRef.current = { x: clientX, y: clientY };
+
+      clearLongPressTimer();
+      longPressTimerRef.current = window.setTimeout(() => {
+        longPressTimerRef.current = null;
+        if (isAnimatingRef.current) return;
+        longPressTriggeredRef.current = true;
+        try {
+          if (typeof navigator !== 'undefined' && navigator.vibrate) {
+            navigator.vibrate(15);
+          }
+        } catch {}
+        onOpenContextMenu?.(clientX, clientY);
+      }, LONG_PRESS_DURATION_MS);
+    },
+    [clearLongPressTimer, onOpenContextMenu]
+  );
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      if (!pointerDownPosRef.current || longPressTimerRef.current === null) return;
+      const dx = e.clientX - pointerDownPosRef.current.x;
+      const dy = e.clientY - pointerDownPosRef.current.y;
+      if (Math.hypot(dx, dy) > LONG_PRESS_MOVE_TOLERANCE_PX) {
+        clearLongPressTimer();
+      }
+    },
+    [clearLongPressTimer]
+  );
+
+  const handlePointerUpOrCancel = useCallback(() => {
+    clearLongPressTimer();
+    pointerDownPosRef.current = null;
+    if (longPressTriggeredRef.current) {
+      window.setTimeout(() => {
+        longPressTriggeredRef.current = false;
+      }, 150);
+    }
+  }, [clearLongPressTimer]);
+
+  const handleContextMenu = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      clearLongPressTimer();
+      longPressTriggeredRef.current = true;
+      window.setTimeout(() => {
+        longPressTriggeredRef.current = false;
+      }, 150);
+      onOpenContextMenu?.(e.clientX, e.clientY);
+    },
+    [clearLongPressTimer, onOpenContextMenu]
+  );
 
   const handleDragStart = () => {
     isDraggingRef.current = true;
@@ -111,9 +195,18 @@ export default function PlayerViewport({
   };
 
   const handleDragEnd = (_e: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    clearLongPressTimer();
     setTimeout(() => {
       isDraggingRef.current = false;
     }, 120);
+
+    if (longPressTriggeredRef.current) {
+      animate(y, 0, { type: 'spring', stiffness: 350, damping: 30 });
+      window.setTimeout(() => {
+        longPressTriggeredRef.current = false;
+      }, 150);
+      return;
+    }
 
     const offsetY = info.offset.y;
     const velocityY = info.velocity.y;
@@ -149,6 +242,7 @@ export default function PlayerViewport({
   };
 
   const handleWheel = (e: React.WheelEvent) => {
+    clearLongPressTimer();
     if (!canSwipe || isAnimatingRef.current) return;
     const now = Date.now();
     if (now - lastWheelTimeRef.current < 600) return;
@@ -164,6 +258,7 @@ export default function PlayerViewport({
   };
 
   const handleClick = (e: React.MouseEvent) => {
+    if (longPressTriggeredRef.current) return;
     if (isDraggingRef.current && Math.abs(y.get()) > 10) return;
     triggerTap();
   };
@@ -183,6 +278,7 @@ export default function PlayerViewport({
       className="absolute inset-0 overflow-hidden select-none touch-none"
       onClick={handleClick}
       onWheel={handleWheel}
+      onContextMenu={handleContextMenu}
     >
       {/* 3-Slot Vertical Container for 1:1 real-time drag following (跟手且露前后媒体) */}
       <motion.div
@@ -190,9 +286,10 @@ export default function PlayerViewport({
         drag={canSwipe ? 'y' : false}
         dragConstraints={{ top: 0, bottom: 0 }}
         dragElastic={canSwipe ? 1 : 0.1}
-        onPointerDown={() => {
-          dragStartTimeRef.current = Date.now();
-        }}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUpOrCancel}
+        onPointerCancel={handlePointerUpOrCancel}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         onTap={() => triggerTap()}

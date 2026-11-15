@@ -68,5 +68,17 @@
   "refresh": "Atualizar",
   "recommendedForYou": "Recomendado para você",
   "pullToRefresh": "Puxe para atualizar",
-  "releaseToRefresh": "Solte para atualizar"
+  "releaseToRefresh": "Solte para atualizar",
+  "tapToUnmute": "Toque para ativar o som",
+  "addToCollection": "Adicionar à coleção",
+  "editInfo": "Editar informações",
+  "copyUrl": "Copiar URL",
+  "removeFromCollection": "Remover da coleção",
+  "newCollectionPlaceholder": "Nova coleção...",
+  "untitledMedia": "Mídia sem título",
+  "orientation": "Orientação",
+  "savedSuccess": "Alterações salvas",
+  "addedToCollection": "Adicionado a \"{name}\"",
+  "removedFromCollection": "Removido de \"{name}\"",
+  "inCollectionsCount": "Em {count} coleções"
 }

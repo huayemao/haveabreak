@@ -68,5 +68,17 @@
   "refresh": "Aktualisieren",
   "recommendedForYou": "Empfohlen für dich",
   "pullToRefresh": "Ziehen zum Aktualisieren",
-  "releaseToRefresh": "Freigeben zum Aktualisieren"
+  "releaseToRefresh": "Freigeben zum Aktualisieren",
+  "tapToUnmute": "Tippen zum Ton einschalten",
+  "addToCollection": "Zur Sammlung hinzufügen",
+  "editInfo": "Info bearbeiten",
+  "copyUrl": "URL kopieren",
+  "removeFromCollection": "Aus Sammlung entfernen",
+  "newCollectionPlaceholder": "Neuer Sammlungsname...",
+  "untitledMedia": "Unbenanntes Medium",
+  "orientation": "Ausrichtung",
+  "savedSuccess": "Änderungen gespeichert",
+  "addedToCollection": "Zu „{name}“ hinzugefügt",
+  "removedFromCollection": "Aus „{name}“ entfernt",
+  "inCollectionsCount": "In {count} Sammlungen"
 }

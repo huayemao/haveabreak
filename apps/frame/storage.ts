@@ -79,6 +79,23 @@ export async function addMedia(url: string, type: 'image' | 'video', title?: str
   return newItem;
 }
 
+export async function updateMedia(id: string, updates: Partial<MediaItem>): Promise<MediaItem | null> {
+  const media = await getStoredMedia();
+  const index = media.findIndex((m) => m.id === id);
+  if (index === -1) return null;
+
+  const updated: MediaItem = {
+    ...media[index],
+    ...updates,
+    id: media[index].id,
+    updatedAt: Date.now(),
+  };
+
+  media[index] = updated;
+  saveMedia(media);
+  return updated;
+}
+
 export async function deleteMedia(id: string): Promise<void> {
   const media = (await getStoredMedia()).filter((m) => m.id !== id);
   saveMedia(media);

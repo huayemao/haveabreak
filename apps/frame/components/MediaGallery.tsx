@@ -1,15 +1,18 @@
 "use client";
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useRouter, usePathname } from '@/i18n/routing';
 import { useSearchParams } from 'next/navigation';
 import Lightbox from 'yet-another-react-lightbox';
 import Video from 'yet-another-react-lightbox/plugins/video';
-import { MediaItem, MediaType } from '../types';
+import { Collection, MediaItem, MediaType } from '../types';
 import { useTranslations } from 'next-intl';
 import 'yet-another-react-lightbox/styles.css';
 import MediaCard from './MediaCard';
 import { useScrollLock } from '../utils/useScrollLock';
 import { downloadMediaFile } from '../storage';
+import { useFrameStore } from '../store';
+import PlayerMediaMenu, { PlayerMenuView } from './player/PlayerMediaMenu';
+import { FolderPlus, Edit3 } from 'lucide-react';
 
 interface MediaGalleryProps {
   media: MediaItem[];
@@ -38,7 +41,126 @@ export default function MediaGallery({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  useScrollLock(lightboxOpen || showDeleteConfirm);
+  const collections = useFrameStore((s) => s.collections);
+  const updateMedia = useFrameStore((s) => s.updateMedia);
+  const toggleMediaInCollection = useFrameStore((s) => s.toggleMediaInCollection);
+  const createCollection = useFrameStore((s) => s.createCollection);
+  const updateCollection = useFrameStore((s) => s.updateCollection);
+  const activeCollectionId = searchParams.get('collection');
+
+  const [menuState, setMenuState] = useState<{
+    isOpen: boolean;
+    item: MediaItem | null;
+    x: number;
+    y: number;
+    view: PlayerMenuView;
+  }>({
+    isOpen: false,
+    item: null,
+    x: 0,
+    y: 0,
+    view: 'menu',
+  });
+
+  useScrollLock(lightboxOpen || showDeleteConfirm || menuState.isOpen);
+
+  // Support right-click & long-press when Lightbox is open
+  useEffect(() => {
+    if (!lightboxOpen) return;
+
+    let timer: number | null = null;
+    let startPos: { x: number; y: number } | null = null;
+
+    const clearTimer = () => {
+      if (timer !== null) {
+        clearTimeout(timer);
+        timer = null;
+      }
+    };
+
+    const onContextMenu = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target?.closest('.yarl__root')) return;
+      e.preventDefault();
+      clearTimer();
+      const activeItem = media[currentIndex];
+      if (activeItem) {
+        setMenuState({
+          isOpen: true,
+          item: activeItem,
+          x: e.clientX,
+          y: e.clientY,
+          view: 'menu',
+        });
+      }
+    };
+
+    const onPointerDown = (e: PointerEvent) => {
+      if (e.button === 2) return;
+      const target = e.target as HTMLElement | null;
+      if (!target?.closest('.yarl__slide')) return;
+      startPos = { x: e.clientX, y: e.clientY };
+      clearTimer();
+      timer = window.setTimeout(() => {
+        timer = null;
+        const activeItem = media[currentIndex];
+        if (activeItem && startPos) {
+          try {
+            navigator.vibrate?.(15);
+          } catch {}
+          setMenuState({
+            isOpen: true,
+            item: activeItem,
+            x: startPos.x,
+            y: startPos.y,
+            view: 'menu',
+          });
+        }
+      }, 450);
+    };
+
+    const onPointerMove = (e: PointerEvent) => {
+      if (!startPos || timer === null) return;
+      if (Math.hypot(e.clientX - startPos.x, e.clientY - startPos.y) > 12) {
+        clearTimer();
+      }
+    };
+
+    const onPointerUp = () => {
+      clearTimer();
+      startPos = null;
+    };
+
+    window.addEventListener('contextmenu', onContextMenu, true);
+    window.addEventListener('pointerdown', onPointerDown, true);
+    window.addEventListener('pointermove', onPointerMove, true);
+    window.addEventListener('pointerup', onPointerUp, true);
+    window.addEventListener('pointercancel', onPointerUp, true);
+
+    return () => {
+      clearTimer();
+      window.removeEventListener('contextmenu', onContextMenu, true);
+      window.removeEventListener('pointerdown', onPointerDown, true);
+      window.removeEventListener('pointermove', onPointerMove, true);
+      window.removeEventListener('pointerup', onPointerUp, true);
+      window.removeEventListener('pointercancel', onPointerUp, true);
+    };
+  }, [lightboxOpen, media, currentIndex]);
+
+  const handleOpenCardEditMenu = useCallback(
+    (item: MediaItem, view: PlayerMenuView, e?: React.MouseEvent) => {
+      const x = e?.clientX || (typeof window !== 'undefined' ? window.innerWidth / 2 - 160 : 120);
+      const y = e?.clientY || (typeof window !== 'undefined' ? window.innerHeight / 3 : 120);
+      setMenuState({
+        isOpen: true,
+        item,
+        x,
+        y,
+        view,
+      });
+    },
+    []
+  );
 
   const slides = media.map((item) => {
     if (item.type === 'video') {
@@ -150,6 +272,7 @@ export default function MediaGallery({
               onDelete={handleDelete}
               onPlay={onPlay}
               onDownload={handleDownload}
+              onOpenEditMenu={handleOpenCardEditMenu}
             />
           ))}
         </div>
@@ -187,6 +310,48 @@ export default function MediaGallery({
               </button>
             ] : []),
             <button
+              key="add-collection"
+              type="button"
+              onClick={(e) => {
+                const activeItem = media[currentIndex];
+                if (activeItem) {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  setMenuState({
+                    isOpen: true,
+                    item: activeItem,
+                    x: rect.left,
+                    y: rect.bottom + 8,
+                    view: 'collections',
+                  });
+                }
+              }}
+              className="w-11 h-11 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 shadow-lg transition-all"
+              title={t('frame.addToCollection')}
+            >
+              <FolderPlus className="w-5 h-5" />
+            </button>,
+            <button
+              key="edit-info"
+              type="button"
+              onClick={(e) => {
+                const activeItem = media[currentIndex];
+                if (activeItem) {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  setMenuState({
+                    isOpen: true,
+                    item: activeItem,
+                    x: rect.left,
+                    y: rect.bottom + 8,
+                    view: 'edit',
+                  });
+                }
+              }}
+              className="w-11 h-11 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 shadow-lg transition-all"
+              title={t('frame.editInfo')}
+            >
+              <Edit3 className="w-5 h-5" />
+            </button>,
+            <button
               key="delete"
               type="button"
               onClick={() => setShowDeleteConfirm(true)}
@@ -201,6 +366,59 @@ export default function MediaGallery({
           ],
         }}
       />
+
+      {menuState.item && (
+        <PlayerMediaMenu
+          isOpen={menuState.isOpen}
+          initialView={menuState.view}
+          anchor={{ x: menuState.x, y: menuState.y }}
+          media={media.find((m) => m.id === menuState.item?.id) || menuState.item}
+          collections={collections}
+          activeCollectionId={activeCollectionId}
+          onClose={() => setMenuState((prev) => ({ ...prev, isOpen: false }))}
+          onToggleCollection={(col: Collection) =>
+            toggleMediaInCollection(menuState.item!.id, col.id)
+          }
+          onCreateCollectionWithMedia={async (name: string) => {
+            await createCollection(name, undefined, [menuState.item!.id]);
+          }}
+          onUpdateMedia={async (updates) => {
+            await updateMedia(menuState.item!.id, updates);
+          }}
+          onRemoveFromActiveCollection={
+            activeCollectionId && activeCollectionId !== '__uncollected__'
+              ? async () => {
+                  const col = collections.find((c) => c.id === activeCollectionId);
+                  if (col && menuState.item) {
+                    await updateCollection(col.id, {
+                      mediaIds: col.mediaIds.filter((id) => id !== menuState.item!.id),
+                    });
+                  }
+                }
+              : undefined
+          }
+          onDeleteMedia={async () => {
+            if (menuState.item) {
+              handleDelete(menuState.item.id);
+              if (lightboxOpen && media.length <= 1) {
+                setLightboxOpen(false);
+              }
+            }
+          }}
+          onDownloadMedia={async () => {
+            if (menuState.item) {
+              await handleDownload(menuState.item);
+            }
+          }}
+          onCopyUrl={async () => {
+            if (menuState.item) {
+              try {
+                await navigator.clipboard.writeText(menuState.item.url);
+              } catch {}
+            }
+          }}
+        />
+      )}
 
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">

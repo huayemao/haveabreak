@@ -8,8 +8,9 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from '@haveabreak/ui/components/ui/context-menu';
-import { Trash2, Play, Download } from 'lucide-react';
+import { Trash2, Play, Download, FolderPlus, Edit3 } from 'lucide-react';
 import MediaThumbnail from './MediaThumbnail';
+import { PlayerMenuView } from './player/PlayerMediaMenu';
 
 interface MediaCardProps {
   item: MediaItem;
@@ -19,6 +20,7 @@ interface MediaCardProps {
   onDelete: (id: string) => void;
   onPlay?: (paused: boolean, startIndex?: number) => void;
   onDownload?: (item: MediaItem) => void;
+  onOpenEditMenu?: (item: MediaItem, view: PlayerMenuView, e?: React.MouseEvent) => void;
 }
 
 export default function MediaCard({
@@ -29,6 +31,7 @@ export default function MediaCard({
   onDelete,
   onPlay,
   onDownload,
+  onOpenEditMenu,
 }: MediaCardProps) {
   const t = useTranslations();
   const getOrientationLabel = (orientation: string) => {
@@ -91,6 +94,24 @@ export default function MediaCard({
             <Play className="w-4 h-4" />
             {t('frame.slideshow')}
           </ContextMenuItem>
+        )}
+        {onOpenEditMenu && (
+          <>
+            <ContextMenuItem
+              onClick={(e) => onOpenEditMenu(item, 'collections', e)}
+              className="gap-2"
+            >
+              <FolderPlus className="w-4 h-4" />
+              {t('frame.addToCollection')}
+            </ContextMenuItem>
+            <ContextMenuItem
+              onClick={(e) => onOpenEditMenu(item, 'edit', e)}
+              className="gap-2"
+            >
+              <Edit3 className="w-4 h-4" />
+              {t('frame.editInfo')}
+            </ContextMenuItem>
+          </>
         )}
         <ContextMenuItem
           onClick={() => onDownload?.(item)}

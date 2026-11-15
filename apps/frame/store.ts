@@ -16,6 +16,7 @@ import {
   saveMedia,
   saveCollections,
   addMedia as storageAddMedia,
+  updateMedia as storageUpdateMedia,
   deleteMedia as storageDeleteMedia,
   createCollection as storageCreateCollection,
   updateCollection as storageUpdateCollection,
@@ -47,8 +48,10 @@ interface FrameState {
   generateFeedMedia: () => void;
   setFeedFilter: (filter: FeedMediaFilter) => void;
   addMedia: (url: string, type: MediaType, title?: string, collectionId?: string) => Promise<MediaItem | void>;
+  updateMedia: (id: string, updates: Partial<MediaItem>) => Promise<void>;
   deleteMedia: (id: string) => Promise<void>;
-  createCollection: (name: string, description?: string, mediaIds?: string[], slideInterval?: number) => Promise<void>;
+  toggleMediaInCollection: (mediaId: string, collectionId: string) => Promise<boolean>;
+  createCollection: (name: string, description?: string, mediaIds?: string[], slideInterval?: number) => Promise<Collection | void>;
   updateCollection: (id: string, updates: Partial<Collection>) => Promise<void>;
   deleteCollection: (id: string) => Promise<void>;
   updateSettings: (settings: FrameSettings) => void;
@@ -136,6 +139,20 @@ export const useFrameStore = create<FrameState>((set, get) => ({
     }
   },
 
+  updateMedia: async (id, updates) => {
+    try {
+      const updated = await storageUpdateMedia(id, updates);
+      if (updated) {
+        set((state) => ({
+          media: state.media.map((m) => (m.id === id ? updated : m)),
+          feedMedia: state.feedMedia.map((m) => (m.id === id ? updated : m)),
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to update media:', error);
+    }
+  },
+
   deleteMedia: async (id) => {
     try {
       await storageDeleteMedia(id);
@@ -152,10 +169,22 @@ export const useFrameStore = create<FrameState>((set, get) => ({
     }
   },
 
+  toggleMediaInCollection: async (mediaId, collectionId) => {
+    const collection = get().collections.find((c) => c.id === collectionId);
+    if (!collection) return false;
+    const exists = collection.mediaIds.includes(mediaId);
+    const nextMediaIds = exists
+      ? collection.mediaIds.filter((id) => id !== mediaId)
+      : [...collection.mediaIds, mediaId];
+    await get().updateCollection(collectionId, { mediaIds: nextMediaIds });
+    return !exists;
+  },
+
   createCollection: async (name, description, mediaIds, slideInterval) => {
     try {
       const newCollection = await storageCreateCollection(name, description, mediaIds, slideInterval);
       set((state) => ({ collections: [...state.collections, newCollection] }));
+      return newCollection;
     } catch (error) {
       console.error('Failed to create collection:', error);
     }

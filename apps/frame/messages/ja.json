@@ -68,5 +68,17 @@
   "refresh": "更新",
   "recommendedForYou": "あなたへのおすすめ",
   "pullToRefresh": "下に引いて更新",
-  "releaseToRefresh": "離して更新"
+  "releaseToRefresh": "離して更新",
+  "tapToUnmute": "タップしてミュート解除",
+  "addToCollection": "コレクションに追加",
+  "editInfo": "情報を編集",
+  "copyUrl": "URLをコピー",
+  "removeFromCollection": "現在のコレクションから削除",
+  "newCollectionPlaceholder": "新規コレクション名...",
+  "untitledMedia": "無題のメディア",
+  "orientation": "向き",
+  "savedSuccess": "変更を保存しました",
+  "addedToCollection": "「{name}」に追加しました",
+  "removedFromCollection": "「{name}」から削除しました",
+  "inCollectionsCount": "{count} 個のコレクション"
 }

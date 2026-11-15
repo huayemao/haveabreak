@@ -6,9 +6,13 @@ import { useRouter, usePathname } from '@/i18n/routing';
 import { useSearchParams } from 'next/navigation';
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { MediaItem, FrameSettings } from '../types';
+import { Layers, MoreHorizontal, FolderPlus, Check } from 'lucide-react';
+import { Collection, MediaItem, FrameSettings } from '../types';
+import { useFrameStore } from '../store';
+import { downloadMediaFile } from '../storage';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import PlayerViewport from './player/PlayerViewport';
+import PlayerMediaMenu, { PlayerMenuView } from './player/PlayerMediaMenu';
 
 interface FullscreenPlayerProps {
   media: MediaItem[];
@@ -20,7 +24,7 @@ interface FullscreenPlayerProps {
 }
 
 export default function FullscreenPlayer({
-  media,
+  media: initialPropMedia,
   settings,
   onExit,
   onDelete,
@@ -31,6 +35,44 @@ export default function FullscreenPlayer({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const storeMedia = useFrameStore((s) => s.media);
+  const collections = useFrameStore((s) => s.collections);
+  const updateMedia = useFrameStore((s) => s.updateMedia);
+  const storeDeleteMedia = useFrameStore((s) => s.deleteMedia);
+  const toggleMediaInCollection = useFrameStore((s) => s.toggleMediaInCollection);
+  const createCollection = useFrameStore((s) => s.createCollection);
+  const updateCollection = useFrameStore((s) => s.updateCollection);
+
+  const activeCollectionId = searchParams.get('collection');
+
+  // Keep a stable session queue of media IDs so adding an uncollected item to a collection
+  // during fullscreen playback does not abruptly eject the current slide from under the user.
+  const [sessionMediaIds, setSessionMediaIds] = useState<string[]>(() =>
+    initialPropMedia.map((m) => m.id)
+  );
+
+  // Sync any newly added items from prop media while preserving existing session items that still exist in store
+  useEffect(() => {
+    setSessionMediaIds((prev) => {
+      const storeIds = new Set(storeMedia.map((m) => m.id));
+      const validPrev = prev.filter((id) => storeIds.has(id));
+      const existingSet = new Set(validPrev);
+      const additions = initialPropMedia
+        .map((m) => m.id)
+        .filter((id) => storeIds.has(id) && !existingSet.has(id));
+      return additions.length > 0 ? [...validPrev, ...additions] : validPrev;
+    });
+  }, [initialPropMedia, storeMedia]);
+
+  // Resolve latest MediaItem metadata (title, description, orientation, url) from store
+  const media = useMemo<MediaItem[]>(() => {
+    const storeMap = new Map(storeMedia.map((m) => [m.id, m]));
+    const propMap = new Map(initialPropMedia.map((m) => [m.id, m]));
+    return sessionMediaIds
+      .map((id) => storeMap.get(id) || propMap.get(id))
+      .filter((m): m is MediaItem => Boolean(m));
+  }, [sessionMediaIds, storeMedia, initialPropMedia]);
 
   const shuffleArray = useMemo(() => {
     const array = media.map((_, index) => index);
@@ -46,11 +88,13 @@ export default function FullscreenPlayer({
       }
     }
     return array;
-  }, [media, startIndex]);
+  }, [media.length, startIndex]);
 
   const [shuffledOrder, setShuffledOrder] = useState<number[]>(shuffleArray);
   const [shuffledIndex, setShuffledIndex] = useState(0);
-  const [currentIndex, setCurrentIndex] = useState(settings.shuffle ? shuffledOrder[0] : startIndex);
+  const [currentIndex, setCurrentIndex] = useState(
+    settings.shuffle ? (shuffleArray[0] ?? 0) : startIndex
+  );
   const [isPlaying, setIsPlaying] = useState(startPaused ? false : settings.autoPlay);
   const [showControls, setShowControls] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -61,6 +105,56 @@ export default function FullscreenPlayer({
   const [direction, setDirection] = useState<'next' | 'prev'>('next');
   const [transitionType, setTransitionType] = useState<'slide' | 'fade'>('fade');
   const [isAutoplayMuted, setIsAutoplayMuted] = useState(false);
+
+  // Context menu & quick edit state
+  const [menuState, setMenuState] = useState<{
+    isOpen: boolean;
+    x: number;
+    y: number;
+    initialView: PlayerMenuView;
+  }>({
+    isOpen: false,
+    x: 0,
+    y: 0,
+    initialView: 'menu',
+  });
+
+  // Fullscreen toast notification state
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const toastTimerRef = useRef<number | null>(null);
+
+  const showToast = useCallback((msg: string) => {
+    setToastMessage(msg);
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+    }
+    toastTimerRef.current = window.setTimeout(() => {
+      setToastMessage(null);
+    }, 2200);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+      }
+    };
+  }, []);
+
+  // Keep currentIndex and shuffledOrder within bounds when media items are deleted
+  useEffect(() => {
+    if (media.length === 0) {
+      onExit();
+      return;
+    }
+    setCurrentIndex((prev) => (prev >= media.length ? Math.max(0, media.length - 1) : prev));
+    setShuffledOrder((prev) => {
+      const filtered = prev.filter((idx) => idx < media.length);
+      if (filtered.length === media.length) return prev;
+      return media.map((_, idx) => idx);
+    });
+    setShuffledIndex((prev) => (prev >= media.length ? 0 : prev));
+  }, [media.length, onExit]);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const progressBarRef = useRef<HTMLDivElement | null>(null);
@@ -302,9 +396,9 @@ export default function FullscreenPlayer({
     };
   }, [showControls, isScrubbing, resetControlsTimeout]);
 
-  // Slideshow auto-advance for images
+  // Slideshow auto-advance for images (paused while context menu / editor is open)
   useEffect(() => {
-    if (!isPlaying || !currentMedia || currentMedia.type !== 'image') {
+    if (!isPlaying || menuState.isOpen || !currentMedia || currentMedia.type !== 'image') {
       return;
     }
 
@@ -313,7 +407,7 @@ export default function FullscreenPlayer({
     }, settings.slideInterval);
 
     return () => clearTimeout(timer);
-  }, [isPlaying, currentIndex, settings.slideInterval, goToNext, currentMedia]);
+  }, [isPlaying, menuState.isOpen, currentIndex, settings.slideInterval, goToNext, currentMedia]);
 
   // Handle video element play state when current media or isPlaying changes
   useEffect(() => {
@@ -330,6 +424,27 @@ export default function FullscreenPlayer({
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      const isEditingInput =
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable);
+
+      if (e.key === 'Escape') {
+        if (menuState.isOpen) {
+          e.preventDefault();
+          setMenuState((prev) => ({ ...prev, isOpen: false }));
+          return;
+        }
+        onExit();
+        return;
+      }
+
+      if (isEditingInput || menuState.isOpen) {
+        return;
+      }
+
       resetControlsTimeout();
       switch (e.key) {
         case 'ArrowDown':
@@ -346,15 +461,12 @@ export default function FullscreenPlayer({
           e.preventDefault();
           togglePlayPause();
           break;
-        case 'Escape':
-          onExit();
-          break;
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [goToNext, goToPrev, togglePlayPause, onExit, resetControlsTimeout]);
+  }, [goToNext, goToPrev, togglePlayPause, onExit, resetControlsTimeout, menuState.isOpen]);
 
   // Scrubbing logic
   const calculateProgressFromPointer = (clientX: number) => {
@@ -509,6 +621,11 @@ export default function FullscreenPlayer({
     if (videoRef.current && e.currentTarget !== videoRef.current) {
       return;
     }
+    if (menuState.isOpen) {
+      e.currentTarget.currentTime = 0;
+      attemptPlayVideo(e.currentTarget);
+      return;
+    }
     setIsPlaying(true);
     goToNext('fade');
   };
@@ -535,6 +652,105 @@ export default function FullscreenPlayer({
     }
   };
 
+  const handleOpenContextMenu = useCallback(
+    (x: number, y: number, initialView: PlayerMenuView = 'menu') => {
+      setMenuState({
+        isOpen: true,
+        x,
+        y,
+        initialView,
+      });
+    },
+    []
+  );
+
+  const handleCloseContextMenu = useCallback(() => {
+    setMenuState((prev) => ({ ...prev, isOpen: false }));
+  }, []);
+
+  const handleToggleCollection = useCallback(
+    async (col: Collection) => {
+      if (!currentMedia) return false;
+      const added = await toggleMediaInCollection(currentMedia.id, col.id);
+      showToast(
+        added
+          ? t('frame.addedToCollection', { name: col.name })
+          : t('frame.removedFromCollection', { name: col.name })
+      );
+      return added;
+    },
+    [currentMedia, toggleMediaInCollection, showToast, t]
+  );
+
+  const handleCreateCollectionWithMedia = useCallback(
+    async (name: string) => {
+      if (!currentMedia) return;
+      await createCollection(name, undefined, [currentMedia.id]);
+      showToast(t('frame.addedToCollection', { name }));
+    },
+    [currentMedia, createCollection, showToast, t]
+  );
+
+  const handleUpdateCurrentMedia = useCallback(
+    async (updates: Partial<MediaItem>) => {
+      if (!currentMedia) return;
+      await updateMedia(currentMedia.id, updates);
+      showToast(t('frame.savedSuccess'));
+    },
+    [currentMedia, updateMedia, showToast, t]
+  );
+
+  const handleRemoveFromActiveCollection = useCallback(async () => {
+    if (!currentMedia || !activeCollectionId || activeCollectionId === '__uncollected__') return;
+    const col = collections.find((c) => c.id === activeCollectionId);
+    if (!col) return;
+    await updateCollection(col.id, {
+      mediaIds: col.mediaIds.filter((id) => id !== currentMedia.id),
+    });
+    setSessionMediaIds((prev) => prev.filter((id) => id !== currentMedia.id));
+    showToast(t('frame.removedFromCollection', { name: col.name }));
+  }, [currentMedia, activeCollectionId, collections, updateCollection, showToast, t]);
+
+  const handleDeleteCurrentMedia = useCallback(async () => {
+    if (!currentMedia) return;
+    const targetId = currentMedia.id;
+    setSessionMediaIds((prev) => prev.filter((id) => id !== targetId));
+    if (onDelete) {
+      await onDelete(targetId);
+    } else {
+      await storeDeleteMedia(targetId);
+    }
+  }, [currentMedia, onDelete, storeDeleteMedia]);
+
+  const handleDownloadCurrentMedia = useCallback(async () => {
+    if (!currentMedia) return;
+    try {
+      const ext = currentMedia.type === 'image' ? 'jpg' : 'mp4';
+      const filename = currentMedia.title
+        ? `${currentMedia.title}.${ext}`
+        : `media-${currentMedia.id}.${ext}`;
+      await downloadMediaFile(currentMedia.url, filename);
+      showToast(t('frame.downloadComplete'));
+    } catch (error) {
+      console.error('Download failed:', error);
+    }
+  }, [currentMedia, showToast, t]);
+
+  const handleCopyCurrentUrl = useCallback(async () => {
+    if (!currentMedia) return;
+    try {
+      await navigator.clipboard.writeText(currentMedia.url);
+      showToast(t('frame.copiedToClipboard'));
+    } catch (error) {
+      console.error('Copy failed:', error);
+    }
+  }, [currentMedia, showToast, t]);
+
+  const currentMediaCollections = useMemo(() => {
+    if (!currentMedia) return [];
+    return collections.filter((col) => col.mediaIds.includes(currentMedia.id));
+  }, [collections, currentMedia]);
+
   if (!currentMedia) {
     return (
       <div className="fixed inset-0 bg-black flex items-center justify-center">
@@ -556,9 +772,9 @@ export default function FullscreenPlayer({
     <div
       className="fixed inset-0 bg-black z-[100] overflow-hidden select-none touch-none"
       onPointerMove={handlePointerMove}
-      style={{ cursor: showControls ? 'default' : 'none' }}
+      style={{ cursor: showControls || menuState.isOpen ? 'default' : 'none' }}
     >
-      {/* 3-Slot Viewport: Handles gesture tracking, peek previews above/below, and natural cross-fade */}
+      {/* 3-Slot Viewport: Handles gesture tracking, peek previews above/below, long-press/right-click, and cross-fade */}
       <PlayerViewport
         media={media}
         currentIndex={currentIndex}
@@ -570,6 +786,7 @@ export default function FullscreenPlayer({
         transitionType={transitionType}
         transitionDuration={settings.transitionDuration || 800}
         swipeEnabled={settings.swipeSwitching}
+        isMenuOpen={menuState.isOpen}
         isPlaying={isPlaying}
         videoRef={handleVideoCallbackRef}
         isAutoplayMuted={isAutoplayMuted}
@@ -577,6 +794,7 @@ export default function FullscreenPlayer({
         onSlideNext={() => goToNext('slide')}
         onSlidePrev={() => goToPrev('slide')}
         onContainerClick={handleContainerClick}
+        onOpenContextMenu={(x, y) => handleOpenContextMenu(x, y, 'menu')}
         onPlay={() => setIsPlaying(true)}
         onPlaying={() => setIsPlaying(true)}
         onPause={handleVideoPause}
@@ -585,6 +803,24 @@ export default function FullscreenPlayer({
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleVideoEnded}
       />
+
+      {/* Fullscreen Floating Feedback Toast */}
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -16, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -12, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className="fixed top-6 left-1/2 -translate-x-1/2 z-[10010] bg-neutral-900/90 backdrop-blur-xl border border-white/15 text-white text-xs sm:text-sm px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 pointer-events-none"
+          >
+            <span className="w-4 h-4 rounded-full bg-accent flex items-center justify-center shrink-0">
+              <Check className="w-2.5 h-2.5 text-white stroke-[3]" />
+            </span>
+            <span>{toastMessage}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Tap to Unmute Button for Mobile Autoplay */}
       {isAutoplayMuted && (
@@ -615,27 +851,88 @@ export default function FullscreenPlayer({
           >
             {/* Top Bar */}
             <div
-              className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black/70 via-black/30 to-transparent p-8 flex justify-between items-start pointer-events-auto"
+              className="absolute top-0 left-0 right-0 min-h-32 bg-gradient-to-b from-black/75 via-black/35 to-transparent p-6 sm:p-8 flex justify-between items-start gap-4 pointer-events-auto"
               onPointerDown={(e) => e.stopPropagation()}
             >
-              <div className="text-white">
-                <h3 className="text-xl font-medium drop-shadow-md">{currentMedia.title || ''}</h3>
-                <p className="text-sm text-white/60">
-                  {currentIndex + 1} / {media.length}
-                </p>
+              <div className="text-white min-w-0 flex-1">
+                {currentMedia.title && (
+                  <h3 className="text-lg sm:text-xl font-medium drop-shadow-md truncate">
+                    {currentMedia.title}
+                  </h3>
+                )}
+                {currentMedia.description && (
+                  <p className="text-xs sm:text-sm text-white/75 line-clamp-1 mt-0.5 max-w-xl drop-shadow">
+                    {currentMedia.description}
+                  </p>
+                )}
+                <div className="flex items-center flex-wrap gap-2 mt-1.5">
+                  <span className="text-xs sm:text-sm text-white/60 font-mono">
+                    {currentIndex + 1} / {media.length}
+                  </span>
+
+                  {/* Interactive Collection Badges / Quick Add Pill */}
+                  {currentMediaCollections.length > 0 ? (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        handleOpenContextMenu(rect.left, rect.bottom + 8, 'collections');
+                      }}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-md border border-white/10 text-xs text-white/90 transition-all active:scale-95 cursor-pointer"
+                      title={t('frame.addToCollection')}
+                    >
+                      <Layers className="w-3 h-3 text-accent shrink-0" />
+                      <span className="truncate max-w-[160px]">
+                        {currentMediaCollections.map((c) => c.name).join(' · ')}
+                      </span>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        handleOpenContextMenu(rect.left, rect.bottom + 8, 'collections');
+                      }}
+                      className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 text-xs text-white/70 hover:text-white transition-all active:scale-95 cursor-pointer"
+                      title={t('frame.addToCollection')}
+                    >
+                      <FolderPlus className="w-3 h-3 text-accent shrink-0" />
+                      <span>{t('frame.addToCollection')}</span>
+                    </button>
+                  )}
+                </div>
               </div>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onExit();
-                }}
-                className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all group active:scale-95"
-                title={t('frame.exitFullscreen')}
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+
+              <div className="flex items-center gap-2.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    handleOpenContextMenu(rect.right - 272, rect.bottom + 10, 'menu');
+                  }}
+                  className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all active:scale-95 cursor-pointer"
+                  title={t('frame.editInfo')}
+                >
+                  <MoreHorizontal className="w-5 h-5 sm:w-6 sm:h-6" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onExit();
+                  }}
+                  className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all group active:scale-95 cursor-pointer"
+                  title={t('frame.exitFullscreen')}
+                >
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
 
             {/* Bottom Controls */}
@@ -741,6 +1038,24 @@ export default function FullscreenPlayer({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Long-Press / Right-Click Glassmorphic Media Editor & Context Menu */}
+      <PlayerMediaMenu
+        isOpen={menuState.isOpen}
+        initialView={menuState.initialView}
+        anchor={{ x: menuState.x, y: menuState.y }}
+        media={currentMedia}
+        collections={collections}
+        activeCollectionId={activeCollectionId}
+        onClose={handleCloseContextMenu}
+        onToggleCollection={handleToggleCollection}
+        onCreateCollectionWithMedia={handleCreateCollectionWithMedia}
+        onUpdateMedia={handleUpdateCurrentMedia}
+        onRemoveFromActiveCollection={handleRemoveFromActiveCollection}
+        onDeleteMedia={handleDeleteCurrentMedia}
+        onDownloadMedia={handleDownloadCurrentMedia}
+        onCopyUrl={handleCopyCurrentUrl}
+      />
     </div>
   );
 }

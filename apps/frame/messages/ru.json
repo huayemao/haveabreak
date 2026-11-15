@@ -68,5 +68,17 @@
   "refresh": "Обновить",
   "recommendedForYou": "Рекомендуем для вас",
   "pullToRefresh": "Потяните вниз чтобы обновить",
-  "releaseToRefresh": "Отпустите чтобы обновить"
+  "releaseToRefresh": "Отпустите чтобы обновить",
+  "tapToUnmute": "Нажмите, чтобы включить звук",
+  "addToCollection": "Добавить в коллекцию",
+  "editInfo": "Редактировать",
+  "copyUrl": "Копировать URL",
+  "removeFromCollection": "Убрать из коллекции",
+  "newCollectionPlaceholder": "Новая коллекция...",
+  "untitledMedia": "Без названия",
+  "orientation": "Ориентация",
+  "savedSuccess": "Изменения сохранены",
+  "addedToCollection": "Добавлено в «{name}»",
+  "removedFromCollection": "Удалено из «{name}»",
+  "inCollectionsCount": "В {count} коллекциях"
 }

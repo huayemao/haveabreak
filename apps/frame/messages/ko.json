@@ -68,5 +68,17 @@
   "refresh": "새로 고침",
   "recommendedForYou": "당신을 위한 추천",
   "pullToRefresh": "당겨서 새로 고침",
-  "releaseToRefresh": "놓아서 새로 고침"
+  "releaseToRefresh": "놓아서 새로 고침",
+  "tapToUnmute": "탭하여 음소거 해제",
+  "addToCollection": "컬렉션에 추가",
+  "editInfo": "정보 편집",
+  "copyUrl": "URL 복사",
+  "removeFromCollection": "현재 컬렉션에서 제거",
+  "newCollectionPlaceholder": "새 컬렉션 이름...",
+  "untitledMedia": "제목 없는 미디어",
+  "orientation": "방향",
+  "savedSuccess": "변경 사항 저장됨",
+  "addedToCollection": "\"{name}\"에 추가됨",
+  "removedFromCollection": "\"{name}\"에서 제거됨",
+  "inCollectionsCount": "{count}개 컬렉션에 포함됨"
 }

@@ -70,5 +70,16 @@
   "recommendedForYou": "为你推荐",
   "pullToRefresh": "下拉刷新",
   "releaseToRefresh": "松开刷新",
-  "tapToUnmute": "点击开启声音"
+  "tapToUnmute": "点击开启声音",
+  "addToCollection": "加入合集",
+  "editInfo": "编辑信息",
+  "copyUrl": "复制链接",
+  "removeFromCollection": "移出当前合集",
+  "newCollectionPlaceholder": "新建合集并加入...",
+  "untitledMedia": "未命名媒体",
+  "orientation": "方向",
+  "savedSuccess": "已保存修改",
+  "addedToCollection": "已加入「{name}」",
+  "removedFromCollection": "已从「{name}」移除",
+  "inCollectionsCount": "已在 {count} 个合集中"
 }

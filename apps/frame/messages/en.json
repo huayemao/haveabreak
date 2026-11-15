@@ -70,5 +70,16 @@
   "recommendedForYou": "Recommended for you",
   "pullToRefresh": "Pull down to refresh",
   "releaseToRefresh": "Release to refresh",
-  "tapToUnmute": "Tap to unmute"
+  "tapToUnmute": "Tap to unmute",
+  "addToCollection": "Add to Collection",
+  "editInfo": "Edit Info",
+  "copyUrl": "Copy URL",
+  "removeFromCollection": "Remove from Collection",
+  "newCollectionPlaceholder": "New collection name...",
+  "untitledMedia": "Untitled Media",
+  "orientation": "Orientation",
+  "savedSuccess": "Changes saved",
+  "addedToCollection": "Added to \"{name}\"",
+  "removedFromCollection": "Removed from \"{name}\"",
+  "inCollectionsCount": "In {count} collections"
 }
